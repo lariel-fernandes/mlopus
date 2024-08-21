@@ -1,5 +1,5 @@
 # MLOpus
-[![Test Coverage](https://github.com/lariel-fernandes/mlopus/tree/gh-pages/coverage/coverage.svg?raw=true)](https://github.com/lariel-fernandes/mlopus/tree/gh-pages/coverage)
+[![Test Coverage](https://lariel-fernandes.github.io/mlopus/coverage/coverage.svg)](https://lariel-fernandes.github.io/mlopus/coverage)
 
 A collection of MLOps tools for AI/ML/DS research and development.
 
