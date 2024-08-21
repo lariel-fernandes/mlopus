@@ -3,7 +3,7 @@
 # This is going to:
 # - Build and publish the Python package
 #
-name: Release
+name: PyPI
 
 on:
   workflow_dispatch:
