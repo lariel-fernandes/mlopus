@@ -14,6 +14,12 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      dry-run:
+        type: boolean
+        default: false
+        required: false
+        description: Dry run
 
 env:
   TWINE_USERNAME: __token__
@@ -26,6 +32,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -47,21 +55,26 @@ jobs:
     - name: Install UV tools
       run: make install-tools
 
-    - name: Get dev release
-      id: get-dev-release
+    - name: Get metadata
+      id: get-metadata
       run: |
-        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP ${{ env.DEVRELEASE_PATTERN }}) ]] ; then
-          echo "value=${GITHUB_RUN_ID}" >> $GITHUB_OUTPUT
+        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP '${{ env.DEVRELEASE_PATTERN }}') ]] ; then
+          echo "devrelease=${GITHUB_RUN_ID}" >> $GITHUB_OUTPUT
+        else
+          echo "changelog=true" >> $GITHUB_OUTPUT
         fi
 
     - name: Commitizen
       uses: commitizen-tools/commitizen-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        devrelease: ${{ steps.get-dev-release.outputs.value }}
+        dry_run: ${{ github.event.inputs.dry-run }}
+        changelog: ${{ steps.get-metadata.outputs.changelog }}
+        devrelease: ${{ steps.get-metadata.outputs.devrelease }}
 
     - name: Build Python package
       run: uvx --from build pyproject-build --installer uv -s
 
     - name: Publish Python package
+      if: ${{ github.event.inputs.dry-run == false }}
       run: uvx twine upload dist/*
