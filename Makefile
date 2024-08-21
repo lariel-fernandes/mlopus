@@ -15,7 +15,6 @@ install-tools:
 	@uv tool install -q pre-commit
 	@uv tool install -q commitizen
 	@uv tool install -q coverage-badge
-	@uv tool install -q sphinx --with sphinx-autodoc-typehints
 
 # === Git hooks ===================================================================================
 
@@ -52,7 +51,7 @@ ruff-apply:
 # === Sphinx ======================================================================================
 
 api-docs:
-	cd docs/api && $(MAKE) -s html
+	cd docs/api && uv run $(MAKE) -s html
 
 # === MLflow Sandbox ==============================================================================
 
