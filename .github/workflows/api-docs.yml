@@ -50,7 +50,7 @@ jobs:
     - name: Get docs scope
       id: get-docs-scope
       run: |
-        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP ${{ env.DEVRELEASE_PATTERN }}) ]] ; then
+        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP '${{ env.DEVRELEASE_PATTERN }}') ]] ; then
           echo "value=dev" >> $GITHUB_OUTPUT
         else
           echo "value=stable" >> $GITHUB_OUTPUT
