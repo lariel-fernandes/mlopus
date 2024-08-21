@@ -1,0 +1,74 @@
+# Trigger this workflow manually while choosing a branch in order update the API docs.
+#
+# The target folder for deploying docs in GH pages is determined by the major version of
+# the latest release tag in the history of the targeted branch, along with the branch scope
+# (`dev` if the branch name matches the regex `DEVRELEASE_PATTERN`, otherwise `stable`).
+# An additional deployment to stable/latest is made if the target branch is `main`.
+#
+# This is going to:
+# - Build the API docs
+# - Deploy to GH pages
+#
+name: "API Docs"
+
+on:
+  workflow_dispatch:
+
+env:
+  DEVRELEASE_PATTERN: ^(?!main$).+$  # Match any branch name except 'main'
+
+jobs:
+  api-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version-file: .python-version
+
+    - name: Set up uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    - name: Cache UV
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.uv-cache
+        key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+        restore-keys: |
+          uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          uv-${{ runner.os }}
+
+    - name: Install UV tools
+      run: make install-tools
+
+    - name: Render API docs
+      run: make api-docs
+
+    - name: Get docs scope
+      id: get-docs-version
+      run: |
+        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP ${{ env.DEVRELEASE_PATTERN }}) ]] ; then
+          echo "value=dev" >> $GITHUB_OUTPUT
+        else
+          echo "value=stable" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Get docs version
+      id: get-docs-version
+      run: echo "value=$(git describe --tags --abbrev=0 | grep -oP '^\d+')' >> "$GITHUB_OUTPUT"
+
+    - name: Publish API docs to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: docs/api/_build/html
+        target-folder: docs/api/${{ steps.get-docs-scope.outputs.value }}/v${{ steps.get-docs-version.outputs.value }}
+
+    - name: Publish API docs to GitHub Pages (latest)
+      if: ${{ github.ref == 'refs/heads/main' }}
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: docs/api/_build/html
+        target-folder: docs/api/stable/latest

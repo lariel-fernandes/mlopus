@@ -1,0 +1,67 @@
+# Trigger this workflow manually while choosing a branch in order to make a release.
+#
+# The release tag is inferred by commitizen by looking at the history of commit messages.
+# It will be a dev release if the branch name matches the regex `DEVRELEASE_PATTERN`.
+#
+# This is going to:
+# - Create the release tag
+# - Update the package metadata and changelog
+# - Build and publish the Python package
+#
+# For updating the API docs, see the workflow `api-docs.yml`
+#
+name: Release
+
+on:
+  workflow_dispatch:
+
+env:
+  TWINE_USERNAME: __token__
+  TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+  DEVRELEASE_PATTERN: ^(?!main$).+$  # Match any branch name except 'main'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version-file: .python-version
+
+    - name: Set up uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    - name: Cache UV
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.uv-cache
+        key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+        restore-keys: |
+          uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          uv-${{ runner.os }}
+
+    - name: Install UV tools
+      run: make install-tools
+
+    - name: Get dev release
+      id: get-dev-release
+      run: |
+        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP ${{ env.DEVRELEASE_PATTERN }}) ]] ; then
+          echo "value=${GITHUB_RUN_ID}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commitizen
+      uses: commitizen-tools/commitizen-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        devrelease: ${{ steps.get-dev-release.outputs.value }}
+
+    - name: Build Python package
+      run: uvx --from build pyproject-build --installer uv -s
+
+    - name: Publish Python package
+      run: uvx twine upload dist/*
