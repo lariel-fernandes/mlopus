@@ -15,7 +15,7 @@ A collection of MLOps tools for AI/ML/DS research and development.
 Check the tutorials in the [examples folder](examples)
 for a friendly walkthrough of (almost) everything you can do with MLOpus.
 
-A minimal API reference is also available [here](https://github.com/lariel-fernandes/mlopus/tree/gh-pages/docs/api/stable/latest).
+A minimal API reference is also available [here](https://lariel-fernandes.github.io/mlopus/docs/api/stable/latest).
 
 ### Installation
 
