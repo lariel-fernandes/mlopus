@@ -1,0 +1,54 @@
+# Trigger this workflow manually while choosing a tag in order to publish the package.
+#
+# This is going to:
+# - Build and publish the Python package
+#
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        type: boolean
+        default: false
+        required: false
+        description: Dry run
+
+env:
+  TWINE_USERNAME: __token__
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version-file: .python-version
+
+    - name: Set up uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    - name: Cache UV
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.uv-cache
+        key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+        restore-keys: |
+          uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          uv-${{ runner.os }}
+
+    - name: Install UV tools
+      run: make install-tools
+
+    - name: Build Python package
+      run: uvx --from build pyproject-build --installer uv -s
+
+    - name: Publish Python package
+      if: ${{ github.event.inputs.dry-run != 'true' }}
+      run: uvx twine upload -p ${{ secrets.PYPI_TOKEN }} dist/*
