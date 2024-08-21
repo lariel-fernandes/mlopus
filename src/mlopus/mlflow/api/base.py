@@ -1,0 +1,1092 @@
+import contextlib
+import logging
+import os.path
+import tempfile
+import typing
+from abc import ABC, abstractmethod
+from datetime import datetime
+from pathlib import Path
+from typing import Type, TypeVar, Callable, Iterator, Tuple, Mapping
+
+from mlopus.utils import pydantic, paths, urls, mongo, string_utils, iter_utils
+from . import contract
+from .common import schema, decorators, serde, exceptions, patterns, transfer
+from .exp import ExpApi
+from .model import ModelApi
+from .mv import ModelVersionApi
+from .run import RunApi
+
+logger = logging.getLogger(__name__)
+
+A = TypeVar("A")  # Any type
+
+# Entity types
+E = schema.Experiment
+R = schema.Run
+M = schema.Model
+V = schema.ModelVersion
+T = TypeVar("T", bound=schema.BaseEntity)
+
+# Identifier types
+ExpIdentifier = contract.ExpIdentifier
+RunIdentifier = contract.RunIdentifier
+ModelIdentifier = contract.ModelIdentifier
+ModelVersionIdentifier = contract.ModelVersionIdentifier
+
+
+class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
+    """Base class for APIs following the MLflow paradigm."""
+
+    cache_dir: Path = None
+    offline_mode: bool = False
+    temp_artifacts_dir: Path = None
+    cache_local_artifacts: bool = False
+    always_pull_artifacts: bool = False
+    file_transfer: transfer.FileTransfer = pydantic.Field(default_factory=transfer.FileTransfer, repr=False)
+    entity_serializer: serde.EntitySerializer = pydantic.Field(default_factory=serde.EntitySerializer, repr=False)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        # Apply default to cache dir, expand and resolve
+        if paths.is_cwd(cache := self.cache_dir or ""):
+            cache = self._impl_default_cache_dir()
+        pydantic.force_set_attr(self, key="cache_dir", val=cache.expanduser().resolve())
+
+        # Apply default to temp artifacts dir, expand and resolve
+        if paths.is_cwd(tmp := self.temp_artifacts_dir or ""):
+            tmp = self._artifacts_cache.joinpath("temp")
+        pydantic.force_set_attr(self, key="temp_artifacts_dir", val=tmp.expanduser().resolve())
+
+    @property
+    def in_offline_mode(self) -> "BaseMlflowApi":
+        """Get an offline copy of this API."""
+        return self.copy(update={"offline_mode": True})
+
+    # =======================================================================================================
+    # === Metadata cache locators ===========================================================================
+
+    @property
+    def _metadata_cache(self) -> Path:
+        return self.cache_dir.joinpath("metadata")
+
+    @property
+    def _exp_cache(self) -> Path:
+        return self._metadata_cache.joinpath("exp")
+
+    @property
+    def _run_cache(self) -> Path:
+        return self._metadata_cache.joinpath("run")
+
+    @property
+    def _model_cache(self) -> Path:
+        return self._metadata_cache.joinpath("model")
+
+    @property
+    def _mv_cache(self) -> Path:
+        return self._metadata_cache.joinpath("mv")
+
+    def _get_exp_cache(self, exp_id: str) -> Path:
+        return self._exp_cache.joinpath(exp_id)
+
+    def _get_run_cache(self, run_id: str) -> Path:
+        return self._run_cache.joinpath(run_id)
+
+    def _get_model_cache(self, name: str) -> Path:
+        return self._model_cache.joinpath(patterns.encode_model_name(name))
+
+    def _get_mv_cache(self, name: str, version: str) -> Path:
+        return self._mv_cache.joinpath(patterns.encode_model_name(name), version)
+
+    # =======================================================================================================
+    # === Artifact cache locators ===========================================================================
+
+    @property
+    def _artifacts_cache(self) -> Path:
+        return self.cache_dir.joinpath("artifacts")
+
+    @property
+    def _run_artifacts_cache(self) -> Path:
+        return self._artifacts_cache.joinpath("runs")
+
+    def _get_run_artifact_cache_path(
+        self, run: RunIdentifier, path_in_run: str = "", allow_base_resolve: bool = True
+    ) -> Path:
+        path_in_run = self._valid_path_in_run(path_in_run, allow_empty=allow_base_resolve)
+        return self._run_artifacts_cache.joinpath(self._coerce_run_id(run), path_in_run)
+
+    def _get_temp_artifacts_dir(self) -> Path:
+        return Path(tempfile.mkdtemp(dir=paths.ensure_is_dir(self.temp_artifacts_dir)))
+
+    # =======================================================================================================
+    # === Cache protection ==================================================================================
+
+    @contextlib.contextmanager
+    def _lock_run_artifact(self, run_id: str, path_in_run: str, allow_base_resolve: bool = True) -> Path:
+        path_in_run = self._valid_path_in_run(path_in_run, allow_empty=allow_base_resolve)
+        with paths.dir_lock(self._get_run_artifact_cache_path(run_id)) as path:
+            yield path.joinpath(path_in_run)
+
+    # =======================================================================================================
+    # === Cache cleanup =====================================================================================
+
+    def _clean_temp_artifacts(self):
+        paths.ensure_non_existing(self.temp_artifacts_dir, force=True)
+
+    def _clean_all_meta_cache(self):
+        for path in (self._exp_cache, self._run_cache, self._model_cache, self._mv_cache):
+            with paths.dir_lock(path):
+                paths.ensure_empty_dir(path, force=True)
+
+    def _clean_run_artifact(self, run_id: str, path_in_run: str = ""):
+        with self._lock_run_artifact(run_id, path_in_run) as path:
+            paths.ensure_non_existing(path, force=True)
+
+    def _clean_all_runs_artifacts(self):
+        with paths.dir_lock(self._run_artifacts_cache) as path:
+            paths.ensure_non_existing(path, force=True)
+
+    def _clean_all_cache(self):
+        self._clean_all_meta_cache()
+        self._clean_all_runs_artifacts()
+
+    # =======================================================================================================
+    # === Metadata Getters ==================================================================================
+
+    @classmethod
+    def _meta_fetcher(cls, fetcher: Callable[[A], T], args: A) -> Callable[[], T]:
+        return lambda: fetcher(args)
+
+    def _meta_cache_reader(self, path: Path, type_: Type[T]) -> Callable[[], T]:
+        return lambda: self.entity_serializer.load(type_, path)
+
+    def _meta_cache_writer(self, lock_dir: Path, path: Path, type_: Type[T]) -> Callable[[T], None]:
+        def _write_meta_cache(meta: T):
+            assert isinstance(meta, type_)
+            with paths.dir_lock(lock_dir):
+                self.entity_serializer.save(meta, path)
+
+        return _write_meta_cache
+
+    def _get_meta(
+        self,
+        fetcher: Callable[[], T],
+        cache_reader: Callable[[], T],
+        cache_writer: Callable[[T], None],
+        force_cache_refresh: bool = False,
+    ) -> T:
+        """Get metadata."""
+        if force_cache_refresh:
+            if self.offline_mode:
+                raise RuntimeError("Cannot refresh cache on offline mode.")
+            cache_writer(meta := fetcher())
+        elif not self.offline_mode:
+            meta = fetcher()
+        else:
+            meta = cache_reader()
+
+        return meta
+
+    def _get_exp(self, exp_id: str, **cache_opts: bool) -> E:
+        """Get Experiment metadata."""
+        return self._get_meta(
+            self._meta_fetcher(self._fetch_exp, exp_id),
+            self._meta_cache_reader(cache := self._get_exp_cache(exp_id), E),
+            self._meta_cache_writer(self._exp_cache, cache, E),
+            **cache_opts,
+        )
+
+    def _get_run(self, run_id: str, **cache_opts: bool) -> R:
+        """Get Run metadata."""
+        return self._get_meta(
+            self._meta_fetcher(self._fetch_run, run_id),
+            self._meta_cache_reader(cache := self._get_run_cache(run_id), R),
+            lambda run: [
+                self._meta_cache_writer(self._run_cache, cache, R)(run),
+                self._meta_cache_writer(self._exp_cache, self._get_exp_cache(run.exp.id), E)(run.exp),
+            ][0],
+            **cache_opts,
+        )
+
+    def _get_model(self, name: str, **cache_opts: bool) -> M:
+        """Get Model metadata."""
+        return self._get_meta(
+            self._meta_fetcher(self._fetch_model, name),
+            self._meta_cache_reader(cache := self._get_model_cache(name), M),
+            self._meta_cache_writer(self._model_cache, cache, M),
+            **cache_opts,
+        )
+
+    def _get_mv(self, name_and_version: Tuple[str, str], **cache_opts: bool) -> V:
+        """Get ModelVersion metadata."""
+        return self._get_meta(
+            self._meta_fetcher(self._fetch_mv, name_and_version),
+            self._meta_cache_reader(cache := self._get_mv_cache(*name_and_version), V),
+            lambda mv: [
+                self._meta_cache_writer(self._mv_cache, cache, V)(mv),
+                self._meta_cache_writer(self._model_cache, self._get_model_cache(mv.model.name), M)(mv.model),
+            ][0],
+            **cache_opts,
+        )
+
+    @decorators.online
+    def _fetch_exp(self, exp_id: str) -> E:
+        return self._impl_fetch_exp(exp_id)
+
+    @decorators.online
+    def _fetch_run(self, run_id: str) -> R:
+        return self._impl_fetch_run(run_id)
+
+    @decorators.online
+    def _fetch_model(self, name: str) -> M:
+        return self._impl_fetch_model(name)
+
+    @decorators.online
+    def _fetch_mv(self, name_and_version: Tuple[str, str]) -> V:
+        return self._impl_fetch_mv(name_and_version)
+
+    def _export_meta(self, meta: T, cache: Path, target: Path):
+        paths.ensure_only_parents(target := target / cache.relative_to(self.cache_dir), force=True)
+        self.entity_serializer.save(meta, target)
+
+    # =======================================================================================================
+    # === Metadata Finders ==================================================================================
+
+    def _find_experiments(self, query: mongo.Query, sorting: mongo.Sorting) -> Iterator[E]:
+        return self._find_meta(self._exp_cache, E, query, sorting, self._impl_find_experiments)
+
+    def _find_runs(self, query: mongo.Query, sorting: mongo.Sorting) -> Iterator[R]:
+        return self._find_meta(self._run_cache, R, query, sorting, self._impl_find_runs)
+
+    def _find_models(self, query: mongo.Query, sorting: mongo.Sorting) -> Iterator[M]:
+        return self._find_meta(self._model_cache, M, query, sorting, self._impl_find_models)
+
+    def _find_mv(self, query: mongo.Query, sorting: mongo.Sorting) -> Iterator[V]:
+        return self._find_meta(self._mv_cache, V, query, sorting, self._impl_find_mv)
+
+    def _find_meta(
+        self,
+        cache: Path,
+        type_: Type[T],
+        query: mongo.Query,
+        sorting: mongo.Sorting,
+        finder: Callable[[mongo.Query, mongo.Sorting], Tuple[mongo.Query, mongo.Sorting, iter_utils.Paginator[T]]],
+    ) -> Iterator[T]:
+        if self.offline_mode:
+            logger.warning("Metadata search in offline mode may yield incomplete or stale results.")
+            cached = (self.entity_serializer.load(type_, x) for x in paths.iter_files(cache))
+            paginator = iter_utils.Paginator[T].single_page(cached)
+        else:
+            query, sorting, paginator = finder(query, sorting)
+
+        if sorting:
+            paginator = paginator.collapse()
+
+        if query:
+            paginator = paginator.map_pages(
+                lambda results: list(
+                    mongo.find_all(
+                        results,
+                        query=query,
+                        sorting=sorting,
+                        to_doc=lambda obj: obj.dict(),
+                        from_doc=type_.parse_obj,
+                    )
+                )
+            )
+
+        for page in paginator:
+            for result in page:
+                yield result
+
+    # =======================================================================================================
+    # === Artifact getters ==================================================================================
+
+    def _list_run_artifacts(self, run: RunIdentifier, path_in_run: str = "") -> transfer.LsResult:
+        path_in_run = self._valid_path_in_run(path_in_run, allow_empty=True)
+
+        if self.offline_mode:
+            logger.warning("Listing run artifacts in offline mode may yield incomplete or stale results.")
+            subject = self._get_run_artifact_cache_path(run, path_in_run)
+        elif urls.is_local(subject := urls.urljoin(self._coerce_run(run).repo, path_in_run)):
+            subject = subject.path
+
+        return self.file_transfer.ls(subject)
+
+    @decorators.online
+    def _pull_run_artifact(self, run: RunIdentifier, path_in_run: str) -> Path:
+        """Pull artifact from run repo to local cache, unless repo is already local."""
+        path_in_run = self._valid_path_in_run(path_in_run, allow_empty=True)
+
+        with self._lock_run_artifact((run := self._coerce_run(run)).id, path_in_run) as target:
+            if urls.is_local(url := run.repo_url):
+                source = Path(url.path) / path_in_run
+
+                if self.cache_local_artifacts:
+                    paths.place_path(source, target, mode="copy", overwrite=True)
+                else:
+                    logger.info("Run artifacts repo is local, nothing to pull.")
+                    return source
+            else:
+                self.file_transfer.pull_files(urls.urljoin(run.repo_url, path_in_run), target)
+
+            return target
+
+    def _get_run_artifact(self, run: RunIdentifier, path_in_run: str) -> Path:
+        """Get path to local run artifact, may trigger a cache pull."""
+        path_in_run = self._valid_path_in_run(path_in_run, allow_empty=True)
+        cache = self._get_run_artifact_cache_path(run, path_in_run)
+
+        if not self.offline_mode and (not cache.exists() or self.always_pull_artifacts):
+            return self._pull_run_artifact(run, path_in_run)
+
+        if not cache.exists():
+            raise FileNotFoundError(cache)
+
+        return cache
+
+    def _place_run_artifact(
+        self,
+        run: RunIdentifier,
+        path_in_run: str,
+        target: Path,
+        link: bool,
+        overwrite: bool,
+    ):
+        """Place local run artifact on target path, may trigger a cache pull."""
+        mode = typing.cast(paths.PathOperation, "link" if link else "copy")
+        paths.place_path(self._get_run_artifact(run, path_in_run), target, mode, overwrite)
+
+    # =======================================================================================================
+    # === Arguments pre-processing ==========================================================================
+
+    def _coerce_exp(self, exp: ExpIdentifier) -> E:
+        match exp:
+            case E():
+                return exp
+            case str():
+                return self._get_exp(exp)
+            case _:
+                raise TypeError("Expected Experiment, ExpApi or experiment ID as string.")
+
+    @classmethod
+    @string_utils.retval_matches(patterns.EXP_ID)
+    def _coerce_exp_id(cls, exp: ExpIdentifier) -> str:
+        match exp:
+            case E():
+                return exp.id
+            case str():
+                return exp
+            case _:
+                raise TypeError("Expected Experiment, ExpApi or experiment ID as string.")
+
+    def _coerce_run(self, run: RunIdentifier) -> R:
+        match run:
+            case R():
+                return run
+            case str():
+                return self._get_run(run)
+            case _:
+                raise TypeError("Expected Run, RunApi or run ID as string.")
+
+    @classmethod
+    @string_utils.retval_matches(patterns.RUN_ID)
+    def _coerce_run_id(cls, run: RunIdentifier) -> str:
+        match run:
+            case R():
+                return run.id
+            case str():
+                return run
+            case _:
+                raise TypeError("Expected Run, RunApi or run ID as string.")
+
+    def _coerce_model(self, model: ModelIdentifier) -> M:
+        match model:
+            case M():
+                return model
+            case str():
+                return self._get_model(model)
+            case _:
+                raise TypeError("Expected Model, ModelApi or model name as string.")
+
+    @classmethod
+    @string_utils.retval_matches(patterns.MODEL_NAME)
+    def _coerce_model_name(cls, model: ModelIdentifier) -> str:
+        match model:
+            case M():
+                return model.name
+            case str():
+                return model
+            case _:
+                raise TypeError("Expected Model, ModelApi or model name as string.")
+
+    def _coerce_mv(self, mv: ModelVersionIdentifier) -> V:
+        match mv:
+            case V():
+                return mv
+            case (str(), str()):
+                return self._get_mv(*mv)
+            case _:
+                raise TypeError("Expected ModelVersion or tuple or (name, version) strings.")
+
+    @classmethod
+    @string_utils.retval_matches(patterns.MODEL_NAME, index=0)
+    @string_utils.retval_matches(patterns.MODEL_VERSION, index=1)
+    def _coerce_mv_tuple(cls, mv: ModelVersionIdentifier) -> Tuple[str, str]:
+        match mv:
+            case V():
+                return mv.model.name, mv.version
+            case (str(), str()):
+                return mv
+            case _:
+                raise TypeError("Expected ModelVersion or tuple or (name, version) strings.")
+
+    @classmethod
+    def _valid_path_in_run(cls, path_in_run: str, allow_empty: bool = False) -> str:
+        """Validate the `path_in_run` for an artifact or model.
+
+        - Cannot be empty, unless specified
+        - Slashes are trimmed
+        - Cannot do path climbing (e.g.: "../")
+        - Cannot do current path referencing (e.g.: "./")
+
+        Valid path example: "a/b/c"
+        """
+        if (path_in_run := str(path_in_run).strip("/")) and os.path.abspath(path := "/root/" + path_in_run) == path:
+            return path_in_run
+        if allow_empty and path_in_run == "":
+            return path_in_run
+        raise paths.IllegalPath(f"`path_in_run={path_in_run}`")
+
+    # =======================================================================================================
+    # === Experiment tracking ===============================================================================
+
+    @decorators.online
+    def _create_exp(self, name: str, tags: Mapping) -> E:
+        """Create experiment and return its metadata."""
+        return self._impl_create_exp(name, tags)
+
+    @decorators.online
+    def _create_model(self, name: str, tags: Mapping) -> M:
+        """Create registered model and return its metadata."""
+        return self._impl_create_model(self._coerce_model_name(name), tags)
+
+    @decorators.online
+    def _create_run(
+        self,
+        exp: ExpIdentifier,
+        name: str | None,
+        repo: urls.Url | str | None,
+        tags: Mapping,
+        status: schema.RunStatus,
+        parent: RunIdentifier | None,
+    ) -> R:
+        """Create run with start at current UTC time."""
+        if repo is not None:
+            repo = urls.parse_url(repo, resolve_if_local=True)
+        run_id = self._impl_create_run(
+            self._coerce_exp_id(exp), name, repo, parent_run_id=self._coerce_run_id(parent) if parent else None
+        )
+        self._update_run_tags(run_id, tags)
+        self._set_run_status(run_id, status)
+        return self._get_run(run_id)
+
+    @decorators.online
+    def _set_run_status(self, run: RunIdentifier, status: schema.RunStatus):
+        self._impl_set_run_status(self._coerce_run_id(run), status)
+
+    @decorators.online
+    def _set_run_end_time(self, run: RunIdentifier, end_time: datetime):
+        self._impl_set_run_end_time(self._coerce_run_id(run), end_time)
+
+    @decorators.online
+    def _update_exp_tags(self, exp: ExpIdentifier, tags: Mapping):
+        self._impl_update_exp_tags(self._coerce_exp_id(exp), tags)
+
+    @decorators.online
+    def _update_run_tags(self, run: RunIdentifier, tags: Mapping):
+        self._impl_update_run_tags(self._coerce_run_id(run), tags)
+
+    @decorators.online
+    def _update_model_tags(self, model: ModelIdentifier, tags: Mapping):
+        self._impl_update_model_tags(self._coerce_model_name(model), tags)
+
+    @decorators.online
+    def _update_mv_tags(self, mv: ModelVersionIdentifier, tags: Mapping):
+        self._impl_update_mv_tags(*self._coerce_mv_tuple(mv), tags=tags)
+
+    @decorators.online
+    def _log_run_params(self, run: RunIdentifier, params: Mapping):
+        self._impl_log_run_params(self._coerce_run_id(run), params)
+
+    @decorators.online
+    def _log_run_metrics(self, run: RunIdentifier, metrics: Mapping):
+        self._impl_log_run_metrics(self._coerce_run_id(run), metrics)
+
+    # =======================================================================================================
+    # === Model registry ====================================================================================
+
+    @decorators.online
+    def _register_mv(
+        self, model: ModelIdentifier, run: RunIdentifier, path_in_run: str, version: str | None, tags: Mapping
+    ) -> V:
+        path_in_run = self._valid_path_in_run(path_in_run)
+        return self._impl_register_mv(self._coerce_model(model), self._coerce_run(run), path_in_run, version, tags)
+
+    # =======================================================================================================
+    # === Abstract Methods ==================================================================================
+
+    @abstractmethod
+    def _impl_default_cache_dir(self) -> Path:
+        """Get default cache dir based on the current MLflow API settings."""
+
+    @abstractmethod
+    def _impl_get_exp_url(self, exp_id: str) -> urls.Url:
+        """Get Experiment URL."""
+
+    @abstractmethod
+    def _impl_get_run_url(self, run_id: str, exp_id: str) -> urls.Url:
+        """Get Run URL."""
+
+    @abstractmethod
+    def _impl_get_model_url(self, name: str) -> urls.Url:
+        """Get URL to registered model."""
+
+    @abstractmethod
+    def _impl_get_mv_url(self, name: str, version: str) -> urls.Url:
+        """Get model version URL."""
+
+    @abstractmethod
+    def _impl_fetch_exp(self, exp_id: str) -> E:
+        """Get Experiment by ID."""
+
+    @abstractmethod
+    def _impl_fetch_run(self, run_id: str) -> R:
+        """Get Run by ID."""
+
+    @abstractmethod
+    def _impl_fetch_model(self, name: str) -> M:
+        """Get registered Model by name."""
+
+    @abstractmethod
+    def _impl_fetch_mv(self, name_and_version: Tuple[str, str]) -> V:
+        """Get ModelVersion by name and version."""
+
+    @abstractmethod
+    def _impl_find_experiments(
+        self, query: mongo.Query, sorting: mongo.Sorting
+    ) -> Tuple[mongo.Query, mongo.Sorting, iter_utils.Paginator[E]]:
+        """Push down MongoDB query where possible and return query remainder with results iterator."""
+
+    @abstractmethod
+    def _impl_find_runs(
+        self, query: mongo.Query, sorting: mongo.Sorting
+    ) -> Tuple[mongo.Query, mongo.Sorting, iter_utils.Paginator[R]]:
+        """Push down MongoDB query where possible and return query remainder with results iterator."""
+
+    @abstractmethod
+    def _impl_find_models(
+        self, query: mongo.Query, sorting: mongo.Sorting
+    ) -> Tuple[mongo.Query, mongo.Sorting, iter_utils.Paginator[M]]:
+        """Push down MongoDB query where possible and return query remainder with results iterator."""
+
+    @abstractmethod
+    def _impl_find_mv(
+        self, query: mongo.Query, sorting: mongo.Sorting
+    ) -> Tuple[mongo.Query, mongo.Sorting, iter_utils.Paginator[V]]:
+        """Push down MongoDB query where possible and return query remainder with results iterator."""
+
+    @abstractmethod
+    def _impl_find_child_runs(self, run: R) -> Iterator[R]:
+        """Find child runs."""
+
+    @abstractmethod
+    def _impl_create_exp(self, name: str, tags: Mapping) -> E:
+        """Create experiment and return its metadata."""
+
+    @abstractmethod
+    def _impl_create_model(self, name: str, tags: Mapping) -> M:
+        """Create registered model and return its metadata."""
+
+    @abstractmethod
+    def _impl_create_run(
+        self, exp_id: str, name: str | None, repo: urls.Url | None, parent_run_id: str | None = None
+    ) -> str:
+        """Create experiment run."""
+
+    @abstractmethod
+    def _impl_set_run_status(self, run_id: str, status: schema.RunStatus):
+        """Set Run status."""
+
+    @abstractmethod
+    def _impl_set_run_end_time(self, run_id: str, end_time: datetime):
+        """Set Run end time."""
+
+    @abstractmethod
+    def _impl_update_exp_tags(self, exp_id: str, tags: Mapping):
+        """Update Exp tags."""
+
+    @abstractmethod
+    def _impl_update_run_tags(self, run_id: str, tags: Mapping):
+        """Update Run tags."""
+
+    @abstractmethod
+    def _impl_update_model_tags(self, name: str, tags: Mapping):
+        """Update Model tags."""
+
+    @abstractmethod
+    def _impl_update_mv_tags(self, name: str, version: str, tags: Mapping):
+        """Update Exp tags."""
+
+    @abstractmethod
+    def _impl_log_run_params(self, run_id: str, params: Mapping):
+        """Log run params."""
+
+    @abstractmethod
+    def _impl_log_run_metrics(self, run_id: str, metrics: Mapping):
+        """Log run metrics."""
+
+    @abstractmethod
+    def _impl_register_mv(self, model: M, run: R, path_in_run: str, version: str | None, tags: Mapping) -> V:
+        """Register model version."""
+
+    # =======================================================================================================
+    # === Public Methods ====================================================================================
+
+    def clean_all_cache(self):
+        """Clean all cached metadata and artifacts."""
+        self._clean_all_cache()
+
+    def clean_temp_artifacts(self):
+        """Clean temporary artifacts."""
+        self._clean_temp_artifacts()
+
+    @pydantic.validate_arguments
+    def clean_cached_run_artifact(self, run: RunIdentifier, path_in_run: str = ""):
+        """Clean cached artifact for specified run."""
+        self._clean_run_artifact(self._coerce_run_id(run), path_in_run)
+
+    @pydantic.validate_arguments
+    def clean_cached_model_artifact(self, model_version: ModelVersionIdentifier):
+        """Clean cached artifact for specified model version."""
+        mv = self._coerce_mv(model_version)
+        self.clean_cached_run_artifact(mv.run, mv.path_in_run)
+
+    @pydantic.validate_arguments
+    def list_run_artifacts(self, run: RunIdentifier, path_in_run: str = "") -> transfer.LsResult:
+        """List run artifacts in repo."""
+        return self._list_run_artifacts(run, path_in_run)
+
+    @pydantic.validate_arguments
+    def list_model_artifact(self, model_version: ModelVersionIdentifier) -> transfer.LsResult:
+        """List model version artifacts in repo."""
+        return self.list_run_artifacts((mv := self._coerce_mv(model_version)).run, mv.path_in_run)
+
+    @pydantic.validate_arguments
+    def cache_run_artifact(self, run: RunIdentifier, path_in_run: str = "") -> Path:
+        """Pull run artifact from MLflow server to local cache."""
+        return self._pull_run_artifact(run, path_in_run)
+
+    @pydantic.validate_arguments
+    def cache_model_artifact(self, model_version: ModelVersionIdentifier) -> Path:
+        """Pull model version artifact from MLflow server to local cache."""
+        mv = self._coerce_mv(model_version)
+        return self.cache_run_artifact(mv.run, mv.path_in_run)
+
+    @pydantic.validate_arguments
+    def get_run_artifact(self, run: RunIdentifier, path_in_run: str = "") -> Path:
+        """Get local path to run artifact."""
+        return self._get_run_artifact(self._coerce_run_id(run), path_in_run)
+
+    @pydantic.validate_arguments
+    def get_model_artifact(self, model_version: ModelVersionIdentifier) -> Path:
+        """Get local path to model artifact."""
+        mv = self._coerce_mv(model_version)
+        return self.get_run_artifact(mv.run, mv.path_in_run)
+
+    @pydantic.validate_arguments
+    def place_run_artifact(
+        self,
+        run: RunIdentifier,
+        target: Path,
+        path_in_run: str = "",
+        overwrite: bool = False,
+        link: bool = True,
+    ):
+        """Place run artifact on target path."""
+        self._place_run_artifact(self._coerce_run_id(run), path_in_run, target, link, overwrite)
+
+    @pydantic.validate_arguments
+    def place_model_artifact(
+        self,
+        model_version: ModelVersionIdentifier,
+        target: Path,
+        overwrite: bool = False,
+        link: bool = True,
+    ):
+        """Place model version artifact on target path."""
+        mv = self._coerce_mv(model_version)
+        self.place_run_artifact(mv.run, target, mv.path_in_run, overwrite, link)
+
+    @pydantic.validate_arguments
+    def export_run_artifact(
+        self,
+        run: RunIdentifier,
+        target: Path,
+        path_in_run: str = "",
+    ) -> Path:
+        """Export run artifact cache to target path."""
+        if paths.is_sub_dir(target, self.cache_dir) or paths.is_sub_dir(self.cache_dir, target):
+            raise paths.IllegalPath(f"Cannot export cache to itself, its subdirs or parents: {target}")
+        cache = self._get_run_artifact(run, path_in_run)
+        target = self.copy(update={"cache_dir": target})._get_run_artifact_cache_path(run, path_in_run)
+        paths.place_path(cache, target, mode="copy", overwrite=True)
+        paths.rchmod(target, paths.Mode.rwx)  # Exported caches are not write-protected
+        return target
+
+    @pydantic.validate_arguments
+    def export_model_artifact(
+        self,
+        model_version: ModelVersionIdentifier,
+        target: Path,
+    ) -> Path:
+        """Export model version artifact cache to target path."""
+        mv = self._coerce_mv(model_version)
+        return self.export_run_artifact(mv.run, target, mv.path_in_run)
+
+    @pydantic.validate_arguments
+    def load_run_artifact(self, run: RunIdentifier, loader: Callable[[Path], A], path_in_run: str = "") -> A:
+        """Load run artifact."""
+        return loader(self._get_run_artifact(self._coerce_run_id(run), path_in_run))
+
+    @pydantic.validate_arguments
+    def load_model_artifact(self, model_version: ModelVersionIdentifier, loader: Callable[[Path], A]) -> A:
+        """Load model artifact."""
+        mv = self._coerce_mv(model_version)
+        logger.info("Loading model: %s v%s", mv.model.name, mv.version)
+        return self.load_run_artifact(mv.run, loader, mv.path_in_run)
+
+    @decorators.online
+    @pydantic.validate_arguments
+    def log_run_artifact(
+        self,
+        run: RunIdentifier,
+        source: Path | Callable[[Path], None],
+        path_in_run: str | None = None,
+        keep_the_source: bool | None = None,
+        allow_duplication: bool | None = None,
+        use_cache: bool | None = None,
+    ):
+        """Publish artifact file or dir to experiment run."""
+        tmp = None
+
+        if using_dumper := callable(source):
+            logger.debug("Using temporary artifact path: %s", tmp := self._get_temp_artifacts_dir())
+            source(source := tmp.joinpath("artifact"))
+
+        if (source := Path(source).expanduser().resolve()).is_relative_to(self._run_artifacts_cache):
+            raise paths.IllegalPath(f"Source path points to artifact cache: {source}")
+
+        if keep_the_source is None:
+            keep_the_source = False if using_dumper else True  # noqa: SIM211
+
+        try:
+            if using_dumper:
+                assert path_in_run, "When using an artifact dumper, `path_in_run` must be specified."
+            else:
+                path_in_run = path_in_run or source.name
+            path_in_run = self._valid_path_in_run(path_in_run, allow_empty=False)
+
+            run = self._coerce_run(run)
+            target = urls.urljoin(run.repo_url, path_in_run)
+
+            if repo_is_local := urls.is_local(target):
+                if allow_duplication is None:
+                    allow_duplication = True if keep_the_source else False  # noqa: SIM211,SIM210
+
+                if use_cache is None:
+                    use_cache = False
+
+                if keep_the_source:
+                    if allow_duplication:
+                        mode = "copy"
+                    else:
+                        raise RuntimeError("Cannot keep the source without duplication when artifacts repo is local")
+                else:
+                    mode = "move"
+
+                paths.place_path(
+                    source,
+                    target.path,
+                    mode=typing.cast(paths.PathOperation, mode),
+                    overwrite=True,
+                    move_abs_links=False,
+                )
+            else:
+                if allow_duplication is None:
+                    allow_duplication = False
+
+                if use_cache is None:
+                    use_cache = True
+
+                self.file_transfer.push_files(source, target)
+        except BaseException as exc:
+            raise exceptions.FailedToPublishArtifact(source) from exc
+
+        logger.debug(f"Artifact successfully published to '{target}'")
+
+        if use_cache:
+            cache = self._get_run_artifact_cache_path(run, path_in_run, allow_base_resolve=False)
+            if repo_is_local:
+                if allow_duplication:
+                    paths.place_path(target.path, cache, mode="copy", overwrite=True)
+                else:
+                    raise RuntimeError("Cannot cache artifact without duplication when run artifacts repo is local")
+            elif keep_the_source:
+                if allow_duplication:
+                    paths.place_path(source, cache, mode="copy", overwrite=True)
+                else:
+                    logger.warning("Keeping the `source` as a symbolic link to the cached artifact")
+                    logger.debug(f"{source} -> {cache}")
+                    paths.place_path(source, cache, mode="move", overwrite=True)
+                    paths.place_path(cache, source, mode="link", overwrite=True)
+            else:
+                paths.place_path(source, cache, mode="move", overwrite=True)
+
+        if not keep_the_source:
+            paths.ensure_non_existing(source, force=True)
+            if tmp is not None:
+                paths.ensure_non_existing(tmp, force=True)
+
+    @pydantic.validate_arguments
+    def log_model_version(
+        self,
+        model: ModelIdentifier,
+        run: RunIdentifier,
+        source: Path | Callable[[Path], None],
+        path_in_run: str | None = None,
+        keep_the_source: bool | None = None,
+        allow_duplication: bool | None = None,
+        use_cache: bool | None = None,
+        version: str | None = None,
+        tags: Mapping | None = None,
+    ) -> ModelVersionApi:
+        """Publish artifact file or dir as model version inside the specified experiment run."""
+        logger.info("Logging version of model '%s'", model_name := self._coerce_model_name(model))
+        path_in_run = path_in_run or patterns.encode_model_name(model_name)
+        self.log_run_artifact(run, source, path_in_run, keep_the_source, allow_duplication, use_cache)
+        return ModelVersionApi(**self._register_mv(model, run, path_in_run, version, tags or {})).using(self)
+
+    @pydantic.validate_arguments
+    def get_exp_url(self, exp: ExpIdentifier) -> str:
+        """Get Experiment URL."""
+        return str(self._impl_get_exp_url(self._coerce_exp_id(exp)))
+
+    @pydantic.validate_arguments
+    def get_run_url(self, run: RunIdentifier, exp: ExpIdentifier | None = None) -> str:
+        """Get Run URL."""
+        exp = self._coerce_run(run).exp if exp is None else exp
+        return str(self._impl_get_run_url(self._coerce_run_id(run), self._coerce_exp_id(exp)))
+
+    @pydantic.validate_arguments
+    def get_model_url(self, model: ModelIdentifier) -> str:
+        """Get URL to registered model."""
+        return str(self._impl_get_model_url(self._coerce_model_name(model)))
+
+    @pydantic.validate_arguments
+    def get_model_version_url(self, model_version: ModelVersionIdentifier) -> str:
+        """Get model version URL."""
+        return str(self._impl_get_mv_url(*self._coerce_mv_tuple(model_version)))
+
+    @pydantic.validate_arguments
+    def get_exp(self, exp: ExpIdentifier, **cache_opts: bool) -> ExpApi:
+        """Get Experiment API by ID."""
+        return ExpApi(**self._get_exp(self._coerce_exp_id(exp), **cache_opts)).using(self)
+
+    @pydantic.validate_arguments
+    def get_run(self, run: RunIdentifier, **cache_opts: bool) -> RunApi:
+        """Get Run API by ID."""
+        return RunApi(**self._get_run(self._coerce_run_id(run), **cache_opts)).using(self)
+
+    @pydantic.validate_arguments
+    def get_model(self, model: ModelIdentifier, **cache_opts: bool) -> ModelApi:
+        """Get Model API by name."""
+        return ModelApi(**self._get_model(self._coerce_model_name(model), **cache_opts)).using(self)
+
+    @pydantic.validate_arguments
+    def get_model_version(self, model_version: ModelVersionIdentifier, **cache_opts: bool) -> ModelVersionApi:
+        """Get ModelVersion API by name and version."""
+        return ModelVersionApi(**self._get_mv(self._coerce_mv_tuple(model_version), **cache_opts)).using(self)
+
+    @pydantic.validate_arguments
+    def find_exps(self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None) -> Iterator[ExpApi]:
+        """Search experiments with query in MongoDB query language."""
+        return (ExpApi(**x).using(self) for x in self._find_experiments(query or {}, sorting or []))
+
+    @pydantic.validate_arguments
+    def find_runs(self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None) -> Iterator[RunApi]:
+        """Search runs with query in MongoDB query language."""
+        return (RunApi(**x).using(self) for x in self._find_runs(query or {}, sorting or []))
+
+    @pydantic.validate_arguments
+    def find_models(self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None) -> Iterator[ModelApi]:
+        """Search registered models with query in MongoDB query language."""
+        return (ModelApi(**x).using(self) for x in self._find_models(query or {}, sorting or []))
+
+    @pydantic.validate_arguments
+    def find_model_versions(
+        self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None
+    ) -> Iterator[ModelVersionApi]:
+        """Search model versions with query in MongoDB query language."""
+        return (ModelVersionApi(**x).using(self) for x in self._find_mv(query or {}, sorting or []))
+
+    @pydantic.validate_arguments
+    def find_child_runs(self, parent: RunIdentifier) -> Iterator[RunApi]:
+        """Find child runs."""
+        return (RunApi(**x).using(self) for x in self._impl_find_child_runs(self._coerce_run(parent)))
+
+    @pydantic.validate_arguments
+    def cache_exp_meta(self, exp: ExpIdentifier) -> ExpApi:
+        """Get latest Experiment metadata and save to local cache."""
+        return self.get_exp(exp, force_cache_refresh=True)
+
+    @pydantic.validate_arguments
+    def cache_run_meta(self, run: RunIdentifier) -> RunApi:
+        """Get latest Run metadata and save to local cache."""
+        return self.get_run(run, force_cache_refresh=True)
+
+    @pydantic.validate_arguments
+    def cache_model_meta(self, model: ModelIdentifier) -> ModelApi:
+        """Get latest Model metadata and save to local cache."""
+        return self.get_model(model, force_cache_refresh=True)
+
+    @pydantic.validate_arguments
+    def cache_model_version_meta(self, model_version: ModelVersionIdentifier) -> ModelVersionApi:
+        """Get latest model version metadata and save to local cache."""
+        return self.get_model_version(model_version, force_cache_refresh=True)
+
+    @pydantic.validate_arguments
+    def export_exp_meta(self, exp: ExpIdentifier, target: Path) -> ExpApi:
+        """Export experiment metadata cache to target."""
+        self._export_meta(exp := self.get_exp(id_ := self._coerce_exp_id(exp)), self._get_exp_cache(id_), target)
+        return exp
+
+    @pydantic.validate_arguments
+    def export_run_meta(self, run: RunIdentifier, target: Path) -> RunApi:
+        """Export run metadata cache to target."""
+        self._export_meta(run := self.get_run(id_ := self._coerce_run_id(run)), self._get_run_cache(id_), target)
+        self.export_exp_meta(run.exp, target)
+        return run
+
+    @pydantic.validate_arguments
+    def export_model_meta(self, model: ModelIdentifier, target: Path) -> ModelApi:
+        """Export model metadata cache to target."""
+        name = self._coerce_model_name(model)
+        self._export_meta(model := self.get_model(name), self._get_model_cache(name), target)
+        return model
+
+    @pydantic.validate_arguments
+    def export_model_version_meta(self, mv: ModelVersionIdentifier, target: Path) -> ModelVersionApi:
+        """Export model version metadata cache to target."""
+        tup = self._coerce_mv_tuple(mv)
+        self._export_meta(mv := self.get_model_version(tup), self._get_mv_cache(*tup), target)
+        self.export_model_meta(mv.model, target)
+        return mv
+
+    @pydantic.validate_arguments
+    def create_exp(self, name: str, tags: Mapping | None = None) -> ExpApi:
+        """Create Experiment and return its API."""
+        return ExpApi(**self._create_exp(name, tags or {})).using(self)
+
+    @pydantic.validate_arguments
+    def get_or_create_exp(self, name: str) -> ExpApi:
+        """Get or create Experiment and return its API."""
+        for exp in self._find_experiments({"name": name}, []):
+            break
+        else:
+            exp = self._create_exp(name, tags={})
+
+        return ExpApi(**exp).using(self)
+
+    @pydantic.validate_arguments
+    def create_model(self, name: str, tags: Mapping | None = None) -> ModelApi:
+        """Create registered model and return its API."""
+        return ModelApi(**self._create_model(name, tags or {})).using(self)
+
+    @pydantic.validate_arguments
+    def get_or_create_model(self, name: str) -> ModelApi:
+        """Get or create registered Model and return its API."""
+        for model in self._find_models({"name": name}, []):
+            break
+        else:
+            model = self._create_model(name, tags={})
+
+        return ModelApi(**model).using(self)
+
+    @pydantic.validate_arguments
+    def create_run(
+        self,
+        exp: ExpIdentifier,
+        name: str | None = None,
+        tags: Mapping | None = None,
+        repo: str | urls.Url | None = None,
+        parent: RunIdentifier | None = None,
+    ) -> RunApi:
+        """Declare a new experiment run to be used later."""
+        return RunApi(**self._create_run(exp, name, repo, tags or {}, schema.RunStatus.SCHEDULED, parent)).using(self)
+
+    @pydantic.validate_arguments
+    def start_run(
+        self,
+        exp: ExpIdentifier,
+        name: str | None = None,
+        tags: Mapping | None = None,
+        repo: str | urls.Url | None = None,
+        parent: RunIdentifier | None = None,
+    ) -> RunApi:
+        """Start a new experiment run."""
+        return RunApi(**self._create_run(exp, name, repo, tags or {}, schema.RunStatus.RUNNING, parent)).using(self)
+
+    @pydantic.validate_arguments
+    def resume_run(self, run: RunIdentifier) -> RunApi:
+        """Resume a previous experiment run."""
+        self._set_run_status(run_id := self._coerce_run_id(run), schema.RunStatus.RUNNING)
+        return self.get_run(run_id)
+
+    @pydantic.validate_arguments
+    def end_run(self, run: RunIdentifier, succeeded: bool = True) -> RunApi:
+        """End experiment run."""
+        status = schema.RunStatus.FINISHED if succeeded else schema.RunStatus.FAILED
+        self._set_run_status(run_id := self._coerce_run_id(run), status)
+        self._set_run_end_time(run_id, datetime.now())
+        return self.get_run(run_id)
+
+    @pydantic.validate_arguments
+    def set_tags_on_exp(self, exp: ExpIdentifier, tags: Mapping):
+        """Set tags on experiment."""
+        self._update_exp_tags(exp, tags)
+
+    @pydantic.validate_arguments
+    def set_tags_on_run(self, run: RunIdentifier, tags: Mapping):
+        """Set tags on experiment run."""
+        self._update_run_tags(run, tags)
+
+    @pydantic.validate_arguments
+    def set_tags_on_model(self, model: ModelIdentifier, tags: Mapping):
+        """Set tags on registered model."""
+        self._update_model_tags(model, tags)
+
+    @pydantic.validate_arguments
+    def set_tags_on_model_version(self, model_version: ModelVersionIdentifier, tags: Mapping):
+        """Set tags on model version."""
+        self._update_mv_tags(model_version, tags)
+
+    @pydantic.validate_arguments
+    def log_params(self, run: RunIdentifier, params: Mapping):
+        """Log params to experiment run."""
+        self._log_run_params(run, params)
+
+    @pydantic.validate_arguments
+    def log_metrics(self, run: RunIdentifier, metrics: Mapping):
+        """Log metrics to experiment run."""
+        self._log_run_metrics(run, metrics)
