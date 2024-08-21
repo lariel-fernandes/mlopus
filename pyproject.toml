@@ -51,6 +51,9 @@ dev-dependencies = [
     "devtools        ~=0.12",
     "pytest-mock     ~=3.14",
     "pytest-coverage ~=0.0",
+    "sphinx                    <7",
+    "sphinx-rtd-theme          ~=2.0",
+    "sphinx-autodoc-typehints  ~=1.23",
 ]
 
 # === Commitizen ==================================================================================

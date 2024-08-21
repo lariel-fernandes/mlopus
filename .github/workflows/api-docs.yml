@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -41,16 +41,16 @@ jobs:
           uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
           uv-${{ runner.os }}
 
-    - name: Install UV tools
-      run: make install-tools
+    - name: Install project
+      run: make install-project
 
     - name: Render API docs
       run: make api-docs
 
     - name: Get docs scope
-      id: get-docs-version
+      id: get-docs-scope
       run: |
-        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP ${{ env.DEVRELEASE_PATTERN }}) ]] ; then
+        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP '${{ env.DEVRELEASE_PATTERN }}') ]] ; then
           echo "value=dev" >> $GITHUB_OUTPUT
         else
           echo "value=stable" >> $GITHUB_OUTPUT
@@ -58,7 +58,7 @@ jobs:
 
     - name: Get docs version
       id: get-docs-version
-      run: echo "value=$(git describe --tags --abbrev=0 | grep -oP '^\d+')' >> "$GITHUB_OUTPUT"
+      run: echo "value=$(uvx --from commitizen cz version -p | grep -oP '^\d+')" >> $GITHUB_OUTPUT
 
     - name: Publish API docs to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
