@@ -48,7 +48,7 @@ jobs:
       run: make api-docs
 
     - name: Get docs scope
-      id: get-docs-version
+      id: get-docs-scope
       run: |
         if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP ${{ env.DEVRELEASE_PATTERN }}) ]] ; then
           echo "value=dev" >> $GITHUB_OUTPUT
