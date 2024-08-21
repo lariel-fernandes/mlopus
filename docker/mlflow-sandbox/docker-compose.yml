@@ -1,0 +1,54 @@
+x-healthcheck: &healthcheck
+  start_period: 10s # wait before first check
+  interval: 5s # wait between checks
+  timeout: 3s # count 1 failure if check is not answered under this time
+  retries: 3 # mark as unhealthy after 3 failures
+
+services:
+  database:
+    image: postgres:15-alpine
+    healthcheck:
+      <<: *healthcheck
+      test: [CMD, pg_isready, -U, "${DB_NAME}"]
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PSWD}
+
+  localstack:
+    image: localstack/localstack
+    healthcheck:
+      <<: *healthcheck
+      test: [CMD, curl, --fail, "http://localhost:${LOCALSTACK_CONTAINER_PORT}/_localstack/health"]
+    environment:
+    - SERVICES=s3
+    - BUCKET=${LOCALSTACK_BUCKET}
+    - AWS_ACCESS_KEY_ID=${LOCALSTACK_ACCESS_KEY_ID}
+    - AWS_SECRET_ACCESS_KEY=${LOCALSTACK_SECRET_ACCESS_KEY}
+    ports:
+    - "${LOCALSTACK_HOST_PORT}:${LOCALSTACK_CONTAINER_PORT}"
+    volumes:
+    - ./localstack-init.sh:/etc/localstack/init/ready.d/init-aws.sh
+
+  mlflow:
+    image: bitnami/mlflow
+    healthcheck:
+      <<: *healthcheck
+      test: [CMD, python, -c, "import requests; assert requests.get('http://localhost:${MLFLOW_CONTAINER_PORT}/health').status_code == 200"]
+    depends_on:
+      database: {condition: service_healthy}
+      localstack: {condition: service_healthy}
+    environment:
+      PIP_CACHE: /app/.cache/pip
+      AWS_ACCESS_KEY_ID: ${LOCALSTACK_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${LOCALSTACK_SECRET_ACCESS_KEY}
+      MLFLOW_S3_ENDPOINT_URL: "http://localstack:${LOCALSTACK_CONTAINER_PORT}"
+    ports:
+    - "${MLFLOW_HOST_PORT}:${MLFLOW_CONTAINER_PORT}"
+    volumes:
+    - pip-cache:/app/.cache/pip
+    - ./requirements.txt:/requirements.txt
+    entrypoint: bash -c " pip install -r /requirements.txt && \ mlflow server \ --default-artifact-root s3://${LOCALSTACK_BUCKET} \ --host 0.0.0.0 --port ${MLFLOW_CONTAINER_PORT} --workers=1 \ --backend-store-uri postgresql+psycopg2://${DB_USER}:${DB_PSWD}@database:${DB_CONTAINER_PORT}/${DB_NAME} "
+
+volumes:
+  pip-cache:
