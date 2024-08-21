@@ -1,0 +1,65 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+
+- repo: https://github.com/roy-ht/pre-commit-jupyter
+  rev: v1.2.1
+  hooks:
+  - id: jupyter-notebook-cleanup
+    name: (.ipynb) remove metadata
+    args: ["--remove-kernel-metadata", "--pin-patterns", "[pin];[donotremove]"]
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: check-yaml
+  - id: check-toml
+  - id: check-json
+  - id: pretty-format-json
+    args: ["--autofix", "--no-sort-keys"]
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-added-large-files
+
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.13.0
+  hooks:
+  - id: pretty-format-yaml
+    args: ["--autofix", "--preserve-quotes"]
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.4.4
+  hooks:
+  - id: ruff-format
+  - id: ruff
+    args: ["--fix", "--exit-non-zero-on-fix"]
+
+- repo: local
+  hooks:
+  - id: uv-lock
+    name: uv-lock
+    entry: uv
+    args: [lock, --locked]
+    language: system
+    stages: [pre-commit]
+    pass_filenames: false
+    description: Check that uv.lock is consistent with pyproject.toml
+
+- repo: https://github.com/commitizen-tools/commitizen
+  rev: v3.26.0
+  hooks:
+  - id: commitizen
+
+- repo: local
+  hooks:
+  - id: make-install
+    name: make-install
+    entry: make
+    args: [_hook-install]
+    verbose: true
+    language: system
+    always_run: true
+    require_serial: true
+    stages: [post-checkout, post-merge]
+    description: Install project and Git hooks after each merge or ref checkout

@@ -1,0 +1,132 @@
+
+# === Project =====================================================================================
+
+[project]
+name = "mlOpus"
+version = "0.0.0"
+readme = "README.md"
+license = { file = "LICENSE" }
+description = "MLOps tools for research and development."
+authors = [{name = "Lariel Fernandes", email = "lariel.c2.fernandes@gmail.com"}]
+classifiers = [
+    "Environment :: Console",
+    "Operating System :: Unix",
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Information Technology",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+]
+requires-python = ">=3.10,<4"
+dependencies = [
+    "pytz               >=2024",
+    "dacite             ~=1.5",
+    "pyyaml             ~=6.0",
+    "urllib3            ~=2.2",
+    "pydantic           >=1.10.17,<3.0",
+    "packaging          >=22",
+    "rclone-python      ~=0.1",
+    "importlib-metadata >=6.8",
+]
+
+[project.optional-dependencies]
+search = ["mongomock ~=4.1"]
+mlflow = ["mlflow-skinny ~=2.9"]
+
+[project.entry-points."mlopus.mlflow_api_providers"]
+mlflow = "mlopus.mlflow.providers.mlflow:MlflowApi"
+generic = "mlopus.mlflow.providers.generic:GenericMlflowApi"
+
+# === UV ==========================================================================================
+
+[tool.uv]
+dev-dependencies = [
+    "numpy           ~=2.1",
+    "pandas          ~=2.2",
+    "pytest          ~=7.2",
+    "jupyter         ~=1.0",
+    "tzlocal         ~=5.2",
+    "devtools        ~=0.12",
+    "pytest-mock     ~=3.14",
+    "pytest-coverage ~=0.0",
+]
+
+# === Commitizen ==================================================================================
+
+[tool.commitizen]
+version = "0.0.0"
+tag_format = "$version"
+version_scheme = "semver"
+version_files = [
+    "pyproject.toml:^version",
+    "docs/api/conf.py:^release",
+    "src/mlopus/__init__.py:^VERSION",
+]
+update_changelog_on_bump = true
+allowed_prefixes = []
+
+# === Pytest ======================================================================================
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+log_cli_level = "DEBUG"  # to show logs and prints, run pytest with: -s
+addopts = "--cov mlopus --cov-report term --cov-report html"
+
+[tool.coverage.run]
+omit = ["src/mlopus/mlflow/providers/generic.py"]
+
+# === Ruff ========================================================================================
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+extend-include = []
+exclude = [
+    "examples/",
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "jupyter_lab_config.py",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+exclude = ["src/tests/*"]
+fixable = ["ALL"]
+unfixable = []
+select = [
+    "F",   # Pyflakes
+#    "D",   # pydocstyle
+    "E",   # Errors
+    "W",   # Warning
+    "TCH", # Typecheck
+    "TID",
+    "SIM",
+]
+ignore = []
