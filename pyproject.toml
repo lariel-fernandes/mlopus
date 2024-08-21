@@ -5,7 +5,7 @@
 name = "mlOpus"
 version = "0.1.0"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = { text = "LGPL-3.0-or-later" }
 description = "MLOps tools for research and development."
 authors = [{name = "Lariel Fernandes", email = "lariel.c2.fernandes@gmail.com"}]
 classifiers = [
@@ -30,6 +30,9 @@ dependencies = [
     "rclone-python      ~=0.1",
     "importlib-metadata >=6.8",
 ]
+
+[project.urls]
+Repository = "https://github.com/lariel-fernandes/mlopus"
 
 [project.optional-dependencies]
 search = ["mongomock ~=4.1"]
