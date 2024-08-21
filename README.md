@@ -12,7 +12,7 @@ A collection of MLOps tools for AI/ML/DS research and development.
   - Support for nested tags/params/metrics and JSON-encoded tags/params for non-scalar types.
   - Not dependent on env vars, global vars or a single global active run.
 
-Check the tutorials in the [examples folder](examples)
+Check the [tutorials](https://github.com/lariel-fernandes/mlopus/tree/main/examples)
 for a friendly walkthrough of (almost) everything you can do with MLOpus.
 
 A minimal API reference is also available [here](https://lariel-fernandes.github.io/mlopus/docs/api/stable/latest).

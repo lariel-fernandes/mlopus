@@ -5,15 +5,15 @@ The notebooks in this example serve as a walkthrough for the basic features of M
 For an overview of how those features work, have a look at the [architecture guide](../../docs/architecture.md).
 
 ### Recommended Software
-1. [PyEnv](https://github.com/pyenv/pyenv#installation)
-2. [Poetry](https://python-poetry.org/docs/#installing-with-the-official-installer)
-3. [Rclone CLI](https://rclone.org/install/#script-installation) (required for artifact transfer from/to cloud storage)
+1. [UV](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer)
+2. [Rclone CLI](https://rclone.org/install/#script-installation) (required for artifact transfer from/to cloud storage)
 
 ### Python environment setup
 
-Run this command from the **root** of this repository:
+Run the following command from the **root** of this repository.
+This will set up the virtualenv using UV and install the project code and dependencies.
 ```bash
-make install
+make install-project
 ```
 
 ### MLflow Sandbox
