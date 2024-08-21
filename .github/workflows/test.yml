@@ -34,7 +34,9 @@ jobs:
           uv-${{ runner.os }}
 
     - name: Install
-      run: make install-project install-tools
+      run: |
+        make install-project install-tools
+        sudo -v ; curl https://rclone.org/install.sh | sudo bash
 
     - name: Test
       run: make test
