@@ -14,6 +14,12 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      dry-run:
+        type: boolean
+        default: false
+        required: false
+        description: No side effects
 
 env:
   TWINE_USERNAME: __token__
@@ -62,6 +68,7 @@ jobs:
       uses: commitizen-tools/commitizen-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        dry_run: ${{ github.event.inputs.dry-run }}
         changelog: ${{ steps.get-metadata.outputs.changelog }}
         devrelease: ${{ steps.get-metadata.outputs.devrelease }}
 
@@ -69,4 +76,5 @@ jobs:
       run: uvx --from build pyproject-build --installer uv -s
 
     - name: Publish Python package
+      if: ${{ github.event.inputs.dry-run == false }}
       run: uvx twine upload dist/*
