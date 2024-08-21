@@ -67,7 +67,7 @@ version_files = [
     "docs/api/conf.py:^release",
     "src/mlopus/__init__.py:^VERSION",
 ]
-update_changelog_on_bump = true
+changelog_merge_prerelease = true
 allowed_prefixes = []
 
 # === Pytest ======================================================================================
