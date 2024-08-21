@@ -58,7 +58,7 @@ jobs:
 
     - name: Get docs version
       id: get-docs-version
-      run: echo "value=$(git describe --tags --abbrev=0 | grep -oP '^\d+')' >> "$GITHUB_OUTPUT"
+      run: echo "value=$(git describe --tags --abbrev=0 | grep -oP '^\d+')" >> $GITHUB_OUTPUT
 
     - name: Publish API docs to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
