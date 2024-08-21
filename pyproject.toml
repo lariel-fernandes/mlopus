@@ -3,7 +3,7 @@
 
 [project]
 name = "mlOpus"
-version = "0.1.0"
+version = "0.1.1"
 readme = "README.md"
 license = { text = "LGPL-3.0-or-later" }
 description = "MLOps tools for research and development."
@@ -62,7 +62,7 @@ dev-dependencies = [
 # === Commitizen ==================================================================================
 
 [tool.commitizen]
-version = "0.1.0"
+version = "0.1.1"
 tag_format = "$version"
 version_scheme = "semver"
 version_files = [
