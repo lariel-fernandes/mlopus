@@ -50,7 +50,7 @@ jobs:
     - name: Get dev release
       id: get-dev-release
       run: |
-        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP ${{ env.DEVRELEASE_PATTERN }}) ]] ; then
+        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP '${{ env.DEVRELEASE_PATTERN }}') ]] ; then
           echo "value=${GITHUB_RUN_ID}" >> $GITHUB_OUTPUT
         fi
 
