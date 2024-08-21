@@ -29,6 +29,5 @@ make mlflow-sandbox-restart
 
 ### Start Jupyter Lab
 
-```bash
-poetry run jupyter lab
-```
+From the **root** of this repository, activate the virtualenv with `source .venv/bin/activate`
+and start the Jupyter Lab server with `jupyter lab`.
