@@ -76,5 +76,5 @@ jobs:
       run: uvx --from build pyproject-build --installer uv -s
 
     - name: Publish Python package
-      if: ${{ github.event.inputs.dry-run == false }}
+      if: ${{ github.event.inputs.dry-run != 'true' }}
       run: uvx twine upload dist/*
