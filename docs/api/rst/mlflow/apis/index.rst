@@ -1,6 +1,6 @@
 
-MLflow APIs
-===========
+APIs
+====
 
 .. toctree::
    :maxdepth: 1

@@ -25,10 +25,10 @@ class MlflowApiMixin(pydantic.BaseModel):
             pass
 
         foo = Foo(
-            api={"plugin": "...", "conf": {...}}  # kwargs for `mlopus.mlflow.get_api()`
+            mlflow_api={"plugin": "...", "conf": {...}}  # kwargs for `mlopus.mlflow.get_api()`
         )
 
-        foo.api  # BaseMlflowApi
+        foo.mlflow_api  # BaseMlflowApi
     """
 
     mlflow_api: BaseMlflowApi = pydantic.Field(exclude=True, default=None)
@@ -61,24 +61,42 @@ class RunConf(pydantic.BaseModel, pydantic.EmptyStrAsMissing):
 
 
 class MlflowRunManager(MlflowApiMixin):
-    """A pydantic object that holds a reference to an ongoing MLflow Run API.
+    """A pydantic object that holds a reference to an ongoing MLflow Run.
 
     1. If `run.id` is given, that run is resumed.
-    2. Otherwise, an ongoing run with `run.tags` in `exp.name` is searched for.
-    3. If none can be found, a new one is started in `exp.name` with `run.tags`.
+    2. Otherwise, an ongoing run is searched for in `exp.name` with `run.tags`
+    3. If none can be found, a new one is started in `exp.name` with `run.tags`
+
+    Example:
+
+    .. code-block:: python
+
+        config = {
+            "api": {...},  # kwargs for `mlopus.mlflow.get_api()`
+            "exp": {"name": ...},
+            "run": {"name": ..., "tags": ..., "id": ...},
+        }
+
+        foo_1 = MlflowRunManager(**config)
+        foo_2 = MlflowRunManager(**config)
+
+        # Objects with same config share the same managed run
+        assert foo_1.run.id == foo_2.run.id
+
+        # Accessing the cached property `run` triggers the resume/search/creation of the run.
     """
 
     mlflow_api: BaseMlflowApi = pydantic.Field(exclude=True, alias="api")
 
     exp: ExpConf = pydantic.Field(
         default_factory=ExpConf,
-        description="Experiment specification, used when getting or creating the experiment.",
+        description="Experiment specification (created if doesn't exist). Used to find or create the run.",
     )
 
     run_conf: RunConf = pydantic.Field(
         alias="run",
         default_factory=RunConf,
-        description="Run specification, used for finding or creating run, then replaced with the actual run API handle",
+        description="Run specification, used for resuming, finding or creating the run.",
     )
 
     @functools.cached_property
@@ -110,27 +128,6 @@ class MlflowRunManager(MlflowApiMixin):
 
 
 class MlflowRunMixin(pydantic.BaseModel):
-    """Mixin for pydantic classes that hold a reference to a RunAPI.
-
-    If a run ID is provided, that run is resumed.
-    Otherwise, an active run is searched with the given tags in the given experiment.
-    If no result is found, a new run is started which would match that search criteria.
-
-    Example:
-
-    .. code-block:: python
-
-        class Foo(MlflowRunMixin):
-            pass
-
-        foo = Foo(mlflow={
-            "api": {...},  # kwargs for `mlopus.mlflow.get_api()`
-            "exp": {"name": ...},
-            "run": {"name": ..., "tags": ..., "id": ...},
-        })
-
-        foo.mlflow.api  # BaseMlflowApi
-        foo.mlflow.run  # RunApi in RUNNING status (either resumed, found or started)
-    """
+    """Mixin for pydantic classes that hold a reference to a `MlflowRunManager`."""
 
     run_manager: MlflowRunManager | None = pydantic.Field(exclude=True, alias="mlflow")

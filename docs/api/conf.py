@@ -23,6 +23,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
+    "sphinxcontrib.autodoc_pydantic",
 ]
 
 templates_path = ["_templates"]
@@ -35,3 +36,16 @@ language = "en"
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+# -- Options for autodoc --------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
+
+autodoc_member_order = "bysource"
+
+# -- Options for pydantic_autodoc --------------------------------------------
+# https://autodoc-pydantic.readthedocs.io/en/stable/users/configuration.html
+
+autodoc_pydantic_model_show_json = False
+autodoc_pydantic_model_show_field_summary = False
+autodoc_pydantic_model_show_config_summary = False
+autodoc_pydantic_model_show_validator_summary = False

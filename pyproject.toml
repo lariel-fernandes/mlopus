@@ -23,9 +23,9 @@ requires-python = ">=3.10,<4"
 dependencies = [
     "pytz               >=2024",
     "dacite             ~=1.5",
-    "pyyaml             ~=6.0",
+    "pyyaml             >=5,<7",
     "urllib3            ~=2.2",
-    "pydantic           >=1.10.17,<3.0",
+    "pydantic           >=1.10.17,<3",
     "packaging          >=22",
     "rclone-python      ~=0.1",
     "importlib-metadata >=6.8",
@@ -55,6 +55,7 @@ dev-dependencies = [
     "pytest-mock     ~=3.14",
     "pytest-coverage ~=0.0",
     "sphinx                    <7",
+    "autodoc-pydantic          <2",
     "sphinx-rtd-theme          ~=2.0",
     "sphinx-autodoc-typehints  ~=1.23",
 ]
