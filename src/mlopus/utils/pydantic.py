@@ -73,6 +73,18 @@ class EmptyStrAsMissing(_BaseModelV1):
         return {k: v for k, v in values.items() if v != ""}
 
 
+class ExcludeEmptyMixin(_BaseModelV1):
+    """Mixin for BaseModel."""
+
+    def dict(self, **kwargs) -> dict:
+        """Ignores empty fields when serializing to dict."""
+        kwargs["exclude"] = kwargs.get("exclude") or {}
+        for field in self.__fields__:
+            if common.is_empty(getattr(self, field)):
+                kwargs["exclude"][field] = True
+        return super().dict(**kwargs)
+
+
 class MappingMixin(_BaseModelV1, Mapping):
     """Mixin that allows passing BaseModel instances as kwargs with the '**' operator.
 

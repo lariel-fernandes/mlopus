@@ -1,4 +1,5 @@
-from typing import Any, Sequence, Mapping, Tuple, Hashable, Dict, TypeVar, Iterable
+from copy import deepcopy
+from typing import Any, Sequence, Mapping, Tuple, Hashable, Dict, TypeVar, List, Iterable
 
 T = TypeVar("T")
 
@@ -10,6 +11,13 @@ class _Missing:
 
 
 _MISSING = _Missing()
+
+
+def set_if_empty(_dict: dict, key: str, val: Any) -> dict:
+    """Set key to val in dict if current val is absent, None or an empty container."""
+    if not (current := _dict.get(key)) and current is not False:
+        _dict[key] = val
+    return _dict
 
 
 def set_reserved_key(_dict: Dict[T, Any] | None, key: T, val: Any) -> Dict[T, Any]:
@@ -46,6 +54,28 @@ def set_nested(_dict: Dict[Hashable, Any], keys: Sequence[Hashable], value: Any)
 
     target[keys[-1]] = value
     return _dict
+
+
+def filter_empty_leaves(dict_: Mapping) -> dict:
+    """Filter out leaf-values that are None or empty iterables."""
+    return unflatten(((k, v) for k, v in flatten(dict_).items() if v or v is False))
+
+
+def deep_merge(*dicts: dict):
+    """Merge dicts at the level of leaf-values."""
+    retval = {}
+
+    def _update(tgt: dict, src: dict, prefix_keys: List[str]):
+        for key, val in src.items():
+            if isinstance(val, dict):
+                _update(tgt, val, prefix_keys + [key])
+            else:
+                set_nested(tgt, prefix_keys + [key], deepcopy(val))
+
+    for _dict in dicts:
+        _update(retval, _dict, prefix_keys=[])
+
+    return retval
 
 
 def flatten(_dict: Mapping) -> Dict[Tuple[str, ...], Any]:
