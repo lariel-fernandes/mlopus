@@ -15,7 +15,7 @@ def test_example_1(temp_mlflow):
     root = Path("examples/1_introduction")
     variables = {"tracking_uri": temp_mlflow.tracking_uri, "cache_dir": temp_mlflow.cache_dir}
 
-    for name in ("Part-1.ipynb",):
+    for name in ("Part-1.ipynb", "Part-2.ipynb"):
         print("Testing notebook:", name)
         notebook = nbformat.read(root / name, as_version=4)
 
