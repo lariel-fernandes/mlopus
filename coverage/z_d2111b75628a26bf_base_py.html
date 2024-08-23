@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">613 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">525<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">88<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">528<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">85<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_60e68e6a7721dd5f___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-08-21 21:44 +0000
+            created at 2024-08-23 19:33 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -591,7 +591,7 @@
     <p class="pln"><span class="n"><a id="t509" href="#t509">509</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t510" href="#t510">510</a></span><span class="t">    <span class="op">@</span><span class="nam">decorators</span><span class="op">.</span><span class="nam">online</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t511" href="#t511">511</a></span><span class="t">    <span class="key">def</span> <span class="nam">_update_model_tags</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">model</span><span class="op">:</span> <span class="nam">ModelIdentifier</span><span class="op">,</span> <span class="nam">tags</span><span class="op">:</span> <span class="nam">Mapping</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t512" href="#t512">512</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">_impl_update_model_tags</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">_coerce_model_name</span><span class="op">(</span><span class="nam">model</span><span class="op">)</span><span class="op">,</span> <span class="nam">tags</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t512" href="#t512">512</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">_impl_update_model_tags</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">_coerce_model_name</span><span class="op">(</span><span class="nam">model</span><span class="op">)</span><span class="op">,</span> <span class="nam">tags</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t513" href="#t513">513</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t514" href="#t514">514</a></span><span class="t">    <span class="op">@</span><span class="nam">decorators</span><span class="op">.</span><span class="nam">online</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t515" href="#t515">515</a></span><span class="t">    <span class="key">def</span> <span class="nam">_update_mv_tags</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">mv</span><span class="op">:</span> <span class="nam">ModelVersionIdentifier</span><span class="op">,</span> <span class="nam">tags</span><span class="op">:</span> <span class="nam">Mapping</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1035,7 +1035,7 @@
     <p class="run"><span class="n"><a id="t953" href="#t953">953</a></span><span class="t">    <span class="op">@</span><span class="nam">pydantic</span><span class="op">.</span><span class="nam">validate_arguments</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t954" href="#t954">954</a></span><span class="t">    <span class="key">def</span> <span class="nam">cache_run_meta</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">run</span><span class="op">:</span> <span class="nam">RunIdentifier</span><span class="op">)</span> <span class="op">-></span> <span class="nam">RunApi</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t955" href="#t955">955</a></span><span class="t">        <span class="str">"""Get latest Run metadata and save to local cache."""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t956" href="#t956">956</a></span><span class="t">        <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">get_run</span><span class="op">(</span><span class="nam">run</span><span class="op">,</span> <span class="nam">force_cache_refresh</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t956" href="#t956">956</a></span><span class="t">        <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">get_run</span><span class="op">(</span><span class="nam">run</span><span class="op">,</span> <span class="nam">force_cache_refresh</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t957" href="#t957">957</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t958" href="#t958">958</a></span><span class="t">    <span class="op">@</span><span class="nam">pydantic</span><span class="op">.</span><span class="nam">validate_arguments</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t959" href="#t959">959</a></span><span class="t">    <span class="key">def</span> <span class="nam">cache_model_meta</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">model</span><span class="op">:</span> <span class="nam">ModelIdentifier</span><span class="op">)</span> <span class="op">-></span> <span class="nam">ModelApi</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1156,7 +1156,7 @@
     <p class="run"><span class="n"><a id="t1074" href="#t1074">1074</a></span><span class="t">    <span class="op">@</span><span class="nam">pydantic</span><span class="op">.</span><span class="nam">validate_arguments</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1075" href="#t1075">1075</a></span><span class="t">    <span class="key">def</span> <span class="nam">set_tags_on_model</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">model</span><span class="op">:</span> <span class="nam">ModelIdentifier</span><span class="op">,</span> <span class="nam">tags</span><span class="op">:</span> <span class="nam">Mapping</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1076" href="#t1076">1076</a></span><span class="t">        <span class="str">"""Set tags on registered model."""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t1077" href="#t1077">1077</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">_update_model_tags</span><span class="op">(</span><span class="nam">model</span><span class="op">,</span> <span class="nam">tags</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1077" href="#t1077">1077</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">_update_model_tags</span><span class="op">(</span><span class="nam">model</span><span class="op">,</span> <span class="nam">tags</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1078" href="#t1078">1078</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1079" href="#t1079">1079</a></span><span class="t">    <span class="op">@</span><span class="nam">pydantic</span><span class="op">.</span><span class="nam">validate_arguments</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1080" href="#t1080">1080</a></span><span class="t">    <span class="key">def</span> <span class="nam">set_tags_on_model_version</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">model_version</span><span class="op">:</span> <span class="nam">ModelVersionIdentifier</span><span class="op">,</span> <span class="nam">tags</span><span class="op">:</span> <span class="nam">Mapping</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1181,7 +1181,7 @@
             <a class="nav" href="z_60e68e6a7721dd5f___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-08-21 21:44 +0000
+            created at 2024-08-23 19:33 +0000
         </p>
     </div>
 </footer>
