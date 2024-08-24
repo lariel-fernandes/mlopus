@@ -13,7 +13,7 @@ M = schema.ModelVersion
 
 
 class RunApi(schema.Run, entity.EntityApi):
-    """Shortcut to API calls with specified Run."""
+    """Run metadata with MLflow API handle."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

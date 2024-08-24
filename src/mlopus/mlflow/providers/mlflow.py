@@ -343,14 +343,64 @@ class MlflowTagKeys(pydantic.BaseModel):
 
 
 class MlflowApi(BaseMlflowApi):
-    """MLflow API provider based on open source MLflow."""
+    """MLflow API provider based on open source MLflow.
 
-    tracking_uri: str = None
-    healthcheck: bool | None = None
-    client_settings: Dict[str, str | int] = pydantic.Field(default_factory=dict)
-    tag_keys: MlflowTagKeys = pydantic.Field(repr=False, default_factory=MlflowTagKeys)
-    query_push_down: MlflowQueryPushDown = pydantic.Field(repr=False, default_factory=MlflowQueryPushDown)
-    data_translation: MlflowDataTranslation = pydantic.Field(repr=False, default_factory=MlflowDataTranslation)
+    **Plugin name:** `mlflow`
+
+    **Requires extras:** `mlflow`
+
+    **Default cache dir:** `~/.cache/mlopus/mlflow-providers/mlflow/<hashed-tracking-uri>`
+
+    Assumptions:
+     - No artifacts proxy.
+     - SQL database is server-managed.
+    """
+
+    tracking_uri: str = pydantic.Field(
+        default=None,
+        description=(
+            "MLflow server URL or path to a local directory. "
+            "Defaults to the environment variable `MLFLOW_TRACKING_URI`, "
+            "falls back to `~/.cache/mlflow`."
+        ),
+    )
+
+    healthcheck: bool | None = pydantic.Field(
+        default=None, description="If true, eagerly attempt connection to the server after initialization."
+    )
+
+    client_settings: Dict[str, str | int] = pydantic.Field(
+        default_factory=dict,
+        description=(
+            "MLflow client settings. Keys are like the open-source MLflow environment variables, "
+            "but lower case and without the `MLFLOW_` prefix. Example: `http_request_max_retries`. "
+            "See: https://mlflow.org/docs/latest/python_api/mlflow.environment_variables.html"
+        ),
+    )
+
+    tag_keys: MlflowTagKeys = pydantic.Field(
+        repr=False,
+        default_factory=MlflowTagKeys,
+        description="Tag keys for storing internal information such as parent run ID.",
+    )
+
+    query_push_down: MlflowQueryPushDown = pydantic.Field(
+        repr=False,
+        default_factory=MlflowQueryPushDown,
+        description=(
+            "Utility for partial translation of MongoDB queries to open-source MLflow SQL. "
+            "Users may replace this with a different implementation when subclassing the API."
+        ),
+    )
+
+    data_translation: MlflowDataTranslation = pydantic.Field(
+        repr=False,
+        default_factory=MlflowDataTranslation,
+        description=(
+            "Utility for translating keys and values from MLOpus schema to native MLflow schema and back. "
+            "Users may replace this with a different implementation when subclassing the API."
+        ),
+    )
 
     # =======================================================================================================
     # === Pydantic validators ===============================================================================

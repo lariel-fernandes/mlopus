@@ -35,15 +35,69 @@ ModelVersionIdentifier = contract.ModelVersionIdentifier
 
 
 class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
-    """Base class for APIs following the MLflow paradigm."""
+    """Base class for API clients that use "MLflow-like" backends for experiment tracking and model registry."""
 
-    cache_dir: Path = None
-    offline_mode: bool = False
-    temp_artifacts_dir: Path = None
-    cache_local_artifacts: bool = False
-    always_pull_artifacts: bool = False
-    file_transfer: transfer.FileTransfer = pydantic.Field(default_factory=transfer.FileTransfer, repr=False)
-    entity_serializer: serde.EntitySerializer = pydantic.Field(default_factory=serde.EntitySerializer, repr=False)
+    cache_dir: Path = pydantic.Field(
+        default=None,
+        description=(
+            "Root path for cached artifacts and metadata. "
+            "If not specified, then a default is determined by the respective API plugin."
+        ),
+    )
+
+    offline_mode: bool = pydantic.Field(
+        default=False,
+        description=(
+            "If True, block all operations that attempt communication "
+            "with the MLflow server or artifacts repositories "
+            "(i.e.: work with local cache only)."
+        ),
+    )
+
+    temp_artifacts_dir: Path = pydantic.Field(
+        default=None,
+        description=(
+            "Path for temporary artifacts that are stored by artifact dumpers before being published and preserved "
+            "after a publish error (e.g.: an upload interruption). Defaults to a path inside the local cache."
+        ),
+    )
+
+    cache_local_artifacts: bool = pydantic.Field(
+        default=False,
+        description=(
+            "Use local cache even if the run artifacts repository is in the local file system. "
+            "May be used for testing cache without connecting to a remote MLflow server."
+            "Not recommended in production because of unecessary duplicated disk usage. "
+        ),
+    )
+
+    always_pull_artifacts: bool = pydantic.Field(
+        default=False,
+        description=(
+            "When accessing a cached artifact file or dir, re-sync it with the remote artifacts repository, even "
+            "on a cache hit. Prevents accessing stale data if the remote artifact has been changed in the meantime. "
+            "The default data transfer utility (based on rclone) is pretty efficient for syncing directories, but "
+            "enabling this option may still add some overhead of calculating checksums if they contain many files."
+        ),
+    )
+
+    file_transfer: transfer.FileTransfer = pydantic.Field(
+        repr=False,
+        default_factory=transfer.FileTransfer,
+        description=(
+            "Utility for uploading/downloading artifact files or dirs. Also used for listing files. Based on "
+            "RClone by default. Users may replace this with a different implementation when subclassing the API."
+        ),
+    )
+
+    entity_serializer: serde.EntitySerializer = pydantic.Field(
+        repr=False,
+        default_factory=serde.EntitySerializer,
+        description=(
+            "Utility for (de)serializing entity metadata (i.e.: exp, runs, models, versions)."
+            "Users may replace this with a different implementation when subclassing the API."
+        ),
+    )
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

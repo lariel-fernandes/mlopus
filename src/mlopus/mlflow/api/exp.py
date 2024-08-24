@@ -11,7 +11,7 @@ RunIdentifier = contract.RunIdentifier
 
 
 class ExpApi(schema.Experiment, entity.EntityApi):
-    """Shortcut to API calls with specified Experiment."""
+    """Experiment metadata with MLflow API handle."""
 
     def _get_latest_data(self) -> schema.Experiment:
         """Get latest data for this entity. Used for self update after methods with the `require_update` decorator."""

@@ -13,7 +13,7 @@ RunIdentifier = contract.RunIdentifier
 
 
 class ModelApi(schema.Model, entity.EntityApi):
-    """Shortcut to API calls with specified Model."""
+    """Registered model metadata with MLflow API handle."""
 
     def _get_latest_data(self) -> schema.Model:
         """Get latest data for this entity. Used for self update after methods with the `require_update` decorator."""

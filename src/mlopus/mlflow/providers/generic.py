@@ -17,7 +17,35 @@ V = schema.ModelVersion
 
 
 class GenericMlflowApi(BaseMlflowApi):
-    """MLflow API provider without any implementation of client-server exchange, meant for offline mode only."""
+    """MLflow API provider without any implementation of client-server exchange, meant for offline mode only.
+
+
+    **Plugin name:** `generic`
+
+    **Requires extras:** `None`
+
+    **Default cache dir:** `None` (no fall back, must be provided)
+
+    Example:
+
+    .. code-block:: python
+
+        # Export one or more model versions or run artifacts using any other MLflow API
+        exported_cache = Path("/assets/mlflow-cache")
+
+        for version in mlopus.mlflow.get_api(plugin="mlflow", ...).get_model(...).find_versions(...):
+            version.export(target=exported_cache)
+
+        # Load model versions or run artifacts with the generic API in offline mode
+        versions = mlopus.mlflow \\
+            .get_api(plugin="generic", conf={"cache_dir": exported_cache}) \\
+            .get_model(...).find_versions(...)
+
+        for version in versions:
+            version.load(...)
+    """
+
+    cache_dir: Path
 
     offline_mode: bool = True
 

@@ -9,7 +9,7 @@ A = TypeVar("A")  # Any type
 
 
 class ModelVersionApi(schema.ModelVersion, entity.EntityApi):
-    """Shortcut to API calls with specified model version."""
+    """Model version metadata with MLflow API handle."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

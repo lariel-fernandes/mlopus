@@ -39,7 +39,7 @@ search = ["mongomock ~=4.1"]
 mlflow = ["mlflow-skinny ~=2.9"]
 
 [project.entry-points."mlopus.mlflow_api_providers"]
-mlflow = "mlopus.mlflow.providers.mlflow:MlflowApi"
+mlflow = "mlopus.mlflow.providers.mlflow:MlflowApi[mlflow]"
 generic = "mlopus.mlflow.providers.generic:GenericMlflowApi"
 
 # === UV ==========================================================================================
@@ -57,6 +57,8 @@ dev-dependencies = [
     "sphinx                    <7",
     "autodoc-pydantic          <2",
     "sphinx-rtd-theme          ~=2.0",
+    "enum-tools[sphinx]        ~=0.12",
+    "sphinx-code-include       ~=1.4",
     "sphinx-autodoc-typehints  ~=1.23",
 ]
 
