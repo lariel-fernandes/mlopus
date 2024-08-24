@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlopus.mlflow.providers.mlflow &mdash; MLOpus 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../rst/mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../rst/artschema/index.html">Artifact Schemas</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../rst/lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mlopus.mlflow.providers.mlflow</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mlopus.mlflow.providers.mlflow</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">ContextManager</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">mlflow</span> <span class="kn">import</span> <span class="n">MlflowClient</span> <span class="k">as</span> <span class="n">_NativeMlflowClient</span><span class="p">,</span> <span class="n">entities</span> <span class="k">as</span> <span class="n">native</span>
+<span class="kn">from</span> <span class="nn">mlflow.entities</span> <span class="kn">import</span> <span class="n">model_registry</span> <span class="k">as</span> <span class="n">native_model_registry</span>
+<span class="kn">from</span> <span class="nn">mlflow.store.entities</span> <span class="kn">import</span> <span class="n">PagedList</span>
+<span class="kn">from</span> <span class="nn">mlflow.tracking</span> <span class="kn">import</span> <span class="n">artifact_utils</span> <span class="k">as</span> <span class="n">mlflow_artifact_utils</span>
+
+<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.base</span> <span class="kn">import</span> <span class="n">BaseMlflowApi</span>
+<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.common</span> <span class="kn">import</span> <span class="n">schema</span><span class="p">,</span> <span class="n">patterns</span>
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">mongo</span><span class="p">,</span> <span class="n">dicts</span><span class="p">,</span> <span class="n">json_utils</span><span class="p">,</span> <span class="n">iter_utils</span><span class="p">,</span> <span class="n">urls</span><span class="p">,</span> <span class="n">string_utils</span><span class="p">,</span> <span class="n">env_utils</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>  <span class="c1"># Any type</span>
+<span class="n">A2</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;A2&quot;</span><span class="p">)</span>  <span class="c1"># Any type</span>
+
+<span class="c1"># Entity types used in MLOpus</span>
+<span class="n">E</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Experiment</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Run</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Model</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">ModelVersion</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">BaseEntity</span><span class="p">)</span>
+
+<span class="c1"># Types used natively by open source MLflow</span>
+<span class="n">NE</span> <span class="o">=</span> <span class="n">native</span><span class="o">.</span><span class="n">Experiment</span>
+<span class="n">NR</span> <span class="o">=</span> <span class="n">native</span><span class="o">.</span><span class="n">Run</span>
+<span class="n">NM</span> <span class="o">=</span> <span class="n">native_model_registry</span><span class="o">.</span><span class="n">RegisteredModel</span>
+<span class="n">NV</span> <span class="o">=</span> <span class="n">native_model_registry</span><span class="o">.</span><span class="n">ModelVersion</span>
+<span class="n">NT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;NT&quot;</span><span class="p">,</span> <span class="n">NE</span><span class="p">,</span> <span class="n">NR</span><span class="p">,</span> <span class="n">NM</span><span class="p">,</span> <span class="n">NV</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MlflowClient</span><span class="p">(</span><span class="n">_NativeMlflowClient</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patch of native MlflowClient.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">healthcheck</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if service is available.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="n">urls</span><span class="o">.</span><span class="n">parse_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracking_uri</span><span class="p">))</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="s2">&quot;https&quot;</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/health&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Healthcheck failed for URI &#39;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">urls</span><span class="o">.</span><span class="n">is_local</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No healthcheck for URI &#39;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_artifact_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get root URL of remote run artifacts, according to MLflow server.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">mlflow_artifact_utils</span><span class="o">.</span><span class="n">get_artifact_uri</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">tracking_uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracking_uri</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tracking_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Public access to tracking client.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_client</span>
+
+
+<span class="k">class</span> <span class="nc">KeepUntouched</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set of rules for keys of params/values/metrics whose values are to be kept untouched.</span>
+
+<span class="sd">    Their values are exchanged to/from MLflow server without any pre-processing/encoding/escaping.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">prefixes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mlflow&quot;</span><span class="p">}}</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="s2">&quot;metrics&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">key_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="p">())</span>
+
+
+<span class="k">class</span> <span class="nc">MaxLength</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Max value lengths.&quot;&quot;&quot;</span>
+
+    <span class="n">tag</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span>
+
+
+<span class="k">class</span> <span class="nc">MlflowDataTranslation</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Translates native MLflow data to MLOpus format and back.&quot;&quot;&quot;</span>
+
+    <span class="n">ignore_json_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">max_length</span><span class="p">:</span> <span class="n">MaxLength</span> <span class="o">=</span> <span class="n">MaxLength</span><span class="p">()</span>
+    <span class="n">keep_untouched</span><span class="p">:</span> <span class="n">KeepUntouched</span> <span class="o">=</span> <span class="n">KeepUntouched</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">BaseMlflowApi</span><span class="o">.</span><span class="n">Config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Class constants.&quot;&quot;&quot;</span>
+
+        <span class="n">STATUS_TO_MLFLOW</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="p">,</span> <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">FAILED</span><span class="p">:</span> <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+            <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span> <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span>
+            <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">FINISHED</span><span class="p">:</span> <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">FINISHED</span><span class="p">,</span>
+            <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">SCHEDULED</span><span class="p">:</span> <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">SCHEDULED</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">STATUS_FROM_MLFLOW</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="o">**</span><span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">STATUS_TO_MLFLOW</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">KILLED</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">FAILED</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="c1"># =======================================================================================================</span>
+    <span class="c1"># === Datetime translation ==============================================================================</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mlflow_ts_to_datetime</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse MLflow timestamp as datetime.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">timestamp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">timestamp</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">datetime_to_mlflow_ts</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">datetime_</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Coerce datetime to MLflow timestamp.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">datetime_</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="c1"># =======================================================================================================</span>
+    <span class="c1"># === Enum translation ==================================================================================</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">run_status_from_mlflow</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse run status enum value from MLflow.&quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">status</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">STATUS_FROM_MLFLOW</span><span class="p">[</span><span class="n">status</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">run_status_to_mlflow</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="p">,</span> <span class="n">as_str</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span> <span class="o">|</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Coerce run status enum value to MLflow format.&quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">STATUS_TO_MLFLOW</span><span class="p">[</span><span class="n">status</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">native</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="k">if</span> <span class="n">as_str</span> <span class="k">else</span> <span class="n">status</span>
+
+    <span class="c1"># =======================================================================================================</span>
+    <span class="c1"># === Dict translation ==================================================================================</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="nd">@string_utils</span><span class="o">.</span><span class="n">retval_matches</span><span class="p">(</span><span class="n">patterns</span><span class="o">.</span><span class="n">TAG_PARAM_OR_METRIC_KEY</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">encode_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure dict key is safe for storage and query.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_decode_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inverse func of _encode_key.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">flatten_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Turns a nested dict key into a flat one by joining with dot delimiter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_parts</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">unflatten_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inverse func of _flatten_key.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">preprocess_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process key of tag, param or metric to be sent to MLflow.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encode_key</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_parts</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_preprocess_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span> <span class="n">val_mapper</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">A</span><span class="p">],</span> <span class="n">A2</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">A2</span><span class="p">]]:</span>
+        <span class="k">for</span> <span class="n">key_parts</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">dicts</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mapped_val</span> <span class="o">:=</span> <span class="n">val_mapper</span><span class="p">(</span><span class="n">key_parts</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_key</span><span class="p">(</span><span class="n">key_parts</span><span class="p">),</span> <span class="n">mapped_val</span>
+
+    <span class="k">def</span> <span class="nf">preprocess_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span> <span class="n">val_mapper</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">A</span><span class="p">],</span> <span class="n">A2</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">A2</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-process dict of tags, params or metrics to be compatible with MLflow.</span>
+
+<span class="sd">        - Flatten nested keys as tuples</span>
+<span class="sd">        - URL-encode dots and other forbidden chars in keys</span>
+<span class="sd">        - Join tuple keys as dot-delimited strings</span>
+<span class="sd">        - Map leaf-values (tags and params as json, metrics as float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">val_mapper</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_deprocess_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span> <span class="n">val_mapper</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">A</span><span class="p">],</span> <span class="n">A2</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">A2</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inverse func of _preprocess_dict.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">key_parts</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_decode_key</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unflatten_key</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+            <span class="k">yield</span> <span class="n">key_parts</span><span class="p">,</span> <span class="n">val_mapper</span><span class="p">(</span><span class="n">key_parts</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">deprocess_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span> <span class="n">val_mapper</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">A</span><span class="p">],</span> <span class="n">A2</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">A2</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inverse func of _preprocess_dict.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dicts</span><span class="o">.</span><span class="n">unflatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deprocess_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">val_mapper</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">process_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;JSON encode user-tag.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_untouched</span><span class="p">(</span><span class="n">key_parts</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;tags&quot;</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">string_utils</span><span class="o">.</span><span class="n">escape_sql_single_quote</span><span class="p">(</span><span class="n">json_utils</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Ignoring tag above max length of </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">_deprocess_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;JSON decode user-tag value from MLflow.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_untouched</span><span class="p">(</span><span class="n">key_parts</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;tags&quot;</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">json_utils</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">string_utils</span><span class="o">.</span><span class="n">unscape_sql_single_quote</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ignore_json_errors</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">process_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># noqa</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;JSON encode param.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_untouched</span><span class="p">(</span><span class="n">key_parts</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;params&quot;</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">string_utils</span><span class="o">.</span><span class="n">escape_sql_single_quote</span><span class="p">(</span><span class="n">json_utils</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="o">.</span><span class="n">param</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Ignoring param above max length of </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="o">.</span><span class="n">param</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">_deprocess_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># noqa</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;JSON decode param value from MLflow.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_untouched</span><span class="p">(</span><span class="n">key_parts</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;params&quot;</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">json_utils</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">string_utils</span><span class="o">.</span><span class="n">unscape_sql_single_quote</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ignore_json_errors</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">process_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>  <span class="c1"># noqa</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Coerce metric value to float.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_untouched</span><span class="p">(</span><span class="n">key_parts</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;metrics&quot;</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">_deprocess_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_parts</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>  <span class="c1"># noqa</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Coerce metric val from MLflow to float.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_untouched</span><span class="p">(</span><span class="n">key_parts</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;metrics&quot;</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">preprocess_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare tags dict to be sent to native MLflow API.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">val_mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">process_tag</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">deprocess_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inverse func of _preprocess_tags.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deprocess_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">val_mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deprocess_tag</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">preprocess_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare params dict to be sent to native MLflow API.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">val_mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">process_param</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">deprocess_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inverse func of _preprocess_params.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deprocess_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">val_mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deprocess_param</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">preprocess_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare metrics dict to be sent to native MLflow API.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">val_mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">process_metric</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">deprocess_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inverse func of _preprocess_metrics.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deprocess_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">val_mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deprocess_metric</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MlflowQueryPushDown</span><span class="p">(</span><span class="n">mongo</span><span class="o">.</span><span class="n">Mongo2Sql</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic MongoDB query to MLflow SQL conversor.&quot;&quot;&quot;</span>
+
+    <span class="n">mongo_subj_2_mlflow</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;run_name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;end_time&quot;</span><span class="p">:</span> <span class="s2">&quot;end_time&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;start_time&quot;</span><span class="p">:</span> <span class="s2">&quot;start_time&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;mv&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;run.id&quot;</span><span class="p">:</span> <span class="s2">&quot;run_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;model.name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;version_number&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+    <span class="n">data_translation</span><span class="p">:</span> <span class="n">MlflowDataTranslation</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">nested_subjects</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;metrics&quot;</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">intersect</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nested_subjects</span><span class="o">.</span><span class="n">intersection</span><span class="p">({</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">}):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Pushing down queries for the nested subject(s) </span><span class="si">%s</span><span class="s2"> may produce &quot;</span>
+                <span class="s2">&quot;incomplete results because of MLflow SQL limitations over JSON fields.&quot;</span><span class="p">,</span>
+                <span class="n">intersect</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_subj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coll</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subj</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">scope</span> <span class="o">:=</span> <span class="p">(</span><span class="n">parts</span> <span class="o">:=</span> <span class="n">subj</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nested_subjects</span><span class="p">:</span>
+            <span class="n">subj</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scope</span><span class="si">}</span><span class="s2">.%s&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_key</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mongo_subj_2_mlflow</span><span class="p">[</span><span class="n">coll</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">subj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_parse_subj</span><span class="p">(</span><span class="n">coll</span><span class="p">,</span> <span class="n">subj</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coll</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subj</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pred</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">raw_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">coll</span> <span class="o">==</span> <span class="s2">&quot;run&quot;</span> <span class="ow">and</span> <span class="n">subj</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;start_time&quot;</span><span class="p">,</span> <span class="s2">&quot;end_time&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_obj</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+            <span class="n">raw_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">datetime_to_mlflow_ts</span><span class="p">(</span><span class="n">raw_obj</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_obj</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="p">):</span>
+            <span class="n">raw_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">run_status_to_mlflow</span><span class="p">(</span><span class="n">raw_obj</span><span class="p">,</span> <span class="n">as_str</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">process</span> <span class="o">:=</span> <span class="p">{</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">process_tag</span><span class="p">,</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">process_param</span><span class="p">,</span>
+            <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">process_metric</span><span class="p">,</span>
+        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">parts</span> <span class="o">:=</span> <span class="n">subj</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">process</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">raw_obj</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_parse_obj</span><span class="p">(</span><span class="n">coll</span><span class="p">,</span> <span class="n">subj</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">raw_obj</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">parse_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse query and sorting rule for experiments search, return SQL expression and remainder for each.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">coll</span><span class="o">=</span><span class="s2">&quot;exp&quot;</span><span class="p">),</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_sorting</span><span class="p">(</span><span class="n">sorting</span><span class="p">,</span> <span class="n">coll</span><span class="o">=</span><span class="s2">&quot;exp&quot;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+    <span class="k">def</span> <span class="nf">parse_run</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse query and sorting rule for runs search, return SQL expression and remainder for each, plus exp IDs.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exp_ids</span> <span class="o">:=</span> <span class="n">query</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exp.id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">exp_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">exp_ids</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exp_ids</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">exp_ids</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="s2">&quot;$in&quot;</span><span class="p">:</span>
+            <span class="n">exp_ids</span> <span class="o">=</span> <span class="n">exp_ids</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;$in&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">exp_ids</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">exp_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">exp_ids</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: `exp.id` must be specified when querying runs. &quot;</span>
+                <span class="s1">&#39;Example: {&quot;exp.id&quot;: {&quot;$in&quot;: [&quot;42&quot;, &quot;13&quot;]}}&#39;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">coll</span><span class="o">=</span><span class="s2">&quot;run&quot;</span><span class="p">),</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_sorting</span><span class="p">(</span><span class="n">sorting</span><span class="p">,</span> <span class="n">coll</span><span class="o">=</span><span class="s2">&quot;run&quot;</span><span class="p">),</span> <span class="n">exp_ids</span>  <span class="c1"># noqa</span>
+
+    <span class="k">def</span> <span class="nf">parse_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse query and sorting rule for models search, return SQL expression and remainder for each.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">coll</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">),</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_sorting</span><span class="p">(</span><span class="n">sorting</span><span class="p">,</span> <span class="n">coll</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+    <span class="k">def</span> <span class="nf">parse_mv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse query and sorting rule for model version search, return SQL expression and remainder for each.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">coll</span><span class="o">=</span><span class="s2">&quot;mv&quot;</span><span class="p">),</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">parse_sorting</span><span class="p">(</span><span class="n">sorting</span><span class="p">,</span> <span class="n">coll</span><span class="o">=</span><span class="s2">&quot;mv&quot;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+
+<span class="k">class</span> <span class="nc">MlflowTagKeys</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default tag keys.&quot;&quot;&quot;</span>
+
+    <span class="n">artifacts_repo</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;artifacts_repo&quot;</span>
+    <span class="n">parent_run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mlflow.parentRunId&quot;</span>
+
+
+<div class="viewcode-block" id="MlflowApi"><a class="viewcode-back" href="../../../../rst/mlflow/providers/mlflow.html#mlopus.mlflow.providers.mlflow.MlflowApi">[docs]</a><span class="k">class</span> <span class="nc">MlflowApi</span><span class="p">(</span><span class="n">BaseMlflowApi</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;MLflow API provider based on open source MLflow.</span>
+
+<span class="sd">    **Plugin name:** `mlflow`</span>
+
+<span class="sd">    **Requires extras:** `mlflow`</span>
+
+<span class="sd">    **Default cache dir:** `~/.cache/mlopus/mlflow-providers/mlflow/&lt;hashed-tracking-uri&gt;`</span>
+
+<span class="sd">    Assumptions:</span>
+<span class="sd">     - No artifacts proxy.</span>
+<span class="sd">     - SQL database is server-managed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tracking_uri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;MLflow server URL or path to a local directory. &quot;</span>
+            <span class="s2">&quot;Defaults to the environment variable `MLFLOW_TRACKING_URI`, &quot;</span>
+            <span class="s2">&quot;falls back to `~/.cache/mlflow`.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">healthcheck</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If true, eagerly attempt connection to the server after initialization.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">client_settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;MLflow client settings. Keys are like the open-source MLflow environment variables, &quot;</span>
+            <span class="s2">&quot;but lower case and without the `MLFLOW_` prefix. Example: `http_request_max_retries`. &quot;</span>
+            <span class="s2">&quot;See: https://mlflow.org/docs/latest/python_api/mlflow.environment_variables.html&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">tag_keys</span><span class="p">:</span> <span class="n">MlflowTagKeys</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">MlflowTagKeys</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Tag keys for storing internal information such as parent run ID.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">query_push_down</span><span class="p">:</span> <span class="n">MlflowQueryPushDown</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">MlflowQueryPushDown</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Utility for partial translation of MongoDB queries to open-source MLflow SQL. &quot;</span>
+            <span class="s2">&quot;Users may replace this with a different implementation when subclassing the API.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">data_translation</span><span class="p">:</span> <span class="n">MlflowDataTranslation</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">MlflowDataTranslation</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Utility for translating keys and values from MLOpus schema to native MLflow schema and back. &quot;</span>
+            <span class="s2">&quot;Users may replace this with a different implementation when subclassing the API.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># =======================================================================================================</span>
+    <span class="c1"># === Pydantic validators ===============================================================================</span>
+
+    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># noqa</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_valid_tracking_uri</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">dicts</span><span class="o">.</span><span class="n">AnyDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dicts</span><span class="o">.</span><span class="n">AnyDict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Use default if provided value is None or empty string.&quot;&quot;&quot;</span>
+        <span class="n">raw_url</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tracking_uri&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MLFLOW_TRACKING_URI&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;.cache/mlflow&quot;</span><span class="p">)</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;tracking_uri&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">urls</span><span class="o">.</span><span class="n">parse_url</span><span class="p">(</span><span class="n">raw_url</span><span class="p">,</span> <span class="n">resolve_if_local</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">root_validator</span>  <span class="c1"># noqa</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_default_healthcheck</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">dicts</span><span class="o">.</span><span class="n">AnyDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dicts</span><span class="o">.</span><span class="n">AnyDict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Default to False if on offline mode, otherwise to True.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;healthcheck&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;healthcheck&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;offline_mode&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Let the query push down use the same data translator as the API.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_push_down</span><span class="o">.</span><span class="n">data_translation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">query_push_down</span><span class="o">.</span><span class="n">data_translation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">healthcheck</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">cli</span><span class="p">:</span>
+                <span class="n">cli</span><span class="o">.</span><span class="n">healthcheck</span><span class="p">()</span>
+
+    <span class="c1"># =======================================================================================================</span>
+    <span class="c1"># === Properties ========================================================================================</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_default_cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sub-dir under default cache dir. Only used if `cache_dir` is not specified.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracking_uri</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">16</span><span class="p">]</span>
+
+    <span class="c1"># =======================================================================================================</span>
+    <span class="c1"># === Client ============================================================================================</span>
+
+    <span class="k">def</span> <span class="nf">_get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MlflowClient</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">offline_mode</span><span class="p">,</span> <span class="s2">&quot;Cannot use MlflowClient in offline mode.&quot;</span>
+        <span class="k">return</span> <span class="n">MlflowClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracking_uri</span><span class="p">)</span>
+
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="k">def</span> <span class="nf">_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContextManager</span><span class="p">[</span><span class="n">MlflowClient</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="n">env_utils</span><span class="o">.</span><span class="n">using_env_vars</span><span class="p">({</span><span class="s2">&quot;MLFLOW_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">k</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_settings</span><span class="o">.</span><span class="n">items</span><span class="p">()}):</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_using_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">MlflowClient</span><span class="p">],</span> <span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+    <span class="c1"># =======================================================================================================</span>
+    <span class="c1"># === Metadata parsers ==================================================================================</span>
+
+    <span class="k">def</span> <span class="nf">_parse_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_experiment</span><span class="p">:</span> <span class="n">NE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">E</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">E</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">native_experiment</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">native_experiment</span><span class="o">.</span><span class="n">experiment_id</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">deprocess_tags</span><span class="p">(</span><span class="n">native_experiment</span><span class="o">.</span><span class="n">tags</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_run</span><span class="p">:</span> <span class="n">NR</span><span class="p">,</span> <span class="n">experiment</span><span class="p">:</span> <span class="n">E</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">repo</span> <span class="o">:=</span> <span class="n">native_run</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_keys</span><span class="o">.</span><span class="n">artifacts_repo</span><span class="p">)):</span>
+            <span class="n">repo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span><span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">get_artifact_uri</span><span class="p">(</span><span class="n">native_run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">run_id</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">R</span><span class="p">(</span>
+            <span class="n">exp</span><span class="o">=</span><span class="n">experiment</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">native_run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">native_run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">run_name</span><span class="p">,</span>
+            <span class="n">repo</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">urls</span><span class="o">.</span><span class="n">parse_url</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">resolve_if_local</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+            <span class="n">tags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">deprocess_tags</span><span class="p">(</span><span class="n">native_run</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tags</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">deprocess_params</span><span class="p">(</span><span class="n">native_run</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">params</span><span class="p">),</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">deprocess_metrics</span><span class="p">(</span><span class="n">native_run</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">metrics</span><span class="p">),</span>
+            <span class="n">status</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">run_status_from_mlflow</span><span class="p">(</span><span class="n">native_run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">status</span><span class="p">),</span>
+            <span class="n">end_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">mlflow_ts_to_datetime</span><span class="p">(</span><span class="n">native_run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">end_time</span><span class="p">),</span>
+            <span class="n">start_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">mlflow_ts_to_datetime</span><span class="p">(</span><span class="n">native_run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">start_time</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_model</span><span class="p">:</span> <span class="n">NM</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">M</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">native_model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">deprocess_tags</span><span class="p">(</span><span class="n">native_model</span><span class="o">.</span><span class="n">tags</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_model_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_mv</span><span class="p">:</span> <span class="n">NV</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">M</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">R</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V</span><span class="p">:</span>
+        <span class="n">path_in_run</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">urls</span><span class="o">.</span><span class="n">parse_url</span><span class="p">(</span><span class="n">native_mv</span><span class="o">.</span><span class="n">source</span><span class="p">))</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;runs:///</span><span class="si">{</span><span class="n">run</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">repo</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">V</span><span class="p">(</span>
+            <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">path_in_run</span><span class="o">=</span><span class="n">path_in_run</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="n">native_mv</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">deprocess_tags</span><span class="p">(</span><span class="n">native_mv</span><span class="o">.</span><span class="n">tags</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="c1"># =======================================================================================================</span>
+    <span class="c1"># === Implementations of abstract methods from `BaseMlflowApi` ==========================================</span>
+
+    <span class="k">def</span> <span class="nf">_impl_default_cache_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get default cache dir based on the current MLflow API settings.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;.cache/mlopus/mlflow-providers/mlflow&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_cache_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_get_exp_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">urls</span><span class="o">.</span><span class="n">Url</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Experiment URL.&quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">urls</span><span class="o">.</span><span class="n">is_local</span><span class="p">(</span><span class="n">base</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracking_uri</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;#/experiments&quot;</span>
+        <span class="k">return</span> <span class="n">urls</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_get_run_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">urls</span><span class="o">.</span><span class="n">Url</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Run URL.&quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">urls</span><span class="o">.</span><span class="n">is_local</span><span class="p">(</span><span class="n">base</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_impl_get_exp_url</span><span class="p">(</span><span class="n">exp_id</span><span class="p">))</span> <span class="k">else</span> <span class="s2">&quot;runs&quot;</span>
+        <span class="k">return</span> <span class="n">urls</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">run_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_get_model_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">urls</span><span class="o">.</span><span class="n">Url</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get URL to registered model.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">patterns</span><span class="o">.</span><span class="n">encode_model_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;models/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">urls</span><span class="o">.</span><span class="n">is_local</span><span class="p">(</span><span class="n">base</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracking_uri</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;#/models/</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">urls</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">path</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_get_mv_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">urls</span><span class="o">.</span><span class="n">Url</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get model version URL.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">patterns</span><span class="o">.</span><span class="n">encode_model_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;models/</span><span class="si">%s</span><span class="s2">/version-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">urls</span><span class="o">.</span><span class="n">is_local</span><span class="p">(</span><span class="n">base</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracking_uri</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;#/models/</span><span class="si">%s</span><span class="s2">/versions/</span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">urls</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">path</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_impl_fetch_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">E</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Experiment by ID.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">cli</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_experiment</span><span class="p">(</span><span class="n">cli</span><span class="o">.</span><span class="n">get_experiment</span><span class="p">(</span><span class="n">exp_id</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_impl_fetch_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Run by ID.&quot;&quot;&quot;</span>
+        <span class="n">native_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span><span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">run_id</span><span class="p">))</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_exp</span><span class="p">(</span><span class="n">native_run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">experiment_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_run</span><span class="p">(</span><span class="n">native_run</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_fetch_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get registered Model by name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span><span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">get_registered_model</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_impl_fetch_mv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_and_version</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">V</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ModelVersion by name and version.&quot;&quot;&quot;</span>
+        <span class="n">native_mv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span><span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_version</span><span class="p">(</span><span class="o">*</span><span class="n">name_and_version</span><span class="p">))</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_run</span><span class="p">(</span><span class="n">native_mv</span><span class="o">.</span><span class="n">run_id</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_model</span><span class="p">(</span><span class="n">native_mv</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_model_version</span><span class="p">(</span><span class="n">native_mv</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">run</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_find_experiments</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">,</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Paginator</span><span class="p">[</span><span class="n">E</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push down MongoDB query where possible and return query remainder with results iterator.&quot;&quot;&quot;</span>
+        <span class="n">filter_expr</span><span class="p">,</span> <span class="n">query_remainder</span><span class="p">,</span> <span class="n">sort_expr</span><span class="p">,</span> <span class="n">sort_remainder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_push_down</span><span class="o">.</span><span class="n">parse_exp</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Query push down (exp): </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filter_expr</span><span class="p">,</span> <span class="n">sort_expr</span><span class="p">)</span>
+
+        <span class="n">paginator</span> <span class="o">=</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Paginator</span><span class="p">[</span><span class="n">NE</span><span class="p">](</span>
+            <span class="k">lambda</span> <span class="n">token</span><span class="p">:</span> <span class="n">_open_paged_list</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">search_experiments</span><span class="p">(</span>
+                        <span class="n">page_token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
+                        <span class="n">filter_string</span><span class="o">=</span><span class="n">filter_expr</span><span class="p">,</span>
+                        <span class="n">order_by</span><span class="o">=</span><span class="n">sort_expr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">sort_expr</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">query_remainder</span><span class="p">,</span> <span class="n">sort_remainder</span><span class="p">,</span> <span class="n">paginator</span><span class="o">.</span><span class="n">map_results</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_experiment</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_find_runs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">,</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Paginator</span><span class="p">[</span><span class="n">R</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push down MongoDB query where possible and return query remainder with results iterator.&quot;&quot;&quot;</span>
+        <span class="n">filter_expr</span><span class="p">,</span> <span class="n">query_remainder</span><span class="p">,</span> <span class="n">sort_expr</span><span class="p">,</span> <span class="n">sort_remainder</span><span class="p">,</span> <span class="n">exp_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_push_down</span><span class="o">.</span><span class="n">parse_run</span><span class="p">(</span>
+            <span class="n">query</span><span class="p">,</span> <span class="n">sorting</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Query push down (run): </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filter_expr</span><span class="p">,</span> <span class="n">sort_expr</span><span class="p">)</span>
+
+        <span class="n">paginator</span> <span class="o">=</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Paginator</span><span class="p">[</span><span class="n">NR</span><span class="p">](</span>
+            <span class="k">lambda</span> <span class="n">token</span><span class="p">:</span> <span class="n">_open_paged_list</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">search_runs</span><span class="p">(</span>
+                        <span class="n">page_token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
+                        <span class="n">experiment_ids</span><span class="o">=</span><span class="n">exp_ids</span><span class="p">,</span>
+                        <span class="n">filter_string</span><span class="o">=</span><span class="n">filter_expr</span><span class="p">,</span>
+                        <span class="n">order_by</span><span class="o">=</span><span class="n">sort_expr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">sort_expr</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">map_results</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">native_run</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_run</span><span class="p">(</span>
+                <span class="n">native_run</span><span class="o">=</span><span class="n">native_run</span><span class="p">,</span>
+                <span class="n">experiment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fetch_exp</span><span class="p">(</span><span class="n">native_run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">experiment_id</span><span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">query_remainder</span><span class="p">,</span> <span class="n">sort_remainder</span><span class="p">,</span> <span class="n">paginator</span>
+
+    <span class="k">def</span> <span class="nf">_impl_find_models</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">,</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Paginator</span><span class="p">[</span><span class="n">M</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push down MongoDB query where possible and return query remainder with results iterator.&quot;&quot;&quot;</span>
+        <span class="n">filter_expr</span><span class="p">,</span> <span class="n">query_remainder</span><span class="p">,</span> <span class="n">sort_expr</span><span class="p">,</span> <span class="n">sort_remainder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_push_down</span><span class="o">.</span><span class="n">parse_model</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Query push down (model): </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filter_expr</span><span class="p">,</span> <span class="n">sort_expr</span><span class="p">)</span>
+
+        <span class="n">paginator</span> <span class="o">=</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Paginator</span><span class="p">[</span><span class="n">NM</span><span class="p">](</span>
+            <span class="k">lambda</span> <span class="n">token</span><span class="p">:</span> <span class="n">_open_paged_list</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">search_registered_models</span><span class="p">(</span>
+                        <span class="n">page_token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
+                        <span class="n">filter_string</span><span class="o">=</span><span class="n">filter_expr</span><span class="p">,</span>
+                        <span class="n">order_by</span><span class="o">=</span><span class="n">sort_expr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">sort_expr</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">query_remainder</span><span class="p">,</span> <span class="n">sort_remainder</span><span class="p">,</span> <span class="n">paginator</span><span class="o">.</span><span class="n">map_results</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_model</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_find_mv</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">mongo</span><span class="o">.</span><span class="n">Query</span><span class="p">,</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span><span class="p">,</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Paginator</span><span class="p">[</span><span class="n">V</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push down MongoDB query where possible and return query remainder with results iterator.&quot;&quot;&quot;</span>
+        <span class="n">filter_expr</span><span class="p">,</span> <span class="n">query_remainder</span><span class="p">,</span> <span class="n">sort_expr</span><span class="p">,</span> <span class="n">sort_remainder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_push_down</span><span class="o">.</span><span class="n">parse_mv</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">sorting</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Query push down (mv): </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filter_expr</span><span class="p">,</span> <span class="n">sort_expr</span><span class="p">)</span>
+
+        <span class="n">paginator</span> <span class="o">=</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Paginator</span><span class="p">[</span><span class="n">NV</span><span class="p">](</span>
+            <span class="k">lambda</span> <span class="n">token</span><span class="p">:</span> <span class="n">_open_paged_list</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">search_model_versions</span><span class="p">(</span>
+                        <span class="n">page_token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
+                        <span class="n">filter_string</span><span class="o">=</span><span class="n">filter_expr</span><span class="p">,</span>
+                        <span class="n">order_by</span><span class="o">=</span><span class="n">sort_expr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">sort_expr</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">map_results</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">native_mv</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_model_version</span><span class="p">(</span>
+                <span class="n">native_mv</span><span class="o">=</span><span class="n">native_mv</span><span class="p">,</span>
+                <span class="n">run</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fetch_run</span><span class="p">(</span><span class="n">native_mv</span><span class="o">.</span><span class="n">run_id</span><span class="p">),</span>
+                <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fetch_model</span><span class="p">(</span><span class="n">native_mv</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">query_remainder</span><span class="p">,</span> <span class="n">sort_remainder</span><span class="p">,</span> <span class="n">paginator</span>
+
+    <span class="k">def</span> <span class="nf">_impl_find_child_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">R</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">R</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find child runs.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_runs</span><span class="p">({</span><span class="s2">&quot;exp.id&quot;</span><span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;tags.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_keys</span><span class="o">.</span><span class="n">parent_run_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">_impl_create_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">E</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create experiment and return its metadata.&quot;&quot;&quot;</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span><span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">create_experiment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_impl_create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create registered model and return its metadata.&quot;&quot;&quot;</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span><span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">create_registered_model</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tags</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_impl_create_run</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">repo</span><span class="p">:</span> <span class="n">urls</span><span class="o">.</span><span class="n">Url</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parent_run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create run.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="n">run_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_run</span><span class="p">(</span><span class="n">exp_id</span><span class="p">,</span> <span class="n">run_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">run_id</span>
+            <span class="k">if</span> <span class="n">repo</span><span class="p">:</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_keys</span><span class="o">.</span><span class="n">artifacts_repo</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">repo</span><span class="p">),</span> <span class="n">synchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">parent_run_id</span><span class="p">:</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_keys</span><span class="o">.</span><span class="n">parent_run_id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">parent_run_id</span><span class="p">,</span> <span class="n">synchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">run_id</span>
+
+    <span class="k">def</span> <span class="nf">_impl_set_run_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set Run status.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">update_run</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">run_status_to_mlflow</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">as_str</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_impl_set_run_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set Run end time.&quot;&quot;&quot;</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">datetime_to_mlflow_ts</span><span class="p">(</span><span class="n">end_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span><span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">tracking_client</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">update_run_info</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_impl_update_exp_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update Exp tags.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">set_experiment_tag</span><span class="p">(</span><span class="n">exp_id</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_update_run_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update Run tags.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">synchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_update_model_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update Model tags.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">set_registered_model_tag</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_update_mv_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update Exp tags.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">set_model_version_tag</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_log_run_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log run params.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">log_param</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">synchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_log_run_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log run metrics.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">log_metric</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">synchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_impl_register_mv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">M</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">R</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register model version.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Arbitrary `version` not supported in &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">preprocess_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">urls</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">))</span>
+        <span class="n">native_mv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_using_client</span><span class="p">(</span><span class="k">lambda</span> <span class="n">client</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">create_model_version</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">tags</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_model_version</span><span class="p">(</span><span class="n">native_mv</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">run</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_open_paged_list</span><span class="p">(</span><span class="n">paged_list</span><span class="p">:</span> <span class="n">PagedList</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Page</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert MLflow native PagedList to `iter_utils.Page`.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">iter_utils</span><span class="o">.</span><span class="n">Page</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">paged_list</span><span class="o">.</span><span class="n">token</span><span class="p">,</span> <span class="n">results</span><span class="o">=</span><span class="n">paged_list</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

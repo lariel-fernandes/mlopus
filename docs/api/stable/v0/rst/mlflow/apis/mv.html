@@ -22,7 +22,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Traits" href="../traits.html" />
+    <link rel="next" title="Providers" href="../providers/index.html" />
     <link rel="prev" title="Model API" href="model.html" /> 
 </head>
 
@@ -48,6 +48,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">MLflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../schema.html">Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">APIs</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="base.html">Base MLflow API</a></li>
@@ -60,6 +61,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../providers/index.html">Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../traits.html">Traits</a></li>
 </ul>
 </li>
@@ -97,75 +99,49 @@
              
   <section id="model-version-api">
 <h1>Model Version API<a class="headerlink" href="#model-version-api" title="Permalink to this heading"></a></h1>
-<dl class="py class">
+<dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">ModelVersionApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MlflowApiContract</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi" title="Permalink to this definition"></a></dt>
-<dd><p>Shortcut to API calls with specified model version.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.using">
-<span class="sig-name descname"><span class="pre">using</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.using" title="Permalink to this definition"></a></dt>
-<dd><p>Switch API handle.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
-</dd>
-</dl>
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">ModelVersionApi</span></span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi" title="Permalink to this definition"></a></dt>
+<dd><p>Model version metadata with MLflow API handle.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.model">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ModelApi</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.model" title="Permalink to this definition"></a></dt>
+<dd><p>Parent model.</p>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.url" title="Permalink to this definition"></a></dt>
-<dd><p>Get model version URL.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.path_in_run">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_in_run</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.path_in_run" title="Permalink to this definition"></a></dt>
+<dd><p>Path inside run artifacts.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.run">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">RunApi</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.run" title="Permalink to this definition"></a></dt>
+<dd><p>Parent run.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.tags">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.tags" title="Permalink to this definition"></a></dt>
+<dd><p>Nested tags dict with JSON-serializable leaf-values and keys in the pattern: <cite>[w-/]+</cite></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.version">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.version" title="Permalink to this definition"></a></dt>
+<dd><p>Model version in the pattern <cite>[w-.]+</cite></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.cache">
-<span class="sig-name descname"><span class="pre">cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.cache" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.cache" title="Permalink to this definition"></a></dt>
 <dd><p>Cache metadata and artifact for this model version.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.export">
-<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.export" title="Permalink to this definition"></a></dt>
-<dd><p>Export metadata and artifact cache of this model version to target path.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.cache_meta">
-<span class="sig-name descname"><span class="pre">cache_meta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.cache_meta" title="Permalink to this definition"></a></dt>
-<dd><p>Fetch latest metadata for this model version and save it to cache.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.export_meta">
-<span class="sig-name descname"><span class="pre">export_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.export_meta" title="Permalink to this definition"></a></dt>
-<dd><p>Export metadata cache for this model version.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.set_tags">
-<span class="sig-name descname"><span class="pre">set_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.set_tags" title="Permalink to this definition"></a></dt>
-<dd><p>Set tags on this model version.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.cache_artifact">
-<span class="sig-name descname"><span class="pre">cache_artifact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.cache_artifact" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">cache_artifact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.cache_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.cache_artifact" title="Permalink to this definition"></a></dt>
 <dd><p>Pull artifact of this model version from MLflow server to local cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -175,8 +151,25 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.cache_meta">
+<span class="sig-name descname"><span class="pre">cache_meta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.cache_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.cache_meta" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch latest metadata for this model version and save it to cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.export" title="Permalink to this definition"></a></dt>
+<dd><p>Export metadata and artifact cache of this model version to target path.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.export_artifact">
-<span class="sig-name descname"><span class="pre">export_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.export_artifact" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">export_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.export_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.export_artifact" title="Permalink to this definition"></a></dt>
 <dd><p>Export model version artifact cache to target path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -186,19 +179,19 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.list_artifacts">
-<span class="sig-name descname"><span class="pre">list_artifacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.list_artifacts" title="Permalink to this definition"></a></dt>
-<dd><p>List artifacts in this model version.</p>
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.export_meta">
+<span class="sig-name descname"><span class="pre">export_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.export_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.export_meta" title="Permalink to this definition"></a></dt>
+<dd><p>Export metadata cache for this model version.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>]</p>
+<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.get_artifact">
-<span class="sig-name descname"><span class="pre">get_artifact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.get_artifact" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_artifact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.get_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.get_artifact" title="Permalink to this definition"></a></dt>
 <dd><p>Get local path to artifact of this model version.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -208,20 +201,59 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.place_artifact">
-<span class="sig-name descname"><span class="pre">place_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.place_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Place artifact of this model version on target path.</p>
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.list_artifacts">
+<span class="sig-name descname"><span class="pre">list_artifacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.list_artifacts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.list_artifacts" title="Permalink to this definition"></a></dt>
+<dd><p>List artifacts in this model version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.load_artifact">
-<span class="sig-name descname"><span class="pre">load_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.load_artifact" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.load_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.load_artifact" title="Permalink to this definition"></a></dt>
 <dd><p>Load artifact of this model version.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>)</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.place_artifact">
+<span class="sig-name descname"><span class="pre">place_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.place_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.place_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Place artifact of this model version on target path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.set_tags">
+<span class="sig-name descname"><span class="pre">set_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/mv.html#ModelVersionApi.set_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.set_tags" title="Permalink to this definition"></a></dt>
+<dd><p>Set tags on this model version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.update" title="Permalink to this definition"></a></dt>
+<dd><p>Use API to get latest data for this entity and update this entity in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">EntityApi</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mlopus.mlflow.ModelVersionApi.url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mlopus.mlflow.ModelVersionApi.url" title="Permalink to this definition"></a></dt>
+<dd><p>Get model version URL.</p>
 </dd></dl>
 
 </dd></dl>
@@ -233,7 +265,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="model.html" class="btn btn-neutral float-left" title="Model API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../traits.html" class="btn btn-neutral float-right" title="Traits" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../providers/index.html" class="btn btn-neutral float-right" title="Providers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

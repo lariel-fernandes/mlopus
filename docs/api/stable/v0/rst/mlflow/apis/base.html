@@ -48,6 +48,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">MLflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../schema.html">Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">APIs</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Base MLflow API</a><ul>
@@ -60,6 +61,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mv.html">Model Version API</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../providers/index.html">Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../traits.html">Traits</a></li>
 </ul>
 </li>
@@ -97,325 +99,55 @@
              
   <section id="base-mlflow-api">
 <h1>Base MLflow API<a class="headerlink" href="#base-mlflow-api" title="Permalink to this heading"></a></h1>
-<dl class="py class">
+<dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">BaseMlflowApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offline_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_artifacts_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_local_artifacts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_pull_artifacts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_transfer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FileTransfer</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EntitySerializer</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi" title="Permalink to this definition"></a></dt>
-<dd><p>Base class for APIs following the MLflow paradigm.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.in_offline_mode">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">in_offline_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><span class="pre">BaseMlflowApi</span></a></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.in_offline_mode" title="Permalink to this definition"></a></dt>
-<dd><p>Get an offline copy of this API.</p>
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">BaseMlflowApi</span></span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi" title="Permalink to this definition"></a></dt>
+<dd><p>Base class for API clients that use “MLflow-like” backends for experiment tracking and model registry.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.always_pull_artifacts">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">always_pull_artifacts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.always_pull_artifacts" title="Permalink to this definition"></a></dt>
+<dd><p>When accessing a cached artifact file or dir, re-sync it with the remote artifacts repository, even on a cache hit. Prevents accessing stale data if the remote artifact has been changed in the meantime. The default data transfer utility (based on rclone) is pretty efficient for syncing directories, but enabling this option may still add some overhead of calculating checksums if they contain many files.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.clean_all_cache">
-<span class="sig-name descname"><span class="pre">clean_all_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.clean_all_cache" title="Permalink to this definition"></a></dt>
-<dd><p>Clean all cached metadata and artifacts.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_dir">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Root path for cached artifacts and metadata. If not specified, then a default is determined by the respective API plugin.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.clean_temp_artifacts">
-<span class="sig-name descname"><span class="pre">clean_temp_artifacts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.clean_temp_artifacts" title="Permalink to this definition"></a></dt>
-<dd><p>Clean temporary artifacts.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_local_artifacts">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache_local_artifacts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_local_artifacts" title="Permalink to this definition"></a></dt>
+<dd><p>Use local cache even if the run artifacts repository is in the local file system. May be used for testing cache without connecting to a remote MLflow server.Not recommended in production because of unecessary duplicated disk usage.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.clean_cached_run_artifact">
-<span class="sig-name descname"><span class="pre">clean_cached_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.clean_cached_run_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Clean cached artifact for specified run.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.entity_serializer">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entity_serializer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">EntitySerializer</span></code></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.entity_serializer" title="Permalink to this definition"></a></dt>
+<dd><p>Utility for (de)serializing entity metadata (i.e.: exp, runs, models, versions).Users may replace this with a different implementation when subclassing the API.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.clean_cached_model_artifact">
-<span class="sig-name descname"><span class="pre">clean_cached_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.clean_cached_model_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Clean cached artifact for specified model version.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.file_transfer">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_transfer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">FileTransfer</span></code></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.file_transfer" title="Permalink to this definition"></a></dt>
+<dd><p>Utility for uploading/downloading artifact files or dirs. Also used for listing files. Based on RClone by default. Users may replace this with a different implementation when subclassing the API.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.list_run_artifacts">
-<span class="sig-name descname"><span class="pre">list_run_artifacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.list_run_artifacts" title="Permalink to this definition"></a></dt>
-<dd><p>List run artifacts in repo.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>]</p>
-</dd>
-</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.offline_mode">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">offline_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.offline_mode" title="Permalink to this definition"></a></dt>
+<dd><p>If True, block all operations that attempt communication with the MLflow server or artifacts repositories (i.e.: work with local cache only).</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.list_model_artifact">
-<span class="sig-name descname"><span class="pre">list_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.list_model_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>List model version artifacts in repo.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_run_artifact">
-<span class="sig-name descname"><span class="pre">cache_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_run_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Pull run artifact from MLflow server to local cache.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_model_artifact">
-<span class="sig-name descname"><span class="pre">cache_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_model_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Pull model version artifact from MLflow server to local cache.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_run_artifact">
-<span class="sig-name descname"><span class="pre">get_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_run_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Get local path to run artifact.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model_artifact">
-<span class="sig-name descname"><span class="pre">get_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Get local path to model artifact.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.place_run_artifact">
-<span class="sig-name descname"><span class="pre">place_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.place_run_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Place run artifact on target path.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.place_model_artifact">
-<span class="sig-name descname"><span class="pre">place_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.place_model_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Place model version artifact on target path.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.export_run_artifact">
-<span class="sig-name descname"><span class="pre">export_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_run_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Export run artifact cache to target path.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.export_model_artifact">
-<span class="sig-name descname"><span class="pre">export_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_model_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Export model version artifact cache to target path.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.load_run_artifact">
-<span class="sig-name descname"><span class="pre">load_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.load_run_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Load run artifact.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.load_model_artifact">
-<span class="sig-name descname"><span class="pre">load_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.load_model_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Load model artifact.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.log_run_artifact">
-<span class="sig-name descname"><span class="pre">log_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_the_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplication</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.log_run_artifact" title="Permalink to this definition"></a></dt>
-<dd><p>Publish artifact file or dir to experiment run.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.log_model_version">
-<span class="sig-name descname"><span class="pre">log_model_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_the_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplication</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.log_model_version" title="Permalink to this definition"></a></dt>
-<dd><p>Publish artifact file or dir as model version inside the specified experiment run.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="mv.html#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_exp_url">
-<span class="sig-name descname"><span class="pre">get_exp_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_exp_url" title="Permalink to this definition"></a></dt>
-<dd><p>Get Experiment URL.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_run_url">
-<span class="sig-name descname"><span class="pre">get_run_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_run_url" title="Permalink to this definition"></a></dt>
-<dd><p>Get Run URL.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model_url">
-<span class="sig-name descname"><span class="pre">get_model_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model_url" title="Permalink to this definition"></a></dt>
-<dd><p>Get URL to registered model.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model_version_url">
-<span class="sig-name descname"><span class="pre">get_model_version_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model_version_url" title="Permalink to this definition"></a></dt>
-<dd><p>Get model version URL.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_exp">
-<span class="sig-name descname"><span class="pre">get_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">cache_opts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_exp" title="Permalink to this definition"></a></dt>
-<dd><p>Get Experiment API by ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="exp.html#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_run">
-<span class="sig-name descname"><span class="pre">get_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">cache_opts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_run" title="Permalink to this definition"></a></dt>
-<dd><p>Get Run API by ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model">
-<span class="sig-name descname"><span class="pre">get_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">cache_opts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model" title="Permalink to this definition"></a></dt>
-<dd><p>Get Model API by name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="model.html#mlopus.mlflow.ModelApi" title="mlopus.mlflow.api.model.ModelApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model_version">
-<span class="sig-name descname"><span class="pre">get_model_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">cache_opts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model_version" title="Permalink to this definition"></a></dt>
-<dd><p>Get ModelVersion API by name and version.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="mv.html#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_exps">
-<span class="sig-name descname"><span class="pre">find_exps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_exps" title="Permalink to this definition"></a></dt>
-<dd><p>Search experiments with query in MongoDB query language.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="exp.html#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_runs">
-<span class="sig-name descname"><span class="pre">find_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_runs" title="Permalink to this definition"></a></dt>
-<dd><p>Search runs with query in MongoDB query language.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_models">
-<span class="sig-name descname"><span class="pre">find_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_models" title="Permalink to this definition"></a></dt>
-<dd><p>Search registered models with query in MongoDB query language.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="model.html#mlopus.mlflow.ModelApi" title="mlopus.mlflow.api.model.ModelApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelApi</span></code></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_model_versions">
-<span class="sig-name descname"><span class="pre">find_model_versions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_model_versions" title="Permalink to this definition"></a></dt>
-<dd><p>Search model versions with query in MongoDB query language.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="mv.html#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_child_runs">
-<span class="sig-name descname"><span class="pre">find_child_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_child_runs" title="Permalink to this definition"></a></dt>
-<dd><p>Find child runs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>]</p>
-</dd>
-</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.temp_artifacts_dir">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">temp_artifacts_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.temp_artifacts_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Path for temporary artifacts that are stored by artifact dumpers before being published and preserved after a publish error (e.g.: an upload interruption). Defaults to a path inside the local cache.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_exp_meta">
-<span class="sig-name descname"><span class="pre">cache_exp_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_exp_meta" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">cache_exp_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.cache_exp_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_exp_meta" title="Permalink to this definition"></a></dt>
 <dd><p>Get latest Experiment metadata and save to local cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -425,19 +157,19 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_run_meta">
-<span class="sig-name descname"><span class="pre">cache_run_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_run_meta" title="Permalink to this definition"></a></dt>
-<dd><p>Get latest Run metadata and save to local cache.</p>
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_model_artifact">
+<span class="sig-name descname"><span class="pre">cache_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.cache_model_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_model_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Pull model version artifact from MLflow server to local cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_model_meta">
-<span class="sig-name descname"><span class="pre">cache_model_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_model_meta" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">cache_model_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.cache_model_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_model_meta" title="Permalink to this definition"></a></dt>
 <dd><p>Get latest Model metadata and save to local cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -448,7 +180,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_model_version_meta">
-<span class="sig-name descname"><span class="pre">cache_model_version_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_model_version_meta" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">cache_model_version_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.cache_model_version_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_model_version_meta" title="Permalink to this definition"></a></dt>
 <dd><p>Get latest model version metadata and save to local cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -458,8 +190,98 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_run_artifact">
+<span class="sig-name descname"><span class="pre">cache_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.cache_run_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_run_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Pull run artifact from MLflow server to local cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.cache_run_meta">
+<span class="sig-name descname"><span class="pre">cache_run_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.cache_run_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.cache_run_meta" title="Permalink to this definition"></a></dt>
+<dd><p>Get latest Run metadata and save to local cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.clean_all_cache">
+<span class="sig-name descname"><span class="pre">clean_all_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.clean_all_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.clean_all_cache" title="Permalink to this definition"></a></dt>
+<dd><p>Clean all cached metadata and artifacts.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.clean_cached_model_artifact">
+<span class="sig-name descname"><span class="pre">clean_cached_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.clean_cached_model_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.clean_cached_model_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Clean cached artifact for specified model version.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.clean_cached_run_artifact">
+<span class="sig-name descname"><span class="pre">clean_cached_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.clean_cached_run_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.clean_cached_run_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Clean cached artifact for specified run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.clean_temp_artifacts">
+<span class="sig-name descname"><span class="pre">clean_temp_artifacts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.clean_temp_artifacts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.clean_temp_artifacts" title="Permalink to this definition"></a></dt>
+<dd><p>Clean temporary artifacts.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.create_exp">
+<span class="sig-name descname"><span class="pre">create_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.create_exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.create_exp" title="Permalink to this definition"></a></dt>
+<dd><p>Create Experiment and return its API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="exp.html#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.create_model">
+<span class="sig-name descname"><span class="pre">create_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.create_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.create_model" title="Permalink to this definition"></a></dt>
+<dd><p>Create registered model and return its API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="model.html#mlopus.mlflow.ModelApi" title="mlopus.mlflow.api.model.ModelApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.create_run">
+<span class="sig-name descname"><span class="pre">create_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.create_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.create_run" title="Permalink to this definition"></a></dt>
+<dd><p>Declare a new experiment run to be used later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.end_run">
+<span class="sig-name descname"><span class="pre">end_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">succeeded</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.end_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.end_run" title="Permalink to this definition"></a></dt>
+<dd><p>End experiment run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.export_exp_meta">
-<span class="sig-name descname"><span class="pre">export_exp_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_exp_meta" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">export_exp_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.export_exp_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_exp_meta" title="Permalink to this definition"></a></dt>
 <dd><p>Export experiment metadata cache to target.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -469,19 +291,19 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.export_run_meta">
-<span class="sig-name descname"><span class="pre">export_run_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_run_meta" title="Permalink to this definition"></a></dt>
-<dd><p>Export run metadata cache to target.</p>
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.export_model_artifact">
+<span class="sig-name descname"><span class="pre">export_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.export_model_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_model_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Export model version artifact cache to target path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.export_model_meta">
-<span class="sig-name descname"><span class="pre">export_model_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_model_meta" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">export_model_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.export_model_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_model_meta" title="Permalink to this definition"></a></dt>
 <dd><p>Export model metadata cache to target.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -492,7 +314,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.export_model_version_meta">
-<span class="sig-name descname"><span class="pre">export_model_version_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_model_version_meta" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">export_model_version_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.export_model_version_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_model_version_meta" title="Permalink to this definition"></a></dt>
 <dd><p>Export model version metadata cache to target.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -502,9 +324,86 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.create_exp">
-<span class="sig-name descname"><span class="pre">create_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.create_exp" title="Permalink to this definition"></a></dt>
-<dd><p>Create Experiment and return its API.</p>
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.export_run_artifact">
+<span class="sig-name descname"><span class="pre">export_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.export_run_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_run_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Export run artifact cache to target path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.export_run_meta">
+<span class="sig-name descname"><span class="pre">export_run_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.export_run_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.export_run_meta" title="Permalink to this definition"></a></dt>
+<dd><p>Export run metadata cache to target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_child_runs">
+<span class="sig-name descname"><span class="pre">find_child_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.find_child_runs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_child_runs" title="Permalink to this definition"></a></dt>
+<dd><p>Find child runs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_exps">
+<span class="sig-name descname"><span class="pre">find_exps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.find_exps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_exps" title="Permalink to this definition"></a></dt>
+<dd><p>Search experiments with query in MongoDB query language.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="exp.html#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_model_versions">
+<span class="sig-name descname"><span class="pre">find_model_versions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.find_model_versions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_model_versions" title="Permalink to this definition"></a></dt>
+<dd><p>Search model versions with query in MongoDB query language.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="mv.html#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_models">
+<span class="sig-name descname"><span class="pre">find_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.find_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_models" title="Permalink to this definition"></a></dt>
+<dd><p>Search registered models with query in MongoDB query language.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="model.html#mlopus.mlflow.ModelApi" title="mlopus.mlflow.api.model.ModelApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelApi</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.find_runs">
+<span class="sig-name descname"><span class="pre">find_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.find_runs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.find_runs" title="Permalink to this definition"></a></dt>
+<dd><p>Search runs with query in MongoDB query language.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_exp">
+<span class="sig-name descname"><span class="pre">get_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">cache_opts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_exp" title="Permalink to this definition"></a></dt>
+<dd><p>Get Experiment API by ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="exp.html#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a></p>
@@ -513,8 +412,74 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_exp_url">
+<span class="sig-name descname"><span class="pre">get_exp_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_exp_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_exp_url" title="Permalink to this definition"></a></dt>
+<dd><p>Get Experiment URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model">
+<span class="sig-name descname"><span class="pre">get_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">cache_opts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model" title="Permalink to this definition"></a></dt>
+<dd><p>Get Model API by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="model.html#mlopus.mlflow.ModelApi" title="mlopus.mlflow.api.model.ModelApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model_artifact">
+<span class="sig-name descname"><span class="pre">get_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_model_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Get local path to model artifact.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model_url">
+<span class="sig-name descname"><span class="pre">get_model_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_model_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model_url" title="Permalink to this definition"></a></dt>
+<dd><p>Get URL to registered model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model_version">
+<span class="sig-name descname"><span class="pre">get_model_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">cache_opts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_model_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model_version" title="Permalink to this definition"></a></dt>
+<dd><p>Get ModelVersion API by name and version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="mv.html#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_model_version_url">
+<span class="sig-name descname"><span class="pre">get_model_version_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_model_version_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_model_version_url" title="Permalink to this definition"></a></dt>
+<dd><p>Get model version URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_or_create_exp">
-<span class="sig-name descname"><span class="pre">get_or_create_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_or_create_exp" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_or_create_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_or_create_exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_or_create_exp" title="Permalink to this definition"></a></dt>
 <dd><p>Get or create Experiment and return its API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -524,19 +489,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.create_model">
-<span class="sig-name descname"><span class="pre">create_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.create_model" title="Permalink to this definition"></a></dt>
-<dd><p>Create registered model and return its API.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="model.html#mlopus.mlflow.ModelApi" title="mlopus.mlflow.api.model.ModelApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_or_create_model">
-<span class="sig-name descname"><span class="pre">get_or_create_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_or_create_model" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_or_create_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_or_create_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_or_create_model" title="Permalink to this definition"></a></dt>
 <dd><p>Get or create registered Model and return its API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -546,9 +500,9 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.create_run">
-<span class="sig-name descname"><span class="pre">create_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.create_run" title="Permalink to this definition"></a></dt>
-<dd><p>Declare a new experiment run to be used later.</p>
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_run">
+<span class="sig-name descname"><span class="pre">get_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">cache_opts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_run" title="Permalink to this definition"></a></dt>
+<dd><p>Get Run API by ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
@@ -557,19 +511,115 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.start_run">
-<span class="sig-name descname"><span class="pre">start_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.start_run" title="Permalink to this definition"></a></dt>
-<dd><p>Start a new experiment run.</p>
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_run_artifact">
+<span class="sig-name descname"><span class="pre">get_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_run_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_run_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Get local path to run artifact.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.get_run_url">
+<span class="sig-name descname"><span class="pre">get_run_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.get_run_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.get_run_url" title="Permalink to this definition"></a></dt>
+<dd><p>Get Run URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.list_model_artifact">
+<span class="sig-name descname"><span class="pre">list_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.list_model_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.list_model_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>List model version artifacts in repo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.list_run_artifacts">
+<span class="sig-name descname"><span class="pre">list_run_artifacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.list_run_artifacts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.list_run_artifacts" title="Permalink to this definition"></a></dt>
+<dd><p>List run artifacts in repo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjMeta</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.load_model_artifact">
+<span class="sig-name descname"><span class="pre">load_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.load_model_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.load_model_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Load model artifact.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.load_run_artifact">
+<span class="sig-name descname"><span class="pre">load_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.load_run_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.load_run_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Load run artifact.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.log_metrics">
+<span class="sig-name descname"><span class="pre">log_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.log_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.log_metrics" title="Permalink to this definition"></a></dt>
+<dd><p>Log metrics to experiment run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.log_model_version">
+<span class="sig-name descname"><span class="pre">log_model_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_the_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplication</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.log_model_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.log_model_version" title="Permalink to this definition"></a></dt>
+<dd><p>Publish artifact file or dir as model version inside the specified experiment run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="mv.html#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.log_params">
+<span class="sig-name descname"><span class="pre">log_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.log_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.log_params" title="Permalink to this definition"></a></dt>
+<dd><p>Log params to experiment run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.log_run_artifact">
+<span class="sig-name descname"><span class="pre">log_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_the_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplication</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.log_run_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.log_run_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Publish artifact file or dir to experiment run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.place_model_artifact">
+<span class="sig-name descname"><span class="pre">place_model_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.place_model_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.place_model_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Place model version artifact on target path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.place_run_artifact">
+<span class="sig-name descname"><span class="pre">place_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.place_run_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.place_run_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Place run artifact on target path.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.resume_run">
-<span class="sig-name descname"><span class="pre">resume_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.resume_run" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">resume_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.resume_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.resume_run" title="Permalink to this definition"></a></dt>
 <dd><p>Resume a previous experiment run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -579,9 +629,33 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.end_run">
-<span class="sig-name descname"><span class="pre">end_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">succeeded</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.end_run" title="Permalink to this definition"></a></dt>
-<dd><p>End experiment run.</p>
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.set_tags_on_exp">
+<span class="sig-name descname"><span class="pre">set_tags_on_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.set_tags_on_exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.set_tags_on_exp" title="Permalink to this definition"></a></dt>
+<dd><p>Set tags on experiment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.set_tags_on_model">
+<span class="sig-name descname"><span class="pre">set_tags_on_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.set_tags_on_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.set_tags_on_model" title="Permalink to this definition"></a></dt>
+<dd><p>Set tags on registered model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.set_tags_on_model_version">
+<span class="sig-name descname"><span class="pre">set_tags_on_model_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.set_tags_on_model_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.set_tags_on_model_version" title="Permalink to this definition"></a></dt>
+<dd><p>Set tags on model version.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.set_tags_on_run">
+<span class="sig-name descname"><span class="pre">set_tags_on_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.set_tags_on_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.set_tags_on_run" title="Permalink to this definition"></a></dt>
+<dd><p>Set tags on experiment run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.start_run">
+<span class="sig-name descname"><span class="pre">start_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/base.html#BaseMlflowApi.start_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.start_run" title="Permalink to this definition"></a></dt>
+<dd><p>Start a new experiment run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a></p>
@@ -589,40 +663,10 @@
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.set_tags_on_exp">
-<span class="sig-name descname"><span class="pre">set_tags_on_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.set_tags_on_exp" title="Permalink to this definition"></a></dt>
-<dd><p>Set tags on experiment.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.set_tags_on_run">
-<span class="sig-name descname"><span class="pre">set_tags_on_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.set_tags_on_run" title="Permalink to this definition"></a></dt>
-<dd><p>Set tags on experiment run.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.set_tags_on_model">
-<span class="sig-name descname"><span class="pre">set_tags_on_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.set_tags_on_model" title="Permalink to this definition"></a></dt>
-<dd><p>Set tags on registered model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.set_tags_on_model_version">
-<span class="sig-name descname"><span class="pre">set_tags_on_model_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.set_tags_on_model_version" title="Permalink to this definition"></a></dt>
-<dd><p>Set tags on model version.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.log_params">
-<span class="sig-name descname"><span class="pre">log_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.log_params" title="Permalink to this definition"></a></dt>
-<dd><p>Log params to experiment run.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.log_metrics">
-<span class="sig-name descname"><span class="pre">log_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.log_metrics" title="Permalink to this definition"></a></dt>
-<dd><p>Log metrics to experiment run.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.in_offline_mode">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">in_offline_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><span class="pre">BaseMlflowApi</span></a></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.in_offline_mode" title="Permalink to this definition"></a></dt>
+<dd><p>Get an offline copy of this API.</p>
 </dd></dl>
 
 </dd></dl>
