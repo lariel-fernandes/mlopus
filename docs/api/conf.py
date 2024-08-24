@@ -29,6 +29,8 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_autodoc_typehints",
     "sphinxcontrib.autodoc_pydantic",
+    "sphinx_toolbox.more_autodoc.typevars",
+    "sphinx_paramlinks",
 ]
 
 templates_path = ["_templates"]
@@ -45,7 +47,12 @@ html_static_path = ["_static"]
 # -- Options for autodoc --------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
 
+autodoc_typehints = "signature"
 autodoc_member_order = "groupwise"
+autodoc_default_options = {
+    "autoclass_content": "class",
+    "show-inheritance": True,
+}
 
 # -- Options for pydantic_autodoc --------------------------------------------
 # https://autodoc-pydantic.readthedocs.io/en/stable/users/configuration.html
@@ -55,6 +62,11 @@ autodoc_pydantic_model_member_order = "groupwise"
 autodoc_pydantic_model_show_field_summary = False
 autodoc_pydantic_model_show_config_summary = False
 autodoc_pydantic_model_show_validator_summary = False
+
+# -- Options for sphinx-paramlinks -------------------------------------------
+# https://github.com/sqlalchemyorg/sphinx-paramlinks
+
+paramlinks_hyperlink_param = "name_and_symbol"
 
 # -- Event handlers ----------------------------------------------------------
 
@@ -77,4 +89,5 @@ def skip_member_handler(app, objtype, membername, member, skip, options):  # noq
 
 
 def setup(app):
+    app.add_css_file("my_theme.css")
     app.connect("autodoc-skip-member", skip_member_handler)

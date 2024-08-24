@@ -70,7 +70,12 @@ class ClassSpec(pydantic.BaseModel, pydantic.MappingMixin):
     pkg: PkgSpec
 
     def load(self, type_: Type[A] | None = None, skip_reqs_check: bool = False) -> Type[A]:
-        """Load class by fully qualified name, optionally doing package requirement checks."""
+        """Load class by fully qualified name.
+
+        :param type_: If specified, the loaded class must inherit this type.
+        :param skip_reqs_check: Ignore package requirements for the loaded class.
+        :return: Loaded class as subclass of :paramref:`type_`
+        """
         if not skip_reqs_check:
             self.pkg.check_requirement()
             self.pkg.check_extras()
@@ -167,7 +172,18 @@ class Tags(pydantic.BaseModel, pydantic.MappingMixin):
         with_constraint: packaging.VersionConstraint = DEFAULT_CONSTRAINT,
         and_extras: Sequence[str] | None = None,
     ) -> "Tags":
-        """Add aliased artifact schema to this `Tags` object."""
+        """Add aliased artifact schema to this `Tags` object.
+
+        If not specified, the params :paramref:`from_package` and :paramref:`at_version` are inferred from
+        the metadata of the provided :paramref:`cls` and the packages installed in the current environment.
+
+        :param cls: Artifact schema class.
+        :param aliased_as: Schema alias. Defaults to `default`.
+        :param from_package: Required package for this schema.
+        :param at_version: Required package version.
+        :param with_constraint: Version requirement constraint.
+        :param and_extras: Required package extras for using the schema.
+        """
         if (alias := aliased_as or DEFAULT_ALIAS) in self.schemas:
             raise ValueError(f"Found duplicated schema alias: {alias}")
         self.schemas[alias] = ClassSpec.parse_class(cls, from_package, at_version, with_constraint, and_extras)

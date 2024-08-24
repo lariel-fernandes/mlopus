@@ -8,7 +8,8 @@ from mlopus.utils import pydantic, paths, typing_utils, json_utils
 
 logger = logging.getLogger(__name__)
 
-A = TypeVar("A", bound=object)  # Type of artifact
+A = TypeVar("A", bound=object)
+"""Type of artifact"""
 
 
 class Dumper(pydantic.BaseModel, ABC, Generic[A]):
@@ -98,7 +99,8 @@ class _DummyDumper(Dumper[object]):
         pass
 
 
-D = TypeVar("D", bound=Dumper)  # Type of dumper
+D = TypeVar("D", bound=Dumper)
+"""Type of :class:`Dumper`"""
 
 
 class Loader(pydantic.BaseModel, ABC, Generic[A, D]):
@@ -179,11 +181,14 @@ class _DummyLoader(Loader[object, _DummyDumper]):
         return path
 
 
-L = TypeVar("L", bound=Loader)  # Type of loader
+L = TypeVar("L", bound=Loader)
+"""Type of :class:`Loader`"""
 
 
 class Schema(pydantic.BaseModel, Generic[A, D, L]):
     """Base class for artifact schemas.
+
+    Serves for putting together the types of :class:`Artifact`, :class:`Dumper` and :class:`Loader`.
 
     Example:
 
@@ -240,10 +245,26 @@ class Schema(pydantic.BaseModel, Generic[A, D, L]):
     def get_dumper(
         self, artifact: A | dict | Path, dumper: D | dict | None = None, **dumper_kwargs
     ) -> Callable[[Path], None] | Path:
-        """Get dumper callback for artifact data.
+        """Get a dumper callback.
 
-        - If artifact is a `Path`, it will be just verified and returned as it is.
-        - If artifact is a `dict` and the target type is a pydantic model, it will be parsed before being dumped.
+        :param artifact:
+
+            - An instance of :attr:`.Artifact`
+            - A `Path` to a file or dir containing a pre-dumped :attr:`.Artifact`
+            - A `dict` that can be parsed into an :attr:`.Artifact` (in case :attr:`.Artifact` is a Pydantic model)
+
+        :param dumper: Custom :attr:`.Dumper` configuration. Defaults to an empty `dict`.
+
+            - An instance of :attr:`.Dumper`
+            - A `dict` that can be parsed into a :attr:`.Dumper`
+
+        :param dumper_kwargs: | Keyword arguments for instantiating a :attr:`.Dumper`.
+                              | Incompatible with the :paramref:`dumper` param.
+
+        :return:
+
+            - If :paramref:`artifact` is a `Path`: The same `Path` after being verified by the configured :attr:`.Dumper`.
+            - Otherwise: A callback that accepts a `Path` and uses the configured :attr:`.Dumper` to dump the provided :attr:`.Artifact` on it.
         """
         assert dumper is None or not dumper_kwargs, "`dumper` and `dumper_kwargs` are not compatible."
 
@@ -260,10 +281,22 @@ class Schema(pydantic.BaseModel, Generic[A, D, L]):
     def get_loader(
         self, loader: L | dict | None = None, dry_run: bool = False, **loader_kwargs
     ) -> Callable[[Path], A | Path]:
-        """Get loader callback for artifact file(s).
+        """Get a loader callback.
 
-        - If `dry_run=True`, the callback will just verify the given `Path` and return it as it is.
-        - If the loaded artifact is a `dict` and the target type is a pydantic model, the callback will parse it.
+        :param loader: Custom :attr:`.Loader` configuration. Defaults to an empty `dict`.
+
+            - An instance of :attr:`.Loader`
+            - A `dict` that can be parsed into a :attr:`.Loader`
+
+        :param loader_kwargs: | Keyword arguments for instantiating a :attr:`.Loader`.
+                              | Incompatible with the :paramref:`loader` param.
+
+        :param dry_run: | Just verify, do not load.
+
+        :return:
+
+            - If :paramref:`dry_run` is `True`: A callback that accepts a `Path`, verifies it and returns it.
+            - Otherwise: A callback that accepts a `Path` and uses the configured :attr:`.Loader` to load and return an :attr:`.Artifact`
         """
         assert loader is None or not loader_kwargs, "`loader` and `loader_kwargs` are not compatible."
 
@@ -277,17 +310,26 @@ class Schema(pydantic.BaseModel, Generic[A, D, L]):
 
     @property
     def Artifact(self) -> Type[A]:  # noqa
-        """Artifact type used by this schema."""
+        """Artifact type used by this schema.
+
+        :return: Type of :attr:`~mlopus.artschema.framework.A`
+        """
         return self._get_artifact_type()
 
     @property
     def Dumper(self) -> Type[D]:  # noqa
-        """Dumper class used by this schema."""
+        """:class:`Dumper` type used by this schema.
+
+        :return: Type of :attr:`~mlopus.artschema.framework.D`
+        """
         return self._get_dumper_type()
 
     @property
     def Loader(self) -> Type[L]:  # noqa
-        """Loader class used by this schema."""
+        """:class:`Loader` type used by this schema.
+
+        :return: Type of :attr:`~mlopus.artschema.framework.L`
+        """
         return self._get_loader_type()
 
     @classmethod

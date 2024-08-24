@@ -28,10 +28,10 @@ V = schema.ModelVersion
 T = TypeVar("T", bound=schema.BaseEntity)
 
 # Identifier types
-ExpIdentifier = contract.ExpIdentifier
-RunIdentifier = contract.RunIdentifier
-ModelIdentifier = contract.ModelIdentifier
-ModelVersionIdentifier = contract.ModelVersionIdentifier
+ExpIdentifier = contract.ExpIdentifier | ExpApi
+RunIdentifier = contract.RunIdentifier | RunApi
+ModelIdentifier = contract.ModelIdentifier | ModelApi
+ModelVersionIdentifier = contract.ModelVersionIdentifier | ModelVersionApi
 
 
 class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
@@ -717,44 +717,76 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def clean_cached_run_artifact(self, run: RunIdentifier, path_in_run: str = ""):
-        """Clean cached artifact for specified run."""
+        """Clean cached artifact for specified run.
+
+        :param run: Run ID or object.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         self._clean_run_artifact(self._coerce_run_id(run), path_in_run)
 
     @pydantic.validate_arguments
     def clean_cached_model_artifact(self, model_version: ModelVersionIdentifier):
-        """Clean cached artifact for specified model version."""
+        """Clean cached artifact for specified model version.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         mv = self._coerce_mv(model_version)
         self.clean_cached_run_artifact(mv.run, mv.path_in_run)
 
     @pydantic.validate_arguments
     def list_run_artifacts(self, run: RunIdentifier, path_in_run: str = "") -> transfer.LsResult:
-        """List run artifacts in repo."""
+        """List run artifacts in repo.
+
+        :param run: Run ID or object.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return self._list_run_artifacts(run, path_in_run)
 
     @pydantic.validate_arguments
     def list_model_artifact(self, model_version: ModelVersionIdentifier) -> transfer.LsResult:
-        """List model version artifacts in repo."""
+        """List model version artifacts in repo.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         return self.list_run_artifacts((mv := self._coerce_mv(model_version)).run, mv.path_in_run)
 
     @pydantic.validate_arguments
     def cache_run_artifact(self, run: RunIdentifier, path_in_run: str = "") -> Path:
-        """Pull run artifact from MLflow server to local cache."""
+        """Pull run artifact from MLflow server to local cache.
+
+        :param run: Run ID or object.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return self._pull_run_artifact(run, path_in_run)
 
     @pydantic.validate_arguments
     def cache_model_artifact(self, model_version: ModelVersionIdentifier) -> Path:
-        """Pull model version artifact from MLflow server to local cache."""
+        """Pull model version artifact from MLflow server to local cache.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         mv = self._coerce_mv(model_version)
         return self.cache_run_artifact(mv.run, mv.path_in_run)
 
     @pydantic.validate_arguments
     def get_run_artifact(self, run: RunIdentifier, path_in_run: str = "") -> Path:
-        """Get local path to run artifact."""
+        """Get local path to run artifact.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param run: Run ID or object.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return self._get_run_artifact(self._coerce_run_id(run), path_in_run)
 
     @pydantic.validate_arguments
     def get_model_artifact(self, model_version: ModelVersionIdentifier) -> Path:
-        """Get local path to model artifact."""
+        """Get local path to model artifact.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         mv = self._coerce_mv(model_version)
         return self.get_run_artifact(mv.run, mv.path_in_run)
 
@@ -767,7 +799,16 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         overwrite: bool = False,
         link: bool = True,
     ):
-        """Place run artifact on target path."""
+        """Place run artifact on target path.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param run: Run ID or object.
+        :param target: Target path.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        :param overwrite: Overwrite target path if exists.
+        :param link: Use symbolic link instead of copy.
+        """
         self._place_run_artifact(self._coerce_run_id(run), path_in_run, target, link, overwrite)
 
     @pydantic.validate_arguments
@@ -778,7 +819,15 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         overwrite: bool = False,
         link: bool = True,
     ):
-        """Place model version artifact on target path."""
+        """Place model version artifact on target path.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        :param target: Target path.
+        :param overwrite: Overwrite target path if exists.
+        :param link: Use symbolic link instead of copy.
+        """
         mv = self._coerce_mv(model_version)
         self.place_run_artifact(mv.run, target, mv.path_in_run, overwrite, link)
 
@@ -789,7 +838,14 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         target: Path,
         path_in_run: str = "",
     ) -> Path:
-        """Export run artifact cache to target path."""
+        """Export run artifact cache to target path while keeping the original cache structure.
+
+        The target path can then be used as cache dir by the `generic` MLflow API in offline mode.
+
+        :param run: Run ID or object.
+        :param target: Cache export path.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         if paths.is_sub_dir(target, self.cache_dir) or paths.is_sub_dir(self.cache_dir, target):
             raise paths.IllegalPath(f"Cannot export cache to itself, its subdirs or parents: {target}")
         cache = self._get_run_artifact(run, path_in_run)
@@ -804,18 +860,35 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         model_version: ModelVersionIdentifier,
         target: Path,
     ) -> Path:
-        """Export model version artifact cache to target path."""
+        """Export model version artifact cache to target path while keeping the original cache structure.
+
+        The target path can then be used as cache dir by the `generic` MLflow API in offline mode.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        :param target: Cache export path.
+        """
         mv = self._coerce_mv(model_version)
         return self.export_run_artifact(mv.run, target, mv.path_in_run)
 
     @pydantic.validate_arguments
     def load_run_artifact(self, run: RunIdentifier, loader: Callable[[Path], A], path_in_run: str = "") -> A:
-        """Load run artifact."""
+        """Load run artifact.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param run: Run ID or object.
+        :param loader: Loader callback.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return loader(self._get_run_artifact(self._coerce_run_id(run), path_in_run))
 
     @pydantic.validate_arguments
     def load_model_artifact(self, model_version: ModelVersionIdentifier, loader: Callable[[Path], A]) -> A:
-        """Load model artifact."""
+        """Load model version artifact.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        :param loader: Loader callback.
+        """
         mv = self._coerce_mv(model_version)
         logger.info("Loading model: %s v%s", mv.model.name, mv.version)
         return self.load_run_artifact(mv.run, loader, mv.path_in_run)
@@ -831,7 +904,33 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         allow_duplication: bool | None = None,
         use_cache: bool | None = None,
     ):
-        """Publish artifact file or dir to experiment run."""
+        """Publish artifact file or dir to experiment run.
+
+        The flags :paramref:`keep_the_source`, :paramref:`allow_duplication` and :paramref:`use_cache` are
+        experimental and may conflict with one another. It is recommended to leave them unspecified, so this
+        method will do a best-effort to use cache if it makes sense to, keep the source files if it makes
+        sense to (possibly as a symbolic link) and avoid duplicated disk usage when possible.
+
+        :param run: | Run ID or object.
+
+        :param source: | Path to artifact file or dir, or a dumper callback.
+                       | If it's a callback and the upload is interrupted, the temporary artifact is kept.
+
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+
+            - If `source` is a `Path`: Defaults to file or dir name.
+            - If `source` is a callback: No default available.
+
+        :param keep_the_source:
+            - If `source` is a `Path`: Keep that file or dir (defaults to `True`).
+            - If `source` is a callback: Keep the temporary artifact, even after a successful upload (defaults to `False`).
+
+        :param allow_duplication: | If `False`, a `source` file or dir may be replaced with a symbolic link to the local cache in order to avoid duplicated disk usage.
+                                  | Defaults to `True` if :paramref:`keep_the_source` is `True` and the run artifacts repo is local.
+
+        :param use_cache: | If `True`, keep artifact in local cache after publishing.
+                          | Defaults to `True` if the run artifacts repo is remote.
+        """
         tmp = None
 
         if using_dumper := callable(source):
@@ -925,7 +1024,31 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         version: str | None = None,
         tags: Mapping | None = None,
     ) -> ModelVersionApi:
-        """Publish artifact file or dir as model version inside the specified experiment run."""
+        """Publish artifact file or dir as model version inside the specified experiment run.
+
+        :param model: | Model name or object.
+
+        :param run: | Run ID or object.
+
+        :param source: | See :paramref:`log_run_artifact.source`
+
+        :param path_in_run: | Plain relative path inside run artifacts (e.g.: `a/b/c`).
+                            | Defaults to model name.
+
+        :param keep_the_source: | See :paramref:`log_run_artifact.keep_the_source`
+
+        :param allow_duplication: | See :paramref:`log_run_artifact.allow_duplication`
+
+        :param use_cache: | See :paramref:`log_run_artifact.use_cache`
+
+        :param version: | Arbitrary model version
+                        | (not supported by all backends).
+
+        :param tags: | Model version tags.
+                     | See :class:`schema.ModelVersion.tags`
+
+        :return: New model version metadata with API handle.
+        """
         logger.info("Logging version of model '%s'", model_name := self._coerce_model_name(model))
         path_in_run = path_in_run or patterns.encode_model_name(model_name)
         self.log_run_artifact(run, source, path_in_run, keep_the_source, allow_duplication, use_cache)

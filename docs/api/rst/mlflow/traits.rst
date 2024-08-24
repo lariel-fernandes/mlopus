@@ -7,4 +7,3 @@ Traits
 .. autopydantic_model:: mlopus.mlflow.MlflowRunMixin
 
 .. autopydantic_model:: mlopus.mlflow.MlflowRunManager
-   :show-inheritance:

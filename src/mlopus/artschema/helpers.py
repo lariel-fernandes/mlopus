@@ -2,34 +2,49 @@
 
 import logging
 from pathlib import Path
-from typing import TypeVar, Type, Tuple, Mapping
+from typing import Type, Tuple, Mapping
 
-from mlopus.mlflow.api.common.schema import BaseEntity
+import mlopus
 from mlopus.mlflow.api.contract import RunIdentifier
 from mlopus.mlflow.api.model import ModelApi
 from mlopus.mlflow.api.mv import ModelVersionApi
 from mlopus.mlflow.api.run import RunApi
 from mlopus.utils import import_utils, typing_utils, dicts
-
-from .framework import Dumper, Loader, Schema
+from .framework import Schema, A, D, L
 from .tags import Tags, ClassSpec, DEFAULT_ALIAS
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar("T", bound=BaseEntity)  # Type of entity
-
-A = TypeVar("A", bound=object)  # Type of artifact
-D = TypeVar("D", bound=Dumper)  # Type of Dumper
-L = TypeVar("L", bound=Loader)  # Type of Loader
+T = (
+    mlopus.mlflow.schema.Experiment
+    | mlopus.mlflow.schema.Run
+    | mlopus.mlflow.schema.Model
+    | mlopus.mlflow.schema.ModelVersion
+)
 
 
 def get_schemas(subject: T) -> Tags:
-    """Based on tags, find the artifact schemas for the specified experiment, run, registered model or model version."""
+    """Get all artifact schemas from :paramref:`subject`.
+
+    - Runs inherit schemas of their parent experiment.
+    - Model versions inherit schemas of their parent model.
+
+    :param subject: | Experiment, run, registered model or model version.
+    :return: Registered schema tags for that :paramref:`subject`.
+    """
     return Tags.parse_subject(subject)
 
 
 def get_schema(subject: T, alias: str | None = None) -> ClassSpec:
-    """Based on tags, infer artifact schema for the specified experiment, run, registered model or model version."""
+    """Get aliased artifact schema from :paramref:`subject`.
+
+    See also :func:`get_schemas`.
+
+    :param subject: | See :paramref:`get_schemas.subject`.
+    :param alias: | Alias of a previously registered schema for that :paramref:`subject`.
+                  | Defaults to `default`.
+    :return: Class specification for the artifact schema.
+    """
     return Tags.parse_subject(subject).get_schema(alias)
 
 
@@ -45,7 +60,35 @@ def log_run_artifact(
     allow_duplication: bool | None = None,
     use_cache: bool | None = None,
 ) -> None:
-    """Log run artifact using schema (either provided or inferred from tags)."""
+    """Publish run artifact using schema.
+
+    :param artifact: | See :paramref:`Schema.get_dumper.artifact`
+
+    :param run: | Run API object.
+
+    :param path_in_run: | See :paramref:`mlopus.mlflow.BaseMlflowApi.log_run_artifact.path_in_run`
+
+    :param schema:
+        - Type or instance of :class:`Schema`
+        - Fully qualified name of a :class:`Schema` class (e.g.: `package.module:Class`)
+        - Name of an aliased schema previously registered for this run or its parent experiment
+          (see :class:`mlopus.artschema.Tags`).
+
+    :param dumper_conf: | See :paramref:`Schema.get_dumper.dumper`
+
+    :param skip_reqs_check: | If :paramref:`schema` is specified by alias, ignore the registered package requirement.
+
+    :param auto_register: | After a successful :paramref:`artifact` publish, register the used :paramref:`schema` in the :paramref:`run` tags.
+                          | If a non-empty `dict` is passed, it is used as keyword arguments for :meth:`Tags.using`.
+                          | If the :paramref:`schema` was specified by alias, that alias is used by default.
+
+    :param keep_the_source: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.keep_the_source`
+                              (the `source` in this case is a callback, unless :paramref:`artifact` is a `Path`)
+
+    :param allow_duplication: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.allow_duplication`
+
+    :param use_cache: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.use_cache`
+    """
     schema, alias = resolve_schema_and_alias(schema, run, skip_reqs_check)
 
     run.log_artifact(
@@ -66,18 +109,63 @@ def log_model_version(
     artifact: A | dict | Path,
     model: ModelApi,
     run: RunIdentifier,
+    path_in_run: str | None = None,
     schema: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = None,
     dumper_conf: D | dict | None = None,
     skip_reqs_check: bool = False,
     auto_register: bool | dict = False,
-    path_in_run: str | None = None,
     keep_the_source: bool | None = None,
     allow_duplication: bool | None = None,
     use_cache: bool | None = None,
     version: str | None = None,
     tags: Mapping | None = None,
 ) -> ModelVersionApi:
-    """Log artifact as model version using schema (either provided or inferred from tags)."""
+    """Log artifact as model version using schema.
+
+    Example:
+
+    .. code-block:: python
+
+        mlflow = mlopus.mlflow.get_api()
+
+        version = mlopus.artschema.log_model_version(
+            my_artifact,
+            schema=MySchema,
+            run=mlflow.start_run(...),
+            model=mlflow.get_or_create_model(...),
+            auto_register={"aliased_as": "foobar"}  # register `MySchema` as `foobar`
+        )
+
+        mlopus.artschema.load_artifact(version, schema="foobar")
+
+    :param artifact: | See :paramref:`Schema.get_dumper.artifact`
+
+    :param model: | Model API object.
+
+    :param run: | Run API object.
+
+    :param path_in_run: | See :paramref:`mlopus.mlflow.BaseMlflowApi.log_model_version.path_in_run`
+
+    :param schema: | See :paramref:`log_run_artifact.schema`
+
+    :param dumper_conf: | See :paramref:`Schema.get_dumper.dumper`
+
+    :param skip_reqs_check: | See :paramref:`log_run_artifact.skip_reqs_check`
+
+    :param auto_register: | After a successful :paramref:`artifact` publish, register the used :paramref:`schema` in the new model version tags.
+                          | See also :paramref:`log_run_artifact.auto_register`
+
+    :param keep_the_source: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.keep_the_source`
+                              (the `source` in this case is a callback, unless :paramref:`artifact` is a `Path`)
+
+    :param allow_duplication: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.allow_duplication`
+
+    :param use_cache: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.use_cache`
+
+    :param version: | See :paramref:`mlopus.mlflow.BaseMlflowApi.log_model_version.version`
+
+    :param tags: | See :paramref:`mlopus.mlflow.BaseMlflowApi.log_model_version.version`
+    """
     schema, alias = resolve_schema_and_alias(schema, model, skip_reqs_check)
 
     mv = model.log_version(
