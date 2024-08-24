@@ -53,10 +53,10 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Tags</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.Tags"><code class="docutils literal notranslate"><span class="pre">Tags</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Tags.schemas"><code class="docutils literal notranslate"><span class="pre">Tags.schemas</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Tags.using"><code class="docutils literal notranslate"><span class="pre">Tags.using()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Tags.register"><code class="docutils literal notranslate"><span class="pre">Tags.register()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Tags.get_schema"><code class="docutils literal notranslate"><span class="pre">Tags.get_schema()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Tags.parse_subject"><code class="docutils literal notranslate"><span class="pre">Tags.parse_subject()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Tags.register"><code class="docutils literal notranslate"><span class="pre">Tags.register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Tags.using"><code class="docutils literal notranslate"><span class="pre">Tags.using()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.ClassSpec"><code class="docutils literal notranslate"><span class="pre">ClassSpec</span></code></a><ul>
@@ -105,7 +105,7 @@
 <h1>Tags<a class="headerlink" href="#tags" title="Permalink to this heading"></a></h1>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.artschema.Tags">
-<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">Tags</span></span><a class="headerlink" href="#mlopus.artschema.Tags" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">Tags</span></span><a class="reference internal" href="../../_modules/mlopus/artschema/tags.html#Tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Tags" title="Permalink to this definition"></a></dt>
 <dd><p>Artifact schema tags for MLflow experiments, runs, registered models and model versions.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get a model version API.</span>
@@ -146,20 +146,8 @@
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.artschema.Tags.using">
-<span class="sig-name descname"><span class="pre">using</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_constraint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&gt;='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">and_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.artschema.Tags.using" title="Permalink to this definition"></a></dt>
-<dd><p>Add aliased artifact schema to this <cite>Tags</cite> object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.artschema.Tags.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.artschema.Tags.register" title="Permalink to this definition"></a></dt>
-<dd><p>Register these artifact schema tags for the specified subject.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="mlopus.artschema.Tags.get_schema">
-<span class="sig-name descname"><span class="pre">get_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.artschema.Tags.get_schema" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/tags.html#Tags.get_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Tags.get_schema" title="Permalink to this definition"></a></dt>
 <dd><p>Get artifact schema by alias.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -170,7 +158,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.artschema.Tags.parse_subject">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.artschema.Tags.parse_subject" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/tags.html#Tags.parse_subject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Tags.parse_subject" title="Permalink to this definition"></a></dt>
 <dd><p>Parse experiment, run, registered model, model version or tags dict into artifact schema tags.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -179,11 +167,23 @@
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Tags.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/tags.html#Tags.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Tags.register" title="Permalink to this definition"></a></dt>
+<dd><p>Register these artifact schema tags for the specified subject.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Tags.using">
+<span class="sig-name descname"><span class="pre">using</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_constraint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&gt;='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">and_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/tags.html#Tags.using"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Tags.using" title="Permalink to this definition"></a></dt>
+<dd><p>Add aliased artifact schema to this <cite>Tags</cite> object.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.artschema.ClassSpec">
-<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">ClassSpec</span></span><a class="headerlink" href="#mlopus.artschema.ClassSpec" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">ClassSpec</span></span><a class="reference internal" href="../../_modules/mlopus/artschema/tags.html#ClassSpec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.ClassSpec" title="Permalink to this definition"></a></dt>
 <dd><p>Class specification with package requirement info.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.artschema.ClassSpec.cls">
@@ -197,7 +197,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.artschema.ClassSpec.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_reqs_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.artschema.ClassSpec.load" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_reqs_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/tags.html#ClassSpec.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.ClassSpec.load" title="Permalink to this definition"></a></dt>
 <dd><p>Load class by fully qualified name, optionally doing package requirement checks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

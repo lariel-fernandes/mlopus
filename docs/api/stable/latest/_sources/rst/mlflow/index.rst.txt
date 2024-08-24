@@ -5,9 +5,11 @@ MLflow
 .. automodule:: mlopus.mlflow
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
+   schema
    utils
    apis/index
+   providers/index
    traits
