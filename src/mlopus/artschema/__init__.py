@@ -10,7 +10,15 @@ just by providing the alias of a registered schema.
 from .catalog import ArtifactsCatalog
 from .framework import Dumper, Loader, Schema
 from .helpers import load_artifact, get_schema, log_model_version, log_run_artifact, get_schemas
-from .specs import parse_load_specs, LoadArtifactSpec, parse_logart_specs, LogArtifactSpec
+from .specs import (
+    parse_load_specs,
+    LoadArtifactSpec,
+    parse_logart_specs,
+    LogArtifactSpec,
+    RunArtifact,
+    ModelVersionArtifact,
+)
+
 from .tags import Tags, ClassSpec
 
 __all__ = [
@@ -29,4 +37,6 @@ __all__ = [
     "parse_load_specs",
     "LogArtifactSpec",
     "parse_logart_specs",
+    "RunArtifact",
+    "ModelVersionArtifact",
 ]

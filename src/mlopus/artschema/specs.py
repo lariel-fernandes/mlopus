@@ -14,18 +14,14 @@ from pathlib import Path
 from typing import Dict, Any, Generic, Type, Mapping, Tuple
 from typing import TypeVar
 
+from mlopus.lineage import _LineageArg, _ModelLineageArg, _RunLineageArg
 from mlopus.mlflow.api.entity import EntityApi
 from mlopus.mlflow.api.mv import ModelVersionApi
 from mlopus.mlflow.api.run import RunApi
 from mlopus.mlflow.traits import MlflowApiMixin
 from mlopus.utils import pydantic
-from mlopus.lineage import _LineageArg, _ModelLineageArg, _RunLineageArg
-from .framework import Dumper, Loader, Schema, _DummySchema
+from .framework import Schema, _DummySchema, A, D, L
 from .helpers import load_artifact, log_model_version, log_run_artifact
-
-A = TypeVar("A", bound=object)  # Type of artifact
-D = TypeVar("D", bound=Dumper)  # Type of Dumper
-L = TypeVar("L", bound=Loader)  # Type of Loader
 
 T = TypeVar("T", bound=EntityApi)  # Type of entity API
 LA = TypeVar("LA", bound=_LineageArg)  # Type of lineage argument
@@ -59,13 +55,25 @@ class ArtifactSubject(MlflowApiMixin, pydantic.EmptyStrAsMissing, ABC, Generic[T
 class ModelVersionArtifact(ArtifactSubject[ModelVersionApi, _ModelLineageArg]):
     """Specification of a model version artifact."""
 
-    model_name: str
-    model_version: str | None = None  # Required when loading an existing model version
+    model_name: str = pydantic.Field(description="Parent model name.")
 
-    # Params bellow are only used when logging a new model version!
-    run_id: str = None
-    tags: Mapping | None = None
-    path_in_run: str | None = None
+    model_version: str | None = pydantic.Field(
+        default=None, description="Required when loading, optional when publishing."
+    )
+
+    run_id: str = pydantic.Field(default=None, description="Parent run ID. Required when publishing.")
+
+    tags: Mapping | None = pydantic.Field(
+        default=None,
+        description="Optional, only used when publishing. See :attr:`mlopus.mlflow.schema.ModelVersion.tags`.",
+    )
+
+    path_in_run: str | None = pydantic.Field(
+        default=None,
+        description=(
+            "Only used when publishing. See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_model_version.path_in_run`."
+        ),
+    )
 
     @property
     def _version_api(self) -> ModelVersionApi:
@@ -148,23 +156,64 @@ def _parse_subject(subj: ModelVersionArtifact | RunArtifact | dict) -> ArtifactS
 class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
     """Specification for loading an artifact."""
 
-    schema_: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = pydantic.Field(_DummySchema, alias="schema")
-    loader_conf: Dict[str, Any] | None = None
-    skip_reqs_check: bool = False
-    subject: ArtifactSubject[T, LA]
+    schema_: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = pydantic.Field(
+        default_factory=_DummySchema, alias="schema", description="See :paramref:`load_artifact.schema`"
+    )
+
+    loader_conf: Dict[str, Any] | None = pydantic.Field(
+        default=None, description="See :paramref:`Schema.get_loader.loader`"
+    )
+
+    skip_reqs_check: bool = pydantic.Field(default=False, description="See :paramref:`load_artifact.skip_reqs_check`")
+
+    subject: ArtifactSubject[T, LA] = pydantic.Field(
+        description=(
+            "Instance (or `dict` to be parsed into instance) of :class:`RunArtifact` or :class:`ModelVersionArtifact`. "
+            "See also: :paramref:`load_artifact.subject`."
+        )
+    )
 
     _parse_subject = pydantic.validator("subject", pre=True, allow_reuse=True)(_parse_subject)
 
     def download(self) -> Path:
-        """Cache subject metadata and artifact."""
+        """Cache subject metadata and artifact.
+
+        See also:
+            - :meth:`mlopus.mlflow.RunApi.cache_meta`
+            - :meth:`mlopus.mlflow.RunApi.cache_artifact`
+            - :meth:`mlopus.mlflow.ModelVersionApi.cache_meta`
+            - :meth:`mlopus.mlflow.ModelVersionApi.cache_artifact`
+
+        :return: A `Path` to the cached artifact.
+        """
         return self.subject.using(self.mlflow_api).cache()
 
     def export(self, target: Path) -> Path:
-        """Export subject metadata and artifact cache."""
+        """Export subject metadata and artifact cache.
+
+        See also:
+            - :meth:`mlopus.mlflow.RunApi.export_meta`
+            - :meth:`mlopus.mlflow.RunApi.export_artifact`
+            - :meth:`mlopus.mlflow.ModelVersionApi.export_meta`
+            - :meth:`mlopus.mlflow.ModelVersionApi.export_artifact`
+
+        :param target: Target cache export `Path`.
+        """
         return self.subject.using(self.mlflow_api).export(target)
 
     def load(self, schema: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = None, dry_run: bool = False) -> A:
-        """Load artifact."""
+        """Load artifact.
+
+        See also:
+            - :meth:`mlopus.mlflow.RunApi.load_artifact`
+            - :meth:`mlopus.mlflow.ModelVersionApi.load_artifact`
+
+        :param schema: | Override :attr:`schema_`
+        :param dry_run: | See :paramref:`~mlopus.artschema.Loader.load.dry_run`
+        :return:
+            - If :paramref:`dry_run` is `True`: A `Path` to the cached artifact.
+            - Otherwise: An instance of :attr:`Schema.Artifact`
+        """
         return self._load(schema, dry_run)[1]
 
     def _load(

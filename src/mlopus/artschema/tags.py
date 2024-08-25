@@ -4,8 +4,7 @@ from typing import Dict, Type, TypeVar, Set, Sequence
 
 import importlib_metadata
 
-from mlopus.mlflow import schema
-from mlopus.mlflow.api.entity import EntityApi
+import mlopus.mlflow
 from mlopus.utils import pydantic, packaging, dicts, import_utils, typing_utils
 from .framework import Schema
 
@@ -15,15 +14,16 @@ DEFAULT_ALIAS = "default"  # Default artifact schema alias
 
 DEFAULT_CONSTRAINT = ">="  # Default constraint for package version
 
-A = TypeVar("A")  # Any type
+T = TypeVar("T")  # Any type
 
-# Entity types
-E = schema.Experiment
-R = schema.Run
-M = schema.Model
-V = schema.ModelVersion
+Entity = (
+    mlopus.mlflow.schema.Experiment
+    | mlopus.mlflow.schema.Run
+    | mlopus.mlflow.schema.Model
+    | mlopus.mlflow.schema.ModelVersion
+)
 
-T = TypeVar("T", bound=EntityApi)  # Type of Entity API
+API = mlopus.mlflow.ExpApi | mlopus.mlflow.RunApi | mlopus.mlflow.ModelApi | mlopus.mlflow.ModelVersionApi
 
 
 def _maybe_warn_editable_dist(cls: str, dist: importlib_metadata.Distribution):
@@ -69,7 +69,7 @@ class ClassSpec(pydantic.BaseModel, pydantic.MappingMixin):
     cls: str
     pkg: PkgSpec
 
-    def load(self, type_: Type[A] | None = None, skip_reqs_check: bool = False) -> Type[A]:
+    def load(self, type_: Type[T] | None = None, skip_reqs_check: bool = False) -> Type[T]:
         """Load class by fully qualified name.
 
         :param type_: If specified, the loaded class must inherit this type.
@@ -160,7 +160,9 @@ class Tags(pydantic.BaseModel, pydantic.MappingMixin):
         # Package details are inferred automatically unless specified when calling `using(...)`.
     """
 
-    schemas: Dict[str, ClassSpec] = pydantic.Field(default_factory=dict)
+    schemas: Dict[str, ClassSpec] = pydantic.Field(
+        default_factory=dict, description="Mapping of alias to artifact schema class specification."
+    )
 
     @pydantic.validate_arguments
     def using(
@@ -189,8 +191,11 @@ class Tags(pydantic.BaseModel, pydantic.MappingMixin):
         self.schemas[alias] = ClassSpec.parse_class(cls, from_package, at_version, with_constraint, and_extras)
         return self
 
-    def register(self, subject: T):
-        """Register these artifact schema tags for the specified subject."""
+    def register(self, subject: API):
+        """Register these artifact schema tags for the specified :paramref:`subject`.
+
+        :param subject: | Experiment, run, model or model version with API handle.
+        """
         logger.info("Registering artifact schemas for %s\n%s", subject, self.json(indent=4))
         subject.set_tags(self)
 
@@ -201,17 +206,23 @@ class Tags(pydantic.BaseModel, pydantic.MappingMixin):
         return cls_spec
 
     @classmethod
-    def parse_subject(cls, subject: E | R | M | V) -> "Tags":
-        """Parse experiment, run, registered model, model version or tags dict into artifact schema tags."""
+    def parse_subject(cls, subject: Entity) -> "Tags":
+        """Parse artifact schema tags from :paramref:`subject`.
+
+        - Runs inherit schemas of their parent experiment.
+        - Model versions inherit schemas of their parent model.
+
+        :param subject: | Experiment, run, model or model version.
+        """
         key = "schemas"
 
         match subject:
-            case M() | E():
+            case mlopus.mlflow.schema.Model() | mlopus.mlflow.schema.Experiment():
                 tags = subject.tags.get(key, {})
-            case R():
+            case mlopus.mlflow.schema.Run():
                 # Merge schema tags from run and parent exp (run takes precedence)
                 tags = dicts.deep_merge(subject.exp.tags.get(key, {}), subject.tags.get(key, {}))
-            case V():
+            case mlopus.mlflow.schema.ModelVersion():
                 # Merge schema tags from model version and parent model (version takes precedence)
                 tags = dicts.deep_merge(subject.model.tags.get(key, {}), subject.tags.get(key, {}))
             case _:

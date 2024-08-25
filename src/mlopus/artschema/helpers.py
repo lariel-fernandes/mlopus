@@ -24,26 +24,21 @@ T = (
 
 
 def get_schemas(subject: T) -> Tags:
-    """Get all artifact schemas from :paramref:`subject`.
+    """Parse artifact schema tags from :paramref:`subject`.
 
-    - Runs inherit schemas of their parent experiment.
-    - Model versions inherit schemas of their parent model.
+    See also: :meth:`mlopus.artschema.Tags.parse_subject`
 
-    :param subject: | Experiment, run, registered model or model version.
-    :return: Registered schema tags for that :paramref:`subject`.
+    :param subject: | Experiment, run, model or model version.
     """
     return Tags.parse_subject(subject)
 
 
 def get_schema(subject: T, alias: str | None = None) -> ClassSpec:
-    """Get aliased artifact schema from :paramref:`subject`.
+    """Get artifact schema class specification from :paramref:`subject`.
 
-    See also :func:`get_schemas`.
-
-    :param subject: | See :paramref:`get_schemas.subject`.
-    :param alias: | Alias of a previously registered schema for that :paramref:`subject`.
+    :param subject: | Experiment, run, model or model version.
+    :param alias: | Alias of a previously registered schema for this :paramref:`subject`.
                   | Defaults to `default`.
-    :return: Class specification for the artifact schema.
     """
     return Tags.parse_subject(subject).get_schema(alias)
 
@@ -71,12 +66,13 @@ def log_run_artifact(
     :param schema:
         - Type or instance of :class:`Schema`
         - Fully qualified name of a :class:`Schema` class (e.g.: `package.module:Class`)
-        - Name of an aliased schema previously registered for this run or its parent experiment
+        - Alias of a schema previously registered for this run or its parent experiment
           (see :class:`mlopus.artschema.Tags`).
 
     :param dumper_conf: | See :paramref:`Schema.get_dumper.dumper`
 
     :param skip_reqs_check: | If :paramref:`schema` is specified by alias, ignore the registered package requirement.
+                            | See :meth:`mlopus.artschema.ClassSpec.load`
 
     :param auto_register: | After a successful :paramref:`artifact` publish, register the used :paramref:`schema` in the :paramref:`run` tags.
                           | If a non-empty `dict` is passed, it is used as keyword arguments for :meth:`Tags.using`.
@@ -146,11 +142,16 @@ def log_model_version(
 
     :param path_in_run: | See :paramref:`mlopus.mlflow.BaseMlflowApi.log_model_version.path_in_run`
 
-    :param schema: | See :paramref:`log_run_artifact.schema`
+    :param schema:
+        - Type or instance of :class:`Schema`
+        - Fully qualified name of a :class:`Schema` class (e.g.: `package.module:Class`)
+        - Alias of a schema previously registered for this run or its parent experiment
+          (see :class:`mlopus.artschema.Tags`).
 
     :param dumper_conf: | See :paramref:`Schema.get_dumper.dumper`
 
-    :param skip_reqs_check: | See :paramref:`log_run_artifact.skip_reqs_check`
+    :param skip_reqs_check: | If :paramref:`schema` is specified by alias, ignore the registered package requirement.
+                            | See :meth:`mlopus.artschema.ClassSpec.load`
 
     :param auto_register: | After a successful :paramref:`artifact` publish, register the used :paramref:`schema` in the new model version tags.
                           | See also :paramref:`log_run_artifact.auto_register`
@@ -194,8 +195,31 @@ def load_artifact(
     loader_conf: L | dict | None = None,
     skip_reqs_check: bool = False,
     dry_run: bool = False,
-) -> A:
-    """Load artifact of run or model version using schema (either provided or inferred from tags)."""
+) -> A | Path:
+    """Load artifact of run or model version using schema.
+
+    :param subject: | Run or model version with API handle.
+
+    :param path_in_run: | See :paramref:`mlopus.mlflow.BaseMlflowApi.load_run_artifact.path_in_run`
+                        | If :paramref:`subject` is a model version, defaults to model name.
+
+    :param schema:
+        - Type or instance of :class:`Schema`
+        - Fully qualified name of a :class:`Schema` class (e.g.: `package.module:Class`)
+        - Alias of a schema previously registered for this run/model version or its parent experiment/model
+          (see :class:`mlopus.artschema.Tags`).
+
+    :param loader_conf: | See :paramref:`Schema.get_loader.loader`
+
+    :param skip_reqs_check: | If :paramref:`schema` is specified by alias, ignore the registered package requirement.
+                            | See :meth:`mlopus.artschema.ClassSpec.load`
+
+    :param dry_run: | See :paramref:`~mlopus.artschema.Loader.load.dry_run`
+
+    :return:
+        - If :paramref:`dry_run` is `True`: A `Path` to the cached artifact, after being verified.
+        - Otherwise: An instance of :attr:`~mlopus.artschema.Schema.Artifact`
+    """
     kwargs = {}
 
     if isinstance(subject, RunApi):

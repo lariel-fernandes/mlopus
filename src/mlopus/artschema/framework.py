@@ -25,30 +25,67 @@ class Dumper(pydantic.BaseModel, ABC, Generic[A]):
 
     @abstractmethod
     def _dump(self, path: Path, artifact: A) -> None:
-        """Save artifact to `path` as file or dir."""
+        """Save artifact to :paramref:`path` as file or dir.
+
+        :param path: When this method is called, it is guaranteed that this
+                     path doesn't exist yet and that it's parent is a dir.
+
+        :param artifact: An instance of :attr:`.Artifact`.
+        """
 
     @abstractmethod
     def _verify(self, path: Path) -> None:
-        """Verify the `path` where the artifact was dumped."""
+        """Verify the :paramref:`path`.
+
+        :param path: Path where an instance of :attr:`.Artifact` is
+                     supposed to have been dumped, downloaded or placed.
+
+        :raises AssertionError: Unless :paramref:`path` is a file
+                                or dir in the expected structure.
+        """
 
     # =======================================================================================================
     # === Public methods ====================================================================================
 
-    def dump(self, path: Path, artifact: A, overwrite: bool = False) -> None:
-        """Save artifact to `path` as file or dir."""
+    def dump(self, path: Path, artifact: A | dict, overwrite: bool = False) -> None:
+        """Save artifact to :paramref:`path` as file or dir.
+
+        If possible, also saves a file with this dumper's conf.
+
+        :param path: Target path.
+        :param artifact:
+            - An instance of :attr:`.Artifact`.
+            - A `dict` that can be parsed into an :attr:`.Artifact` (in case :attr:`.Artifact` is a Pydantic model)
+
+        :param overwrite: Overwrite the :paramref:`path` if exists.
+        """
         self._dump(artifact=self._pre_dump(artifact), path=(path := paths.ensure_only_parents(path, force=overwrite)))
         self.verify(path)
         self.maybe_save_conf(path, strict=True)
 
     def verify(self, path: Path) -> None:
-        """Verify the `path` where the artifact was dumped."""
+        """Verify the :paramref:`path`.
+
+        :param path: Path where an instance of :attr:`.Artifact` is
+                     supposed to have been dumped, downloaded or placed.
+
+        :raises AssertionError: Unless :paramref:`path` is a file
+                                or dir in the expected structure.
+        """
         if path.exists():
             self._verify(path)
         else:
             raise FileNotFoundError(path)
 
     def maybe_save_conf(self, path: Path, strict: bool):
-        """If path is a dir, save a file with dumper conf."""
+        """If :paramref:`path` is a dir, save a file with this dumper's conf.
+
+        :param path:
+        :param strict:
+        :raises FileNotFoundError: If :paramref:`path` doesn't exist.
+        :raises FileExistsError: If :paramref:`strict` is `True` and a dumper
+                                 conf file already exists in :paramref:`path`.
+        """
         if path.is_file():
             logger.warning("Artifact dump is not a directory, dumper conf file will not be saved.")
         elif path.is_dir():
@@ -64,7 +101,7 @@ class Dumper(pydantic.BaseModel, ABC, Generic[A]):
     # === Private methods ===================================================================================
 
     def _pre_dump(self, artifact: A | dict) -> A:
-        if isinstance(artifact, dict) and (model := pydantic.as_model_cls(self._artifact_type)):
+        if isinstance(artifact, dict) and (model := pydantic.as_model_cls(self.Artifact)):
             artifact = model.parse_obj(artifact)
         return artifact
 
@@ -78,13 +115,16 @@ class Dumper(pydantic.BaseModel, ABC, Generic[A]):
     # === Type param inference ==============================================================================
 
     @property
-    def _artifact_type(self) -> Type[A]:
-        """Artifact type used by this schema."""
+    def Artifact(self) -> Type[A]:  # noqa
+        """Artifact type used by this dumper.
+
+        :return: Type of :attr:`~mlopus.artschema.framework.A`
+        """
         return self._get_artifact_type()
 
     @classmethod
     def _get_artifact_type(cls) -> Type[A]:
-        """Infer artifact type used by this schema."""
+        """Infer artifact type used by this dumper."""
         base = typing_utils.find_base(cls, lambda b: typing_utils.safe_issubclass(b, Dumper))
         return typing_utils.get_type_param(base, object, pos=0, strict=True)
 
@@ -111,13 +151,35 @@ class Loader(pydantic.BaseModel, ABC, Generic[A, D]):
 
     @abstractmethod
     def _load(self, path: Path, dumper: D) -> A | dict:
-        """Load artifact from `path`."""
+        """Load artifact from :paramref:`path`.
+
+        :param path: Path to artifact file or dir.
+        :param dumper:
+            - If :paramref:`path` is a dir containing a dumper conf file, this param will be an instance
+              of :attr:`.Dumper` equivalent to the one that was originally used to save the artifact.
+            - Otherwise, it will be a :attr:`.Dumper` initialized with empty params.
+
+        :return:
+            - An instance of :attr:`.Artifact`.
+            - A `dict` that can be parsed into an :attr:`.Artifact` (in case :attr:`.Artifact` is a Pydantic model)
+        """
 
     # =======================================================================================================
     # === Public methods ====================================================================================
 
     def load(self, path: Path, dry_run: bool = False) -> A | Path:
-        """Load artifact from `path`."""
+        """Load artifact from :paramref:`path`.
+
+        As a side effect, this will use a :attr:`.Dumper` to :meth:`~Dumper.verify` the :paramref:`path`.
+        If :paramref:`path` is a dir containing a dumper conf file, the used :attr:`.Dumper` is equivalent to the one
+        that was originally used to save the artifact. Otherwise, it's a :attr:`.Dumper` initialized with empty params.
+
+        :param path: Path to artifact file or dir.
+        :param dry_run: Just verify the artifact path.
+        :return:
+            - If :paramref:`dry_run` is `True`, the same :paramref:`path`.
+            - Otherwise, an instance of :attr:`.Artifact`.
+        """
         (dumper := self._load_dumper(path)).verify(path)
 
         if dry_run:
@@ -129,22 +191,22 @@ class Loader(pydantic.BaseModel, ABC, Generic[A, D]):
     # === Private methods ===================================================================================
 
     def _post_load(self, artifact: A | dict) -> A:
-        if isinstance(artifact, dict) and (model := pydantic.as_model_cls(self._artifact_type)):
+        if isinstance(artifact, dict) and (model := pydantic.as_model_cls(self.Artifact)):
             artifact = model.parse_obj(artifact)
         return artifact
 
     def _load_dumper(self, path: Path) -> D:
-        if (dumper_conf_file := path / self._dumper_type.Config.dumper_conf_file).exists():
+        if (dumper_conf_file := path / self.Dumper.Config.dumper_conf_file).exists():
             dumper_conf = json_utils.loads(dumper_conf_file.read_text())
         else:
             dumper_conf = {}
 
         try:
-            return self._dumper_type.parse_obj(dumper_conf)
+            return self.Dumper.parse_obj(dumper_conf)
         except pydantic.ValidationError as exc:
             logger.error(
                 "Could not parse dumper with type '%s' (an anonymous pydantic class will be used instead): %s",
-                *(self._dumper_type, exc),
+                *(self.Dumper, exc),
             )
             return pydantic.create_obj_from_data(name="AnonymousDumper", data=dumper_conf, __base__=_DummyDumper)
 
@@ -152,13 +214,19 @@ class Loader(pydantic.BaseModel, ABC, Generic[A, D]):
     # === Type param inference ==============================================================================
 
     @property
-    def _artifact_type(self) -> Type[A]:
-        """Artifact type used by this schema."""
+    def Artifact(self) -> Type[A]:  # noqa
+        """Artifact type used by this loader.
+
+        :return: Type of :attr:`~mlopus.artschema.framework.A`
+        """
         return self._get_artifact_type()
 
     @property
-    def _dumper_type(self) -> Type[D]:
-        """Dumper class used by this schema."""
+    def Dumper(self) -> Type[D]:  # noqa
+        """Dumper type used by this loader.
+
+        :return: Type of :attr:`~mlopus.artschema.framework.D`
+        """
         return self._get_dumper_type()
 
     @classmethod
@@ -291,7 +359,7 @@ class Schema(pydantic.BaseModel, Generic[A, D, L]):
         :param loader_kwargs: | Keyword arguments for instantiating a :attr:`.Loader`.
                               | Incompatible with the :paramref:`loader` param.
 
-        :param dry_run: | Just verify, do not load.
+        :param dry_run: | See :paramref:`Loader.load.dry_run`.
 
         :return:
 

@@ -31,7 +31,13 @@ class MlflowApiMixin(pydantic.BaseModel):
         foo.mlflow_api  # BaseMlflowApi
     """
 
-    mlflow_api: BaseMlflowApi = pydantic.Field(exclude=True, default=None)
+    mlflow_api: BaseMlflowApi = pydantic.Field(
+        exclude=True,
+        default=None,
+        description=(
+            "Instance of :class:`BaseMlflowApi` or a `dict` of keyword arguments for :func:`mlopus.mlflow.get_api`."
+        ),
+    )
 
     @pydantic.validator("mlflow_api", pre=True)  # noqa
     @classmethod

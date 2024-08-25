@@ -35,7 +35,12 @@ ModelVersionIdentifier = contract.ModelVersionIdentifier | ModelVersionApi
 
 
 class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
-    """Base class for API clients that use "MLflow-like" backends for experiment tracking and model registry."""
+    """Base class for API clients that use "MLflow-like" backends for experiment tracking and model registry.
+
+    Important:
+        Implementations of this interface are meant to be thread-safe and independent of env vars/globals,
+        so multiple API instances can coexist in the same program if necessary.
+    """
 
     cache_dir: Path = pydantic.Field(
         default=None,

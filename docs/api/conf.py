@@ -58,6 +58,7 @@ autodoc_default_options = {
 # https://autodoc-pydantic.readthedocs.io/en/stable/users/configuration.html
 
 autodoc_pydantic_model_show_json = False
+autodoc_pydantic_field_list_validators = False
 autodoc_pydantic_model_member_order = "groupwise"
 autodoc_pydantic_model_show_field_summary = False
 autodoc_pydantic_model_show_config_summary = False
