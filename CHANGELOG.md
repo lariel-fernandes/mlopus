@@ -1,3 +1,9 @@
+## 0.2.1 (2024-08-27)
+
+### Fix
+
+- **BaseMlflowApi**: protect cached files, allow duplication by default if using caching from local repo
+
 ## 0.2.0 (2024-08-23)
 
 ### Feat
