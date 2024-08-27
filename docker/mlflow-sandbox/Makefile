@@ -12,4 +12,3 @@ restart:
 
 stop:
 	docker compose --env-file .env down
-# check that unrelated changes do not trigger tests
