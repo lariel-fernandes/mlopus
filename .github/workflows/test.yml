@@ -2,9 +2,27 @@ name: "Test"
 
 on:
   push:
-    branches: [main]
+    branches: [main*, develop]
+    paths:
+    - src/**
+    - uv.lock
+    - Makefile
+    - pyproject.toml
+    - .python-version
+    - .github/workflows/test.yml
+    - examples/1_introduction/**.py
+    - examples/1_introduction/**.ipynb
   pull_request:
-    branches: [main]
+    branches: [main*, develop]
+    paths:
+    - src/**
+    - uv.lock
+    - Makefile
+    - pyproject.toml
+    - .python-version
+    - .github/workflows/test.yml
+    - examples/1_introduction/**.py
+    - examples/1_introduction/**.ipynb
 
 env:
   UV_CACHE_DIR: /tmp/.uv-cache
