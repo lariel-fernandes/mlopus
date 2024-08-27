@@ -176,7 +176,12 @@ class TestApi(ABC, Generic[API]):
             self._ctx_model(request, api, name, {}),
             self._ctx_model_version(request, api, run_id, name, {}),
         ):
-            api.log_run_artifact(run_id, dumper, path_in_run, allow_duplication=True, use_cache=True)
+            api.log_run_artifact(run_id, lambda p: p.write_text("ok"), path_in_run, use_cache=True)
+
+            with pytest.raises(PermissionError):  # Manual rewrite is not permitted
+                api.get_run_artifact(run_id, path_in_run).write_text("bla")
+
+            api.log_run_artifact(run_id, dumper, path_in_run, use_cache=True)
 
             assert len(api.list_run_artifacts(run_id, path_in_run)) == len(artifact)
 

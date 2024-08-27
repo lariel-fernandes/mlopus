@@ -855,11 +855,11 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
             target = urls.urljoin(run.repo_url, path_in_run)
 
             if repo_is_local := urls.is_local(target):
-                if allow_duplication is None:
-                    allow_duplication = True if keep_the_source else False  # noqa: SIM211,SIM210
-
                 if use_cache is None:
                     use_cache = False
+
+                if allow_duplication is None:
+                    allow_duplication = True if keep_the_source or use_cache else False  # noqa: SIM211,SIM210
 
                 if keep_the_source:
                     if allow_duplication:
@@ -877,11 +877,11 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
                     move_abs_links=False,
                 )
             else:
-                if allow_duplication is None:
-                    allow_duplication = False
-
                 if use_cache is None:
                     use_cache = True
+
+                if allow_duplication is None:
+                    allow_duplication = False
 
                 self.file_transfer.push_files(source, target)
         except BaseException as exc:
@@ -890,22 +890,22 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         logger.debug(f"Artifact successfully published to '{target}'")
 
         if use_cache:
-            cache = self._get_run_artifact_cache_path(run, path_in_run, allow_base_resolve=False)
-            if repo_is_local:
-                if allow_duplication:
-                    paths.place_path(target.path, cache, mode="copy", overwrite=True)
+            with self._lock_run_artifact(run.id, path_in_run, allow_base_resolve=False) as cache:
+                if repo_is_local:
+                    if allow_duplication:
+                        paths.place_path(target.path, cache, mode="copy", overwrite=True)
+                    else:
+                        raise RuntimeError("Cannot cache artifact without duplication when run artifacts repo is local")
+                elif keep_the_source:
+                    if allow_duplication:
+                        paths.place_path(source, cache, mode="copy", overwrite=True)
+                    else:
+                        logger.warning("Keeping the `source` as a symbolic link to the cached artifact")
+                        logger.debug(f"{source} -> {cache}")
+                        paths.place_path(source, cache, mode="move", overwrite=True)
+                        paths.place_path(cache, source, mode="link", overwrite=True)
                 else:
-                    raise RuntimeError("Cannot cache artifact without duplication when run artifacts repo is local")
-            elif keep_the_source:
-                if allow_duplication:
-                    paths.place_path(source, cache, mode="copy", overwrite=True)
-                else:
-                    logger.warning("Keeping the `source` as a symbolic link to the cached artifact")
-                    logger.debug(f"{source} -> {cache}")
                     paths.place_path(source, cache, mode="move", overwrite=True)
-                    paths.place_path(cache, source, mode="link", overwrite=True)
-            else:
-                paths.place_path(source, cache, mode="move", overwrite=True)
 
         if not keep_the_source:
             paths.ensure_non_existing(source, force=True)
