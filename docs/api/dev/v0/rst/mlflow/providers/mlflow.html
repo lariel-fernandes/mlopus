@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MlflowApi (default) &mdash; MLOpus 0.2.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Generic (no server)" href="generic.html" />
+    <link rel="prev" title="Providers" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">MLflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../schema.html">Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apis/index.html">APIs</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Providers</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">MlflowApi (default)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.providers.mlflow.MlflowApi"><code class="docutils literal notranslate"><span class="pre">MlflowApi</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generic.html">Generic (no server)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../traits.html">Traits</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../artschema/index.html">Artifact Schemas</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">MLflow</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Providers</a></li>
+      <li class="breadcrumb-item active">MlflowApi (default)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/rst/mlflow/providers/mlflow.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mlflowapi-default">
+<h1>MlflowApi (default)<a class="headerlink" href="#mlflowapi-default" title="Permalink to this heading"></a></h1>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.mlflow.providers.mlflow.MlflowApi">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.providers.mlflow.</span></span><span class="sig-name descname"><span class="pre">MlflowApi</span></span><a class="reference internal" href="../../../_modules/mlopus/mlflow/providers/mlflow.html#MlflowApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.providers.mlflow.MlflowApi" title="Permalink to this definition"></a></dt>
+<dd><p>MLflow API provider based on open source MLflow.</p>
+<p><strong>Plugin name:</strong> <cite>mlflow</cite></p>
+<p><strong>Requires extras:</strong> <cite>mlflow</cite></p>
+<p><strong>Default cache dir:</strong> <cite>~/.cache/mlopus/mlflow-providers/mlflow/&lt;hashed-tracking-uri&gt;</cite></p>
+<dl class="simple">
+<dt>Assumptions:</dt><dd><ul class="simple">
+<li><p>No artifacts proxy.</p></li>
+<li><p>SQL database is server-managed.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.providers.mlflow.MlflowApi.tracking_uri">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tracking_uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.mlflow.providers.mlflow.MlflowApi.tracking_uri" title="Permalink to this definition"></a></dt>
+<dd><p>MLflow server URL or path to a local directory. Defaults to the environment variable <cite>MLFLOW_TRACKING_URI</cite>, falls back to <cite>~/.cache/mlflow</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.providers.mlflow.MlflowApi.healthcheck">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">healthcheck</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.mlflow.providers.mlflow.MlflowApi.healthcheck" title="Permalink to this definition"></a></dt>
+<dd><p>If true, eagerly attempt connection to the server after initialization.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.providers.mlflow.MlflowApi.client_settings">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client_settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.mlflow.providers.mlflow.MlflowApi.client_settings" title="Permalink to this definition"></a></dt>
+<dd><p>MLflow client settings. Keys are like the open-source MLflow environment variables, but lower case and without the <cite>MLFLOW_</cite> prefix. Example: <cite>http_request_max_retries</cite>. See: <a class="reference external" href="https://mlflow.org/docs/latest/python_api/mlflow.environment_variables.html">https://mlflow.org/docs/latest/python_api/mlflow.environment_variables.html</a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.providers.mlflow.MlflowApi.tag_keys">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tag_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowTagKeys</span></code></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.mlflow.providers.mlflow.MlflowApi.tag_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Tag keys for storing internal information such as parent run ID.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.providers.mlflow.MlflowApi.query_push_down">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_push_down</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowQueryPushDown</span></code></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.mlflow.providers.mlflow.MlflowApi.query_push_down" title="Permalink to this definition"></a></dt>
+<dd><p>Utility for partial translation of MongoDB queries to open-source MLflow SQL. Users may replace this with a different implementation when subclassing the API.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.providers.mlflow.MlflowApi.data_translation">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_translation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowDataTranslation</span></code></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.mlflow.providers.mlflow.MlflowApi.data_translation" title="Permalink to this definition"></a></dt>
+<dd><p>Utility for translating keys and values from MLOpus schema to native MLflow schema and back. Users may replace this with a different implementation when subclassing the API.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Providers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generic.html" class="btn btn-neutral float-right" title="Generic (no server)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

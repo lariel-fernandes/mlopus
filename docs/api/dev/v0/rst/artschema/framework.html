@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Framework &mdash; MLOpus 0.2.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tags" href="tags.html" />
+    <link rel="prev" title="Artifact Schemas" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Artifact Schemas</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Framework</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.Dumper"><code class="docutils literal notranslate"><span class="pre">Dumper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Dumper._dump"><code class="docutils literal notranslate"><span class="pre">Dumper._dump()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Dumper._verify"><code class="docutils literal notranslate"><span class="pre">Dumper._verify()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Dumper.dump"><code class="docutils literal notranslate"><span class="pre">Dumper.dump()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Dumper.maybe_save_conf"><code class="docutils literal notranslate"><span class="pre">Dumper.maybe_save_conf()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Dumper.verify"><code class="docutils literal notranslate"><span class="pre">Dumper.verify()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.Loader"><code class="docutils literal notranslate"><span class="pre">Loader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Loader._load"><code class="docutils literal notranslate"><span class="pre">Loader._load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Loader.load"><code class="docutils literal notranslate"><span class="pre">Loader.load()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.Schema"><code class="docutils literal notranslate"><span class="pre">Schema</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Schema.get_dumper"><code class="docutils literal notranslate"><span class="pre">Schema.get_dumper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Schema.get_loader"><code class="docutils literal notranslate"><span class="pre">Schema.get_loader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Schema.Artifact"><code class="docutils literal notranslate"><span class="pre">Schema.Artifact</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Schema.Dumper"><code class="docutils literal notranslate"><span class="pre">Schema.Dumper</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.Schema.Loader"><code class="docutils literal notranslate"><span class="pre">Schema.Loader</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tags.html">Tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helpers.html">Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="specs.html">Specs &amp; Catalog</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Artifact Schemas</a></li>
+      <li class="breadcrumb-item active">Framework</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/rst/artschema/framework.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="framework">
+<h1>Framework<a class="headerlink" href="#framework" title="Permalink to this heading"></a></h1>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.artschema.Dumper">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">Dumper</span></span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Dumper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Dumper" title="Permalink to this definition"></a></dt>
+<dd><p>Base class for artifact dumpers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Dumper._dump">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Dumper._dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Dumper._dump" title="Permalink to this definition"></a></dt>
+<dd><p>Save artifact to <cite>path</cite> as file or dir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Dumper._verify">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Dumper._verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Dumper._verify" title="Permalink to this definition"></a></dt>
+<dd><p>Verify the <cite>path</cite> where the artifact was dumped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Dumper.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Dumper.dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Dumper.dump" title="Permalink to this definition"></a></dt>
+<dd><p>Save artifact to <cite>path</cite> as file or dir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Dumper.maybe_save_conf">
+<span class="sig-name descname"><span class="pre">maybe_save_conf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Dumper.maybe_save_conf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Dumper.maybe_save_conf" title="Permalink to this definition"></a></dt>
+<dd><p>If path is a dir, save a file with dumper conf.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Dumper.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Dumper.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Dumper.verify" title="Permalink to this definition"></a></dt>
+<dd><p>Verify the <cite>path</cite> where the artifact was dumped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.artschema.Loader">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">Loader</span></span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Loader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Loader" title="Permalink to this definition"></a></dt>
+<dd><p>Base class for artifact loaders.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Loader._load">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dumper</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Loader._load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Loader._load" title="Permalink to this definition"></a></dt>
+<dd><p>Load artifact from <cite>path</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>, bound= <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Loader.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Loader.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Loader.load" title="Permalink to this definition"></a></dt>
+<dd><p>Load artifact from <cite>path</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>, bound= <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.artschema.Schema">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">Schema</span></span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Schema" title="Permalink to this definition"></a></dt>
+<dd><p>Base class for artifact schemas.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Artifact</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">some_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">Dumper</span><span class="p">(</span><span class="n">mlopus</span><span class="o">.</span><span class="n">artschema</span><span class="o">.</span><span class="n">Dumper</span><span class="p">[</span><span class="n">Artifact</span><span class="p">]):</span>
+    <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># save `artifact.some_data` inside `path` using `self.encoding`</span>
+
+
+<span class="k">class</span> <span class="nc">Loader</span><span class="p">(</span><span class="n">mlopus</span><span class="o">.</span><span class="n">artschema</span><span class="o">.</span><span class="n">Loader</span><span class="p">[</span><span class="n">Artifact</span><span class="p">,</span> <span class="n">Dumper</span><span class="p">]):</span>
+    <span class="n">max_files</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dumper</span><span class="p">:</span> <span class="n">Dumper</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Artifact</span><span class="p">:</span>
+        <span class="c1"># load instance of `Artifact` from `path` using `self.max_files` and `dumper.encoding`</span>
+
+
+<span class="k">class</span> <span class="nc">Schema</span><span class="p">(</span><span class="n">mlopus</span><span class="o">.</span><span class="n">artschema</span><span class="o">.</span><span class="n">Schema</span><span class="p">[</span><span class="n">Artifact</span><span class="p">,</span> <span class="n">Dumper</span><span class="p">,</span> <span class="n">Loader</span><span class="p">]):</span>
+    <span class="k">pass</span>  <span class="c1"># No methods needed here, but the type params are important!</span>
+
+
+<span class="c1"># Instantiate</span>
+<span class="n">artifact</span> <span class="o">=</span> <span class="n">Artifact</span><span class="p">(</span><span class="n">some_data</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="p">})</span>
+
+<span class="c1"># Dump</span>
+<span class="n">dumper</span> <span class="o">=</span> <span class="n">Schema</span><span class="p">()</span><span class="o">.</span><span class="n">get_dumper</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+<span class="n">dumper</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+<span class="c1"># Load</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">Schema</span><span class="p">()</span><span class="o">.</span><span class="n">get_loader</span><span class="p">(</span><span class="n">max_files</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">loader</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>  <span class="c1"># Returns: Artifact</span>
+
+<span class="c1"># Combine with MlflowApi</span>
+<span class="k">with</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span> \
+    <span class="o">.</span><span class="n">get_api</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> \
+    <span class="o">.</span><span class="n">get_exp</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> \
+    <span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+
+    <span class="n">run</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="n">dumper</span><span class="p">,</span> <span class="n">path_in_run</span><span class="o">=</span><span class="s2">&quot;foobar&quot;</span><span class="p">)</span>
+
+<span class="n">run</span><span class="o">.</span><span class="n">load_artifact</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">path_in_run</span><span class="o">=</span><span class="s2">&quot;foobar&quot;</span><span class="p">)</span>
+<span class="c1"># Same applies when using `log_model_version` and `load_model_artifact`</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Schema.get_dumper">
+<span class="sig-name descname"><span class="pre">get_dumper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dumper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dumper_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Schema.get_dumper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Schema.get_dumper" title="Permalink to this definition"></a></dt>
+<dd><p>Get dumper callback for artifact data.
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
+<ul class="simple">
+<li><p>If artifact is a <cite>Path</cite>, it will be just verified and returned as it is.</p></li>
+<li><p>If artifact is a <cite>dict</cite> and the target type is a pydantic model, it will be parsed before being dumped.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.artschema.Schema.get_loader">
+<span class="sig-name descname"><span class="pre">get_loader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">loader_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/framework.html#Schema.get_loader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.Schema.get_loader" title="Permalink to this definition"></a></dt>
+<dd><p>Get loader callback for artifact file(s).
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>, bound= <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]]</p>
+<ul class="simple">
+<li><p>If <cite>dry_run=True</cite>, the callback will just verify the given <cite>Path</cite> and return it as it is.</p></li>
+<li><p>If the loaded artifact is a <cite>dict</cite> and the target type is a pydantic model, the callback will parse it.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mlopus.artschema.Schema.Artifact">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Artifact</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">A</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mlopus.artschema.Schema.Artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Artifact type used by this schema.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mlopus.artschema.Schema.Dumper">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Dumper</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">D</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mlopus.artschema.Schema.Dumper" title="Permalink to this definition"></a></dt>
+<dd><p>Dumper class used by this schema.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mlopus.artschema.Schema.Loader">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Loader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">L</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mlopus.artschema.Schema.Loader" title="Permalink to this definition"></a></dt>
+<dd><p>Loader class used by this schema.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Artifact Schemas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tags.html" class="btn btn-neutral float-right" title="Tags" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -2,6 +2,6 @@
 Experiment API
 ==============
 
-.. autoclass:: mlopus.mlflow.ExpApi
-   :members:
-   :member-order: bysource
+.. autopydantic_model:: mlopus.mlflow.ExpApi
+   :exclude-members: using, api
+   :inherited-members:

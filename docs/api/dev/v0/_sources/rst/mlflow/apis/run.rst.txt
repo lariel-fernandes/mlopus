@@ -2,6 +2,6 @@
 Run API
 =======
 
-.. autoclass:: mlopus.mlflow.RunApi
-   :members:
-   :member-order: bysource
+.. autopydantic_model:: mlopus.mlflow.RunApi
+   :exclude-members: using, api
+   :inherited-members:

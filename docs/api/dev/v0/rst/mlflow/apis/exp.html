@@ -4,9 +4,10 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Experiment API &mdash; MLOpus 0.0.0 documentation</title>
+  <title>Experiment API &mdash; MLOpus 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
 
   
   <!--[if lt IE 9]>
@@ -47,8 +48,9 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">MLflow</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../schema.html">Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html">Utilities</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">MLflow APIs</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">APIs</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="base.html">Base MLflow API</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Experiment API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.ExpApi"><code class="docutils literal notranslate"><span class="pre">ExpApi</span></code></a></li>
@@ -59,9 +61,14 @@
 <li class="toctree-l3"><a class="reference internal" href="mv.html">Model Version API</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../providers/index.html">Providers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../traits.html">Traits</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../artschema/index.html">Artifact Schemas</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../lineage.html">Lineage</a></li>
 </ul>
 
         </div>
@@ -79,7 +86,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">MLflow</a></li>
-          <li class="breadcrumb-item"><a href="index.html">MLflow APIs</a></li>
+          <li class="breadcrumb-item"><a href="index.html">APIs</a></li>
       <li class="breadcrumb-item active">Experiment API</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../_sources/rst/mlflow/apis/exp.rst.txt" rel="nofollow"> View page source</a>
@@ -92,30 +99,31 @@
              
   <section id="experiment-api">
 <h1>Experiment API<a class="headerlink" href="#experiment-api" title="Permalink to this heading"></a></h1>
-<dl class="py class">
+<dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.mlflow.ExpApi">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">ExpApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MlflowApiContract</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ExpApi" title="Permalink to this definition"></a></dt>
-<dd><p>Shortcut to API calls with specified Experiment.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mlopus.mlflow.ExpApi.url" title="Permalink to this definition"></a></dt>
-<dd><p>This experiment’s URL.</p>
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">ExpApi</span></span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/exp.html#ExpApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ExpApi" title="Permalink to this definition"></a></dt>
+<dd><p>Experiment metadata with MLflow API handle.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.ExpApi.id" title="Permalink to this definition"></a></dt>
+<dd><p>Experiment ID in the pattern <cite>[w-]+</cite></p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.find_runs">
-<span class="sig-name descname"><span class="pre">find_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ExpApi.find_runs" title="Permalink to this definition"></a></dt>
-<dd><p>Search runs belonging to this experiment with query in MongoDB query language.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>]</p>
-</dd>
-</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.ExpApi.name" title="Permalink to this definition"></a></dt>
+<dd><p>Experiment Name.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.tags">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.ExpApi.tags" title="Permalink to this definition"></a></dt>
+<dd><p>Nested tags dict with JSON-serializable leaf-values and keys in the pattern: <cite>[w-/]+</cite></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.cache_meta">
-<span class="sig-name descname"><span class="pre">cache_meta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ExpApi.cache_meta" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">cache_meta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/exp.html#ExpApi.cache_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ExpApi.cache_meta" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch latest metadata for this experiment and save it to cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -125,19 +133,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.export_meta">
-<span class="sig-name descname"><span class="pre">export_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ExpApi.export_meta" title="Permalink to this definition"></a></dt>
-<dd><p>Export metadata cache for this experiment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.create_run">
-<span class="sig-name descname"><span class="pre">create_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ExpApi.create_run" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">create_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/exp.html#ExpApi.create_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ExpApi.create_run" title="Permalink to this definition"></a></dt>
 <dd><p>Declare a new run in this experiment to be used later.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -147,8 +144,41 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.export_meta">
+<span class="sig-name descname"><span class="pre">export_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/exp.html#ExpApi.export_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ExpApi.export_meta" title="Permalink to this definition"></a></dt>
+<dd><p>Export metadata cache for this experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.find_runs">
+<span class="sig-name descname"><span class="pre">find_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/exp.html#ExpApi.find_runs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ExpApi.find_runs" title="Permalink to this definition"></a></dt>
+<dd><p>Search runs belonging to this experiment with query in MongoDB query language.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<a class="reference internal" href="run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.set_tags">
+<span class="sig-name descname"><span class="pre">set_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/exp.html#ExpApi.set_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ExpApi.set_tags" title="Permalink to this definition"></a></dt>
+<dd><p>Set tags on this experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.start_run">
-<span class="sig-name descname"><span class="pre">start_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ExpApi.start_run" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">start_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/exp.html#ExpApi.start_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.ExpApi.start_run" title="Permalink to this definition"></a></dt>
 <dd><p>Start a new run in this experiment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -158,14 +188,20 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.set_tags">
-<span class="sig-name descname"><span class="pre">set_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ExpApi.set_tags" title="Permalink to this definition"></a></dt>
-<dd><p>Set tags on this experiment.</p>
+<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.ExpApi.update" title="Permalink to this definition"></a></dt>
+<dd><p>Use API to get latest data for this entity and update this entity in place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">EntityApi</span></code></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mlopus.mlflow.ExpApi.url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#mlopus.mlflow.ExpApi.url" title="Permalink to this definition"></a></dt>
+<dd><p>This experiment’s URL.</p>
 </dd></dl>
 
 </dd></dl>
