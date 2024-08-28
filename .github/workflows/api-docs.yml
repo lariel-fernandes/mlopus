@@ -1,21 +1,32 @@
-# Trigger this workflow manually while choosing a branch in order update the API docs.
-#
-# The target folder for deploying docs in GH pages is determined by the major version of
-# the latest release tag in the history of the targeted branch, along with the branch scope
-# (`dev` if the branch name matches the regex `DEVRELEASE_PATTERN`, otherwise `stable`).
-# An additional deployment to stable/latest is made if the target branch is `main`.
+# Trigger this workflow manually while choosing a tag in order update the API docs.
 #
 # This is going to:
 # - Build the API docs
 # - Deploy to GH pages
 #
+# The target folder for deploying docs in GH pages is:
+# - If it is a devrelease tag: The tag itself.
+# - Otherwise: The major version, as in the Python project metadata.
+#
+# If the `latest` option is selected, the docs are also deployed to the latest folder.
+#
+# Tip: If you need to update the docs for a certain major version without making a new release, just create
+# a new tag manually while adding a "-n" suffix to the previous tag (e.g.: x.y.z-1, x.y.z-2, etc).
+#
+
 name: "API Docs"
 
 on:
   workflow_dispatch:
+    inputs:
+      latest:
+        type: boolean
+        default: false
+        required: false
+        description: Latest
 
 env:
-  DEVRELEASE_PATTERN: ^(?!main$).+$  # Match any branch name except 'main'
+  DEVRELEASE_PATTERN: ^\d+\.\d+\.\d+-dev\d+$  # Match any tags like '1.2.3-dev123'
 
 jobs:
   api-docs:
@@ -47,28 +58,24 @@ jobs:
     - name: Render API docs
       run: make api-docs
 
-    - name: Get docs scope
-      id: get-docs-scope
-      run: |
-        if ! [[ -z $(echo "${GITHUB_REF#refs/heads/}" | grep -xP '${{ env.DEVRELEASE_PATTERN }}') ]] ; then
-          echo "value=dev" >> $GITHUB_OUTPUT
-        else
-          echo "value=stable" >> $GITHUB_OUTPUT
-        fi
-
     - name: Get docs version
       id: get-docs-version
-      run: echo "value=$(uvx --from commitizen cz version -p | grep -oP '^\d+')" >> $GITHUB_OUTPUT
+      run: |
+        if ! [[ -z $(echo "${GITHUB_REF#refs/tags/}" | grep -xP '${{ env.DEVRELEASE_PATTERN }}') ]] ; then
+          echo "value=v${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        else
+          echo "value=v$(uvx --from commitizen cz version -p | grep -oP '^\d+')" >> $GITHUB_OUTPUT
+        fi
 
     - name: Publish API docs to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: docs/api/_build/html
-        target-folder: docs/api/${{ steps.get-docs-scope.outputs.value }}/v${{ steps.get-docs-version.outputs.value }}
+        target-folder: docs/api/${{ steps.get-docs-version.outputs.value }}
 
     - name: Publish API docs to GitHub Pages (latest)
-      if: ${{ github.ref == 'refs/heads/main' }}
+      if: ${{ github.event.inputs.latest != 'false' }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: docs/api/_build/html
-        target-folder: docs/api/stable/latest
+        target-folder: docs/api/latest
