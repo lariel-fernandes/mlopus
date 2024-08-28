@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlopus.lineage &mdash; MLOpus 0.2.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../rst/mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rst/artschema/index.html">Artifact Schemas</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../rst/lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mlopus.lineage</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mlopus.lineage</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module provides tools for registering inputs/outputs of runs, such as published/loaded</span>
+<span class="sd">model versions and run artifacts.</span>
+
+<span class="sd">It also allows building structured queries for searching runs by their inputs/outputs</span>
+<span class="sd">in MongoDB query syntax using the `find_runs` method of the `BaseMlflowApi`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.run</span> <span class="kn">import</span> <span class="n">RunApi</span>
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">dicts</span>
+
+
+<span class="k">class</span> <span class="nc">_LineageArg</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for lineage arguments.&quot;&quot;&quot;</span>
+
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">val</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">val</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_ModelLineageArg</span><span class="p">(</span><span class="n">_LineageArg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Argument for adding a model artifact as run input or output.&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">_RunLineageArg</span><span class="p">(</span><span class="n">_LineageArg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Argument for adding a run artifact as run input or output.&quot;&quot;&quot;</span>
+
+    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validator</span><span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_valid_path_in_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_LineageInfo</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ExcludeEmptyMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mapping of run artifacts and models that have been used as either input or output.&quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pydantic class config.&quot;&quot;&quot;</span>
+
+        <span class="n">repr_empty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">runs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">({},</span> <span class="n">arg_type</span><span class="o">=</span><span class="n">_RunLineageArg</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mapping of `run_id` -&gt; `[path_in_run]`&quot;&quot;&quot;</span>
+
+    <span class="n">models</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">({},</span> <span class="n">arg_type</span><span class="o">=</span><span class="n">_ModelLineageArg</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mapping of `model_name` -&gt; `[versions]`&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">runs_by_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reverse mapping of `path_in_run` -&gt; `[run_ids]`&quot;&quot;&quot;</span>
+        <span class="n">lookup</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">run_id</span><span class="p">,</span> <span class="n">paths</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+                <span class="n">lookup</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">run_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">lookup</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="n">_LineageArg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_LineageInfo&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fields__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">field_info</span><span class="o">.</span><span class="n">extra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;arg_type&quot;</span><span class="p">)):</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">values</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+<div class="viewcode-block" id="Inputs"><a class="viewcode-back" href="../../rst/lineage.html#mlopus.lineage.Inputs">[docs]</a><span class="k">class</span> <span class="nc">Inputs</span><span class="p">(</span><span class="n">_LineageInfo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mapping of run artifacts and models that have been used as input.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Outputs"><a class="viewcode-back" href="../../rst/lineage.html#mlopus.lineage.Outputs">[docs]</a><span class="k">class</span> <span class="nc">Outputs</span><span class="p">(</span><span class="n">_LineageInfo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mapping of run artifacts and models that have been used as output.&quot;&quot;&quot;</span></div>
+
+
+<span class="k">class</span> <span class="nc">_LineageTags</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ExcludeEmptyMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for lineage tags representation.&quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pydantic class config.&quot;&quot;&quot;</span>
+
+        <span class="n">repr_empty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run inputs.&quot;&quot;&quot;</span>
+
+    <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run outputs.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">with_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="n">_LineageArg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_LineageTags&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add input model or run artifact.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="ow">or</span> <span class="n">Inputs</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">with_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="n">_LineageArg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_LineageTags&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add output model or run artifact.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="ow">or</span> <span class="n">Outputs</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">with_input_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_LineageTags&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add input model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_input</span><span class="p">(</span><span class="n">_ModelLineageArg</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">with_input_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_LineageTags&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add input run artifact.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_input</span><span class="p">(</span><span class="n">_RunLineageArg</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">with_output_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_LineageTags&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add output model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_output</span><span class="p">(</span><span class="n">_ModelLineageArg</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">with_output_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_LineageTags&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add output run artifact.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_output</span><span class="p">(</span><span class="n">_RunLineageArg</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="Lineage"><a class="viewcode-back" href="../../rst/lineage.html#mlopus.lineage.Lineage">[docs]</a><span class="k">class</span> <span class="nc">Lineage</span><span class="p">(</span><span class="n">_LineageTags</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Representation of an experiment run&#39;s lineage tags (i.e.: inputs and outputs).</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        run = mlopus.mlflow. \\</span>
+<span class="sd">            get_api(...) \\</span>
+<span class="sd">            get_run(...)  # or start_run(), resume_run(), etc...</span>
+
+<span class="sd">        mlopus.lineage.of(run) \\</span>
+<span class="sd">            .with_input_model(name, version) \\</span>
+<span class="sd">            .with_output_model(name, version) \\</span>
+<span class="sd">            .with_input_artifact(run_id, path) \\</span>
+<span class="sd">            .with_output_artifact(run_id, path) \\</span>
+<span class="sd">            .register()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">run</span><span class="p">:</span> <span class="n">RunApi</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Lineage.of"><a class="viewcode-back" href="../../rst/lineage.html#mlopus.lineage.Lineage.of">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunApi</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Lineage&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse lineage tags from experiment run with API handle.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span> <span class="o">**</span><span class="n">run</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lineage&quot;</span><span class="p">,</span> <span class="p">{}))</span></div>
+
+<div class="viewcode-block" id="Lineage.register"><a class="viewcode-back" href="../../rst/lineage.html#mlopus.lineage.Lineage.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Lineage&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set these lineage tags on experiment run.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">set_tags</span><span class="p">({</span><span class="s2">&quot;lineage&quot;</span><span class="p">:</span> <span class="n">dicts</span><span class="o">.</span><span class="n">filter_empty_leaves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">())})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">of</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Query"><a class="viewcode-back" href="../../rst/lineage.html#mlopus.lineage.Query">[docs]</a><span class="k">class</span> <span class="nc">Query</span><span class="p">(</span><span class="n">_LineageTags</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Query builder for searching runs by their inputs/outputs.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        query = mlopus.lineage.Query() \\</span>
+<span class="sd">            .with_input_model(name, version) \\</span>
+<span class="sd">            .with_output_model(name, version) \\</span>
+<span class="sd">            .with_input_artifact(run_id, path) \\</span>
+<span class="sd">            .with_output_artifact(run_id, path) \\</span>
+<span class="sd">            .render()  # Omitting the `version` or `path` in the methods above creates a wildcard (*)</span>
+
+<span class="sd">        results = mlopus.mlflow \\</span>
+<span class="sd">            .get_api() \\</span>
+<span class="sd">            .get_exp(&quot;1&quot;) \\</span>
+<span class="sd">            .find_runs(query)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Query.render"><a class="viewcode-back" href="../../rst/lineage.html#mlopus.lineage.Query.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render query dict in MongoDB syntax.&quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;runs&quot;</span><span class="p">,</span> <span class="s2">&quot;models&quot;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">j</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="s2">&quot;lineage&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">:=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+                    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot query for multiple values of </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> (ambiguous AND/OR intention)&quot;</span><span class="p">)</span>
+
+                    <span class="n">query</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+        <span class="k">return</span> <span class="n">query</span></div></div>
+
+
+<div class="viewcode-block" id="of"><a class="viewcode-back" href="../../rst/lineage.html#mlopus.lineage.of">[docs]</a><span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="n">run</span><span class="p">:</span> <span class="n">RunApi</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lineage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse lineage tags from run API.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Lineage</span><span class="o">.</span><span class="n">of</span><span class="p">(</span><span class="n">run</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
