@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlopus.mlflow.traits &mdash; MLOpus 0.2.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/artschema/index.html">Artifact Schemas</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mlopus.mlflow.traits</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mlopus.mlflow.traits</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span> <span class="nn">mlopus.mlflow</span>
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">dicts</span>
+<span class="kn">from</span> <span class="nn">.api.base</span> <span class="kn">import</span> <span class="n">BaseMlflowApi</span>
+<span class="kn">from</span> <span class="nn">.api.common</span> <span class="kn">import</span> <span class="n">schema</span>
+<span class="kn">from</span> <span class="nn">.api.run</span> <span class="kn">import</span> <span class="n">RunApi</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_api</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MlflowApiMixin"><a class="viewcode-back" href="../../../rst/mlflow/traits.html#mlopus.mlflow.MlflowApiMixin">[docs]</a><span class="k">class</span> <span class="nc">MlflowApiMixin</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin for pydantic classes that hold a reference to a Mlflow API instance.</span>
+
+<span class="sd">    The API is instantiated by the utility `mlopus.mlflow.get_api()` on object initialization.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class Foo(MlflowMixinApi):</span>
+<span class="sd">            pass</span>
+
+<span class="sd">        foo = Foo(</span>
+<span class="sd">            mlflow_api={&quot;plugin&quot;: &quot;...&quot;, &quot;conf&quot;: {...}}  # kwargs for `mlopus.mlflow.get_api()`</span>
+<span class="sd">        )</span>
+
+<span class="sd">        foo.mlflow_api  # BaseMlflowApi</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mlflow_api</span><span class="p">:</span> <span class="n">BaseMlflowApi</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validator</span><span class="p">(</span><span class="s2">&quot;mlflow_api&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># noqa</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_load_mlflow_api</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">BaseMlflowApi</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseMlflowApi</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">BaseMlflowApi</span><span class="p">)</span> <span class="k">else</span> <span class="n">get_api</span><span class="p">(</span><span class="o">**</span><span class="n">value</span> <span class="ow">or</span> <span class="p">{})</span>
+
+<div class="viewcode-block" id="MlflowApiMixin.using"><a class="viewcode-back" href="../../../rst/mlflow/traits.html#mlopus.mlflow.MlflowApiMixin.using">[docs]</a>    <span class="k">def</span> <span class="nf">using</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mlflow_api</span><span class="p">:</span> <span class="n">BaseMlflowApi</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MlflowApiMixin&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a copy of this object that uses the specified MLflow API.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;mlflow_api&quot;</span><span class="p">:</span> <span class="n">mlflow_api</span><span class="p">})</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">ExpConf</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Experiment specification for `MlflowRunManager`.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Used when getting or creating the experiment.&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">RunConf</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">EmptyStrAsMissing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run specification for `MlflowRunManager`.&quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Run ID for resuming a previous run.&quot;</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Run name for starting a new run.&quot;</span><span class="p">)</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="n">dicts</span><span class="o">.</span><span class="n">AnyDict</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Run tags for starting a new run or finding an ongoing one.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="MlflowRunManager"><a class="viewcode-back" href="../../../rst/mlflow/traits.html#mlopus.mlflow.MlflowRunManager">[docs]</a><span class="k">class</span> <span class="nc">MlflowRunManager</span><span class="p">(</span><span class="n">MlflowApiMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A pydantic object that holds a reference to an ongoing MLflow Run.</span>
+
+<span class="sd">    1. If `run.id` is given, that run is resumed.</span>
+<span class="sd">    2. Otherwise, an ongoing run is searched for in `exp.name` with `run.tags`</span>
+<span class="sd">    3. If none can be found, a new one is started in `exp.name` with `run.tags`</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        config = {</span>
+<span class="sd">            &quot;api&quot;: {...},  # kwargs for `mlopus.mlflow.get_api()`</span>
+<span class="sd">            &quot;exp&quot;: {&quot;name&quot;: ...},</span>
+<span class="sd">            &quot;run&quot;: {&quot;name&quot;: ..., &quot;tags&quot;: ..., &quot;id&quot;: ...},</span>
+<span class="sd">        }</span>
+
+<span class="sd">        foo_1 = MlflowRunManager(**config)</span>
+<span class="sd">        foo_2 = MlflowRunManager(**config)</span>
+
+<span class="sd">        # Objects with same config share the same managed run</span>
+<span class="sd">        assert foo_1.run.id == foo_2.run.id</span>
+
+<span class="sd">        # Accessing the cached property `run` triggers the resume/search/creation of the run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mlflow_api</span><span class="p">:</span> <span class="n">BaseMlflowApi</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;api&quot;</span><span class="p">)</span>
+
+    <span class="n">exp</span><span class="p">:</span> <span class="n">ExpConf</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">ExpConf</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Experiment specification (created if doesn&#39;t exist). Used to find or create the run.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">run_conf</span><span class="p">:</span> <span class="n">RunConf</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;run&quot;</span><span class="p">,</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">RunConf</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Run specification, used for resuming, finding or creating the run.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">cached_property</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;API handle for the ongoing MLflow Run.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_run</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_resolve_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resume, find or start run and return API handle.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">run_id</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_conf</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">run</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">run_id</span><span class="p">))</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;MLflow Run URL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">run</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_conf</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="s2">&quot;Cannot locate shared run or start a new one without tags.&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="o">**</span><span class="p">{</span><span class="s2">&quot;tags.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dicts</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_conf</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span>
+            <span class="s2">&quot;exp.id&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">exp</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="o">.</span><span class="n">get_or_create_exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="o">.</span><span class="n">find_runs</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">sorting</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;start_time&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]):</span>
+            <span class="k">return</span> <span class="n">run</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span>
+
+        <span class="n">run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_conf</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_conf</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;MLflow Run URL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">run</span></div>
+
+
+<div class="viewcode-block" id="MlflowRunMixin"><a class="viewcode-back" href="../../../rst/mlflow/traits.html#mlopus.mlflow.MlflowRunMixin">[docs]</a><span class="k">class</span> <span class="nc">MlflowRunMixin</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin for pydantic classes that hold a reference to a `MlflowRunManager`.&quot;&quot;&quot;</span>
+
+    <span class="n">run_manager</span><span class="p">:</span> <span class="n">MlflowRunManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;mlflow&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
