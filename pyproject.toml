@@ -85,7 +85,7 @@ filterwarnings = [
 log_cli_level = "DEBUG"  # to show logs and prints, run pytest with: -s
 addopts = "--cov mlopus --cov-report term --cov-report html"
 
-[tool.coverage.run]
+[tool.coverage.report]
 omit = ["src/mlopus/mlflow/providers/generic.py"]
 
 # === Ruff ========================================================================================
