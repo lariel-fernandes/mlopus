@@ -1,7 +1,19 @@
+import types
 import typing
 from typing import Any, TypeVar, Type, Callable, Set
 
 T = TypeVar("T")  # Any type
+
+NoneType = type(None)
+
+
+def is_optional(annotation: type | Type[T]) -> bool:
+    """Tell if typing annotation is an optional."""
+    return (
+        (origin := typing.get_origin(annotation)) is types.UnionType
+        or origin is typing.Union
+        and any(arg is NoneType for arg in typing.get_args(annotation))
+    )
 
 
 def assert_isinstance(subject: Any, type_: type):

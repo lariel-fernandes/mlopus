@@ -1,4 +1,5 @@
 import functools
+import inspect
 from collections.abc import Mapping
 from typing import Any, Type, TypeVar, Dict, Union
 
@@ -73,6 +74,16 @@ class EmptyStrAsMissing(_BaseModelV1):
         return {k: v for k, v in values.items() if v != ""}
 
 
+class EmptyDictAsMissing(_BaseModelV1):
+    """Mixin for BaseModel."""
+
+    @root_validator(pre=True)  # noqa
+    @classmethod
+    def _handle_empty_dict(cls, values: dict) -> dict:
+        """Handles empty dicts in input as missing values."""
+        return {k: v for k, v in values.items() if v != {}}
+
+
 class ExcludeEmptyMixin(_BaseModelV1):
     """Mixin for BaseModel."""
 
@@ -83,6 +94,24 @@ class ExcludeEmptyMixin(_BaseModelV1):
             if common.is_empty(getattr(self, field)):
                 kwargs["exclude"][field] = True
         return super().dict(**kwargs)
+
+
+class HashableMixin:
+    """Mixin for BaseModel."""
+
+    def __hash__(self):
+        """Fixes: TypeError: unhashable type."""
+        return id(self)
+
+
+class SignatureMixin:
+    """Mixin for BaseModel."""
+
+    def __getattribute__(self, attr: str) -> Any:
+        """Fixes: AttributeError: '__signature__' attribute of '...' is class-only."""
+        if attr == "__signature__":
+            return inspect.signature(self.__init__)
+        return super().__getattribute__(attr)
 
 
 class MappingMixin(_BaseModelV1, Mapping):

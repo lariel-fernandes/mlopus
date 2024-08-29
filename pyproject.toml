@@ -35,6 +35,7 @@ dependencies = [
 Repository = "https://github.com/lariel-fernandes/mlopus"
 
 [project.optional-dependencies]
+kedro = ["kedro ~=0.19"]
 search = ["mongomock ~=4.1"]
 mlflow = ["mlflow-skinny ~=2.9"]
 
@@ -46,6 +47,7 @@ generic = "mlopus.mlflow.providers.generic:GenericMlflowApi"
 
 [tool.uv]
 dev-dependencies = [
+    "annoy           ~=1.17",
     "numpy           ~=2.1",
     "pandas          ~=2.2",
     "pytest          ~=7.2",

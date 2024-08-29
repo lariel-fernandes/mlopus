@@ -43,6 +43,21 @@ def map_leaf_vals(data: dict, mapper: callable) -> dict:
     return new
 
 
+def get_nested(_dict: Mapping, keys: Sequence[Hashable], default: Any = _MISSING) -> Any:
+    """Given keys [a, b, c], return _dict[a][b][c]"""
+    target = _dict
+
+    for idx, key in enumerate(keys):
+        try:
+            target = target[key]
+        except KeyError:
+            if default is _MISSING:
+                raise KeyError(keys[0 : idx + 1])  # noqa
+            return default
+
+    return target
+
+
 def set_nested(_dict: Dict[Hashable, Any], keys: Sequence[Hashable], value: Any) -> Dict[Hashable, Any]:
     """Given keys [a, b, c], set _dict[a][b][c] = value"""
     target = _dict
@@ -54,6 +69,20 @@ def set_nested(_dict: Dict[Hashable, Any], keys: Sequence[Hashable], value: Any)
 
     target[keys[-1]] = value
     return _dict
+
+
+def has_nested(_dict: Dict[Hashable, Any], keys: Sequence[Hashable]) -> bool:
+    """Given keys [a, b, c], tell if `_dict[a][b][c]` exists."""
+    try:
+        get_nested(_dict, keys)
+        return True
+    except KeyError:
+        return False
+
+
+def new_nested(keys: Sequence[Hashable], value: Any) -> Dict[Hashable, Any]:
+    """Given keys [a, b, c], produce {a: {b: {c: value}}}"""
+    return set_nested({}, keys, value)
 
 
 def filter_empty_leaves(dict_: Mapping) -> dict:

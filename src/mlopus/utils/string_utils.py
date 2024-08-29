@@ -3,6 +3,13 @@ import re
 from typing import Callable
 
 
+class _Patterns:
+    """Pre-compiled patterns."""
+
+    a = re.compile(r"(.)([A-Z][a-z]+)")
+    b = re.compile(r"([a-z0-9])([A-Z])")
+
+
 def escape_sql_single_quote(text: str) -> str:
     """Single quote escape for SQL strings."""
     return text.replace("'", "''")
@@ -11,6 +18,12 @@ def escape_sql_single_quote(text: str) -> str:
 def unscape_sql_single_quote(text: str) -> str:
     """Revert single quote escape in SQL string."""
     return text.replace("''", "'")
+
+
+def camel_to_snake(name: str):
+    """Convert CamelCase string to snake_case"""
+    name = _Patterns.a.sub(r"\1_\2", name)
+    return _Patterns.b.sub(r"\1_\2", name).lower()
 
 
 def retval_matches(pattern: re.Pattern, index: int = None):

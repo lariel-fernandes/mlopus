@@ -1,10 +1,14 @@
+import functools
 from dataclasses import is_dataclass, asdict
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import yaml
+
 from mlopus.utils import typing_utils, import_utils, pydantic, time_utils
+
+loads = functools.partial(yaml.load, Loader=yaml.Loader)
 
 
 class Dumper(yaml.Dumper):
