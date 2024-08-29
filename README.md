@@ -20,8 +20,18 @@ A collection of MLOps tools for AI/ML/DS research and development.
   - Artifacts catalog for type-safe, configuration-based artifact loading/downloading in serving applications.
 
 
+- **Extended Kedro support:**
+  - Dynamic pipeline and hook evaluation with direct access to the Kedro config loader.
+  - Artifact Schemas can be used in the Kedro datasets catalog.
+  - Extend the Kedro CLI with project-specific options, callbacks and param modifiers.
+  - Artifacts hook to set up pipeline inputs and/or collect outputs (optionally schema-aware).
+  - Highly customizable MLflow tracker hook for storing any pipeline information in experiment runs.
+
 Check the [tutorials](https://github.com/lariel-fernandes/mlopus/tree/main/examples)
 for a friendly walkthrough of (almost) everything you can do with MLOpus.
+
+Have a look at the [architecture guide](docs/architecture.md)
+for an overview of how these and other features work.
 
 A minimal API reference is also available [here](https://lariel-fernandes.github.io/mlopus/docs/api/latest).
 
@@ -33,18 +43,19 @@ A minimal API reference is also available [here](https://lariel-fernandes.github
 **Optional extras:**
 - `mlflow`: Enables support for the default MLflow plugin, which handles communication with open-source MLflow servers.
 - `search`: Enables searching entities with MongoDB query syntax
+- `kedro`: Enables Kedro tools (e.g.: hooks, datasets, CLI extensions, etc)
 
 **Using pip:**
 ```bash
-pip install mlopus[mlflow,search]
+pip install mlopus[mlflow,kedro,search]
 ```
 
 **Using Poetry:**
 ```bash
-poetry add mlopus --extras "mlflow,search"
+poetry add mlopus --extras "mlflow,kedro,search"
 ```
 
 **Using UV:**
 ```bash
-uv add mlopus --extra mlflow --extra search
+uv add mlopus --extra mlflow --extra kedro --extra search
 ```
