@@ -1,3 +1,9 @@
+## 0.3.0 (2024-08-29)
+
+### Feat
+
+- kedro hooks, datasets, config loader and session patch
+
 ## 0.2.1 (2024-08-27)
 
 ### Fix
