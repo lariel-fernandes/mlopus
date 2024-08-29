@@ -1,0 +1,30 @@
+# This is a detailed, comprehensive configuration for `mlopus.mlflow.traits.MlflowRunManager`
+# For a minimal version of it, have a look at:
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/base/globals/mlflow.yml
+
+mlflow:  # Arguments for `mlopus.mlflow.traits.MlflowRunManager`
+  # This object is responsible for resuming, finding or creating an MLflow run that will be shared among
+  # all nodes/datasets/hooks with the trait `MlflowRunMixin` that reference this configuration block.
+
+  exp:  # Arguments for `mlopus.mlflow.traits.ExpConf`
+    name: mlopus_kedro_example  # Find/create the shared MLflow run in this experiment.
+                                # Only used if `run.id` is not specified.
+
+  run:  # Arguments for `mlopus.mlflow.traits.RunConf`
+
+    id: ""  # Override this to resume a previous run. If specified, `name` and `tags` are not used.
+    name: ""  # Defaults to a random name (only used if `id` is not specified).
+    tags:  # Tags for finding or creating the shared MLflow run (only used if `id` is not specified).
+      kedro:
+        active_session:
+          uuid: ${session:uuid}
+
+  api:  # Arguments for `mlopus.mlflow.get_api()`
+
+    plugin: "mlflow"  # Choice of API plugin. See `mlopus.mlflow.list_api_plugins()` (this is the default)
+
+#    cls: ""  # Choice of API class (e.g.: package.module:Class). Incompatible with `plugin`.
+
+    conf:  # Arguments for the selected API plugin/class. See `mlopus.mlflow.api_conf_schema()`
+      tracking_uri: ${env:MLFLOW_TRACKING_URI,"~/.cache/mlflow"}
+      cache_dir: ""  # Defaults to `~/.cache/mlopus/mlflow-providers/mlflow/<hashed_tracking_uri>`

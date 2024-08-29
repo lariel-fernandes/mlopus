@@ -1,0 +1,36 @@
+# This is a detailed, comprehensive configuration for `mlopus.kedro.hooks.MlflowArtifacts`
+# For a minimal version of it, have a look at:
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/base/parameters/hooks/mlflow_artifacts.yml
+
+mlflow_artifacts:  # Arguments for `mlopus.kedro.hooks.MlflowArtifacts`
+
+  mlflow: ${globals:mlflow}  # Arguments for `mlopus.mlflow.traits.MlflowRunManager`
+
+  inputs:  # Artifacts to be fetched before a pipeline runs
+
+  - path: data/...    # Path to place the artifact in
+    overwrite: true    # Overwrite `path` is exists (defaults to `true)
+    pipelines: []    # Enabled this intput for these pipelines only. Defaults to any pipeline.
+    link: true    # Place artifact as symlink to the artifacts cache (default is true). If false, make a copy instead.
+    subject: {model_name: "", model_version: ""}    # Get artifact from this model version
+#    subject: {run_id: "", path_in_run: ""}  # Get artifact from this exp run (defaults to the shared MLflow run)
+    log_lineage: true  # Register this input in the experiment run (defaults to `true`)
+    schema: default    # Fully qualified name of an artifact schema class (e.g.: package.module:Class).
+                       # Or an alias to an artifact schema previously registered for this model or experiment.
+                       # Used for verifying the files after fetching. Defaults to no schema.
+
+    # Extra arguments for `mlopus.artschema.load_artifact` are also accepted here (e.g.: loader_conf, skip_reqs_check)
+
+  outputs:  # Artifacts to be collected and logged after a pipeline runs
+
+  - path: data/...    # Path to collect the artifact from
+    pipelines: []    # Enabled this output for these pipelines only. Defaults to any pipeline.
+    subject: {model_name: ""}    # Log artifact as a new version of this model (also accepts: `tags`, `stage`)
+#    subject: {path_in_run: ""}  # Log artifact to this exp run (defaults to the shared MLflow run)
+    log_lineage: true  # Register this output in the experiment run (defaults to `true`)
+    schema: default    # Fully qualified name of an artifact schema class (e.g.: package.module:Class).
+                       # Or an alias to an artifact schema previously registered for this model or experiment.
+                       # Used for verifying the files before uploading. Defaults to no schema.
+
+    # Extra arguments for `mlopus.artschema.log_model_version` or `mlopus.artschema.log_run_artifact` are
+    # also accepted here (e.g.: dumper_conf, skip_reqs_check, auto_register, use_cache, keep_the_source, etc.)

@@ -1,0 +1,28 @@
+# This is a detailed, comprehensive configuration for
+# For a minimal version of it, have a look at:
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/base/catalog.yml
+model:
+  type: mlopus.kedro.datasets.ArtifactSchemaDataset
+  path: data/model  # Save/load data to/from this path
+  overwrite: true  # Overwrite path if exists (defaults to `true`)
+
+  schema: default  # Fully qualified name of an artifact schema class (e.g.: package.module:Class).
+                   # Or an alias to an artifact schema previously registered for the `subject`.
+                   # The Dumper/Loader in this schema will be used for saving/loading the data.
+
+  subject: '...' # Subject for schema inference by alias (only required if `schema` is an alias)
+                # Infer from experiment tags: {exp_name: ...}
+                # Infer from run tags: {run_id: ...}
+                # Infer from model tags: {model_name: ...}
+                # Infer from model version tags: {model_name: ..., model_version: ...}
+                # Default is `{run_id: ...}` using the session's shared MLflow run.
+
+  mlflow: ${globals:mlflow}  # Arguments for `mlopus.mlflow.traits.MlflowRunManager`
+                             # Only required if `subject` is specified.
+
+  skip_reqs_check: false  # Ignore the schema's Python package requirements (defaults to `false`).
+                          # Only used if `schema` is an alias.
+
+  dumper: {'...': null} # Keyword arguments for the `Dumper` class in the chosen schema
+
+  loader: {'...': null} # Keyword arguments for the `Loader` class in the chosen schema

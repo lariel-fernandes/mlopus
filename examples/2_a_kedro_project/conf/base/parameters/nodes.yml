@@ -1,0 +1,11 @@
+build_vectors:  # Arguments for `mlopus_kedro_example.nodes.BuildVectors`
+  N: 99  # num vectors
+  D: 20  # vector size
+  seed: 42  # seed for randomizing vectors
+
+build_model:  # Arguments for `mlopus_kedro_example.nodes.BuildModel`
+  trees: 20  # num trees
+  metric: angular  # distance metric
+
+eval_model:  # Arguments for `mlopus_kedro_example.nodes.EvalModel`
+  k_values: [3, 10, 20, 50]  # Options of K for evaluating the min/avg score at K

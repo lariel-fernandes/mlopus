@@ -1,0 +1,119 @@
+# This is a detailed, comprehensive configuration for `mlopus.kedro.hooks.MlflowTracker`
+# For a minimal version of it, have a look at:
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/base/parameters/hooks/mlflow_tracker.yml
+
+mlflow_tracker:  # Arguments for `mlopus.kedro.hooks.MlflowTracker`
+
+  mlflow: ${globals:mlflow}  # Arguments for `mlopus.mlflow.traits.MlflowRunManager`
+
+  logs:
+    enabled: true  # Save session logs to run artifacts (defaults to `true`)
+    path: logs  # Target dir in run artifacts (this is the default)
+
+    files: # Log files to be saved
+
+    - path: logs/info.log
+      alias: info.log  # Save file with this name (defaults to original file name)
+      cleanup: true  # Cleanup this file on session start (defaults to `true`)
+
+  report:
+    enabled: true  # Save session report to run artifacts (defaults to `true`)
+    path: kedro-session.yml  # Report file in run artifacts (this is the default)
+
+  tags:
+    report: false  # include these tags in session report (defaults to `false`)
+    values: {}
+
+    mlflow:
+      enabled: true  # Set these tags in the MLflow run (defaults to `true` if the `tags` block exists)
+      prefix: []  # Prefix for all tag keys (tag key comes after this)
+      suffix: []  # Suffix for all tag keys (tag val comes after this)
+
+  metrics:
+    report: true  # Include metrics in session report (defaults to `true` if the `metrics` block exists)
+
+    datasets: []  # List of dataset names to be used as metrics. Nodes that output data to such
+                  # datasets should return either a float or a (possibly nested) dict of floats.
+
+    mlflow:
+      enabled: true  # Include metrics in MLflow run metrics (defaults to `true` if the `metrics` block exists)
+      prefix: []  # Prefix for MLflow metric keys (dataset name comes after this)
+      suffix: []  # Suffix for MLflow metric keys (metric value comes after this)
+
+  params:
+    enabled: true  # Include extracted params in session report (defaults to `true` if `params` block exists)
+
+    mappings:  # Arbitrary mappings for extracting params from each pipeline
+      pipeline_name:
+      - tgt: evaluation  # Target param path/namespace in the report and/or MLflow params
+        src: parameters.nodes.eval_model # Source param path (can point to any key inside any scope of the Kedro config)
+
+    mlflow:
+      enabled: true  # Include extracted params in MLflow run params (defaults to `true` if `params` block exists)
+      prefix: []   # Prefix for MLflow metric keys (param key comes after this)
+      suffix: []   # Suffix for MLflow metric keys (param val comes after this)
+
+  overrides:
+    report: true  # Include runtime params (overrides) in report (defaults to `true` if `overrides` block exists)
+
+    scopes: [globals, catalog, parameters]  # Scopes of runtime params to include in report
+
+    rules: # Rules for including/excluding top-level keys from any scope of runtime params
+    - effect: exclude-all  # Exclude all runtime param keys matching this rule
+      keys: []  # Match rule if key is in list
+      expr: [mlflow.*]  # Match rule if key matches any of these expressions
+
+    mlflow:
+      enabled: false  # Include runtime params in MLflow run params (defaults to `false`)
+      scopes: [parameters]  # Config scopes to include in MLflow params (a subset of the scopes above)
+      rules: []  # Rules for including/excluding runtime param keys from MLflow run params (extends previous rules)
+      prefix: [overrides]  # Prefix for MLflow param keys (scope name comes after this)
+      suffix: []  # Suffix for MLflow param keys (param val comes after this)
+
+  config:
+    report: true  # Include Kedro config in session report (defaults to `true` if `config` block exists)
+
+    scopes: [globals, catalog, parameters]  # Config scopes to include in report
+
+    rules:  # Rules for including/excluding top-level keys from any config scope
+    - effect: exclude-all  # Exclude all config keys matching this rule
+      keys: []  # Match rule if key is in list
+      expr: [mlflow.*]  # Match rule if key matches any of these expressions
+
+    mlflow:
+      enabled: false  # Include Kedro config in MLflow run params (defaults to `false`)
+      scopes: [parameters]  # Config scopes to include in MLflow params (a subset of the scopes above)
+      rules: []  # Rules for including/excluding config keys from MLflow run params (extends previous rules)
+      prefix: []  # Prefix for MLflow param keys (scope name comes after this)
+      suffix: []  # Suffix for MLflow param keys (param val comes after this)
+
+  nodes:
+    report: true  # Include node function representations in session report (defaults to `true`)
+
+    rules:  # Rules for including/excluding nodes
+    - effect: exclude-all  # Exclude all nodes matching this rule (alternative: `include-only`)
+      names: []  # Match rule if node name is in list
+      expr: []  # Match rule if node name matches any of these expressions
+      tags: []  # Match rule if node has any of these tags
+
+    mlflow:
+      enabled: false  # Include node func representations in MLflow run params (default is `true` if `mlflow` block)
+      prepend_pipeline: true  # Prepend pipeline name to node name key
+      rules: []  # Rules for including/excluding nodes from MLflow run params (extends previous rules)
+      prefix: [nodes]  # Prefix for MLflow param keys (node or pipeline name comes after this)
+      suffix: []  # Suffix for MLflow param keys (param val comes after this)
+
+  datasets:
+    report: true  # Include dataset conf representations in session report (defaults to `true`)
+    allow_non_pydantic: false  # Allow tracking conf of datasets that are not pydantic objs (unsafe, defaults to false)
+
+    rules: # Rules for including/excluding datasets
+    - effect: exclude-all  # Exclude all matching this rule (alternative: `include-only`)
+      names: []  # Match rule if dataset name is in list
+      expr: []  # Match rule if dataset name matches any of these expressions
+
+    mlflow:
+      enabled: false  # Include dataset conf representations in MLflow run params (default is `true` if `mlflow` block)
+      rules: []   # Rules for including/excluding datasets from MLflow run params (extends previous rules)
+      prefix: [datasets]  # Prefix for MLflow param keys (dataset name comes after this)
+      suffix: []   # Suffix for MLflow param keys (param val comes after this)

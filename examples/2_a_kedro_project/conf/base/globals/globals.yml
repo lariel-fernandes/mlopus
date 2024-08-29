@@ -1,0 +1,8 @@
+chain_id: ""  # Optional identifier for chaining pipelines
+
+data: ./data  # Base path for data files
+
+model:
+  name: mlopus_kedro_example
+  version: ""
+  schema: mlopus_kedro_example.artschema:AnnModelSchema

@@ -1,0 +1,76 @@
+
+# === Project =====================================================================================
+
+[project]
+name = "mlopus-kedro-example"
+version = "0.0.0"
+readme = "README.md"
+description = "MLOpus Kedro example"
+requires-python = ">=3.10,<4"
+authors = [{name = "Lariel Fernandes", email = "lariel.c2.fernandes@gmail.com"}]
+classifiers = [
+    "Environment :: Console",
+    "Operating System :: Unix",
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Information Technology",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "numpy ~=1.26",
+    "annoy ~=1.17",
+]
+
+[project.optional-dependencies]
+pipelines = ["mlopus[mlflow,kedro,search]"]
+
+# === UV ==========================================================================================
+
+[tool.uv]
+dev-dependencies = [
+    "pandas     ~=2.2",
+    "pytest     ~=7.2",
+    "jupyter    ~=1.0",
+    "devtools   ~=0.12",
+    "papermill  ~=2.6",
+    "matplotlib ~=3.9",
+    "pytest-env      ~=1.1",
+    "pytest-coverage ~=0.0",
+]
+
+[tool.uv.sources]
+mlopus = { path = "../../", editable = true }
+
+# === Kedro =======================================================================================
+
+[tool.kedro]
+project_name = "mlopus-kedro-example"
+package_name = "mlopus_kedro_example"
+kedro_init_version = "0.19.5"
+
+[tool.kedro_telemetry]
+project_id = "2ffe7425fe654c9199196a18a5963720"
+
+# === Pytest ======================================================================================
+
+[tool.pytest_env]
+KEDRO_LOGGING_CONFIG = "src/tests/conf/logging.yml"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning:mlopus.artschema.tags",
+]
+log_cli_level = "DEBUG"  # to show logs and prints, run pytest with: -s
+addopts = "--cov mlopus_kedro_example --cov-report term --cov-report html"
+
+[tool.coverage.run]
+omit = [
+    "src/*/settings.py",
+    "src/*/testing.py",
+    "src/*/exceptions.py",
+    "src/*/pipeline_registry",
+]

@@ -1,0 +1,7 @@
+# This is a minimal configuration for `mlopus.kedro.datasets.ArtifactSchemaDataset`
+# For a fully commented example covering all settings that can be customized in this dataset, have a look at:
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/full/catalog.yml
+model:
+  type: mlopus.kedro.datasets.ArtifactSchemaDataset
+  path: ${globals:data}/model  # Save/load data to/from this path
+  schema: ${globals:model.schema}  # using the Dumper/Loader from this artifact schema

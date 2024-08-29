@@ -1,0 +1,47 @@
+# To enable this custom logging configuration, set KEDRO_LOGGING_CONFIG to the path of this file.
+# More information available at https://docs.kedro.org/en/stable/logging/logging.html
+version: 1
+
+disable_existing_loggers: true
+
+formatters:
+  simple:
+    datefmt: '%Y-%m-%d %H:%M:%S'
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+handlers:
+
+  info:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: simple
+    filename: logs/pytest/info.log
+    maxBytes: 10485760 # 10MB
+    backupCount: 20
+    encoding: utf8
+    delay: true
+
+  error:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: simple
+    filename: logs/pytest/error.log
+    maxBytes: 10485760 # 10MB
+    backupCount: 20
+    encoding: utf8
+    delay: true
+
+loggers:
+  kedro:
+    level: DEBUG
+  kedro.config.common:
+    level: DEBUG
+  mlopus:
+    level: DEBUG
+  mlflow:
+    level: DEBUG
+  mlopus_kedro_example:
+    level: DEBUG
+
+root:
+  handlers: [info, error]
