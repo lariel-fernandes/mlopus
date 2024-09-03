@@ -42,11 +42,17 @@ class _LineageInfo(pydantic.BaseModel, pydantic.ExcludeEmptyMixin):
 
         repr_empty: bool = False
 
-    runs: Dict[str, Set[str]] = pydantic.Field({}, arg_type=_RunLineageArg)
-    """Mapping of `run_id` -> `[path_in_run]`"""
+    runs: Dict[str, Set[str]] = pydantic.Field(
+        default={},
+        arg_type=_RunLineageArg,
+        description="Mapping of `run_id` -> `[path_in_run]`",
+    )
 
-    models: Dict[str, Set[str]] = pydantic.Field({}, arg_type=_ModelLineageArg)
-    """Mapping of `model_name` -> `[versions]`"""
+    models: Dict[str, Set[str]] = pydantic.Field(
+        default={},
+        arg_type=_ModelLineageArg,
+        description="Mapping of `model_name` -> `[versions]`",
+    )
 
     @property
     def runs_by_path(self) -> Dict[str, Set[str]]:
@@ -85,11 +91,15 @@ class _LineageTags(pydantic.BaseModel, pydantic.ExcludeEmptyMixin):
 
         repr_empty: bool = False
 
-    inputs: Inputs = None
-    """Run inputs."""
+    inputs: Inputs = pydantic.Field(
+        default=None,
+        description="Run inputs.",
+    )
 
-    outputs: Outputs = None
-    """Run outputs."""
+    outputs: Outputs = pydantic.Field(
+        default=None,
+        description="Run outputs.",
+    )
 
     def with_input(self, arg: _LineageArg) -> "_LineageTags":
         """Add input model or run artifact."""
@@ -102,19 +112,35 @@ class _LineageTags(pydantic.BaseModel, pydantic.ExcludeEmptyMixin):
         return self
 
     def with_input_model(self, name: str, version: str | None = None) -> "_LineageTags":
-        """Add input model."""
+        """Add input model.
+
+        :param name: Model name.
+        :param version: Model version.
+        """
         return self.with_input(_ModelLineageArg(name, version))
 
     def with_input_artifact(self, run_id: str, path_in_run: str | None = None) -> "_LineageTags":
-        """Add input run artifact."""
+        """Add input run artifact.
+
+        :param run_id: Run ID.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return self.with_input(_RunLineageArg(run_id, path_in_run))
 
     def with_output_model(self, name: str, version: str | None = None) -> "_LineageTags":
-        """Add output model."""
+        """Add output model.
+
+        :param name: Model name.
+        :param version: Model version.
+        """
         return self.with_output(_ModelLineageArg(name, version))
 
     def with_output_artifact(self, run_id: str, path_in_run: str | None = None) -> "_LineageTags":
-        """Add output run artifact."""
+        """Add output run artifact.
+
+        :param run_id: Run ID.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return self.with_output(_RunLineageArg(run_id, path_in_run))
 
 
@@ -141,7 +167,10 @@ class Lineage(_LineageTags):
 
     @classmethod
     def of(cls, run: RunApi) -> "Lineage":
-        """Parse lineage tags from experiment run with API handle."""
+        """Parse lineage tags from experiment run with API handle.
+
+        :param run: Run metadata with API handle.
+        """
         return cls(run=run, **run.tags.get("lineage", {}))
 
     def register(self) -> "Lineage":
@@ -192,5 +221,8 @@ class Query(_LineageTags):
 
 
 def of(run: RunApi) -> Lineage:
-    """Parse lineage tags from run API."""
+    """Parse lineage tags from run API.
+
+    :param run: Run metadata with API handle.
+    """
     return Lineage.of(run)

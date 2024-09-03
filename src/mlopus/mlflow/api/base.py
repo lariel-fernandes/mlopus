@@ -1061,115 +1061,191 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def get_exp_url(self, exp: ExpIdentifier) -> str:
-        """Get Experiment URL."""
+        """Get Experiment URL.
+
+        :param exp: Exp ID or object.
+        """
         return str(self._impl_get_exp_url(self._coerce_exp_id(exp)))
 
     @pydantic.validate_arguments
     def get_run_url(self, run: RunIdentifier, exp: ExpIdentifier | None = None) -> str:
-        """Get Run URL."""
+        """Get Run URL.
+
+        :param run: Run ID or object.
+        :param exp: Exp ID or object.
+
+        Caveats:
+            - :paramref:`exp` must be specified on :attr:`~BaseMlflowApi.offline_mode`
+              if :paramref:`run` is an ID and the run metadata is not in cache.
+        """
         exp = self._coerce_run(run).exp if exp is None else exp
         return str(self._impl_get_run_url(self._coerce_run_id(run), self._coerce_exp_id(exp)))
 
     @pydantic.validate_arguments
     def get_model_url(self, model: ModelIdentifier) -> str:
-        """Get URL to registered model."""
+        """Get URL to registered model.
+
+        :param model: Model name or object.
+        """
         return str(self._impl_get_model_url(self._coerce_model_name(model)))
 
     @pydantic.validate_arguments
     def get_model_version_url(self, model_version: ModelVersionIdentifier) -> str:
-        """Get model version URL."""
+        """Get model version URL.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         return str(self._impl_get_mv_url(*self._coerce_mv_tuple(model_version)))
 
     @pydantic.validate_arguments
     def get_exp(self, exp: ExpIdentifier, **cache_opts: bool) -> ExpApi:
-        """Get Experiment API by ID."""
+        """Get Experiment API by ID.
+
+        :param exp: Exp ID or object.
+        """
         return ExpApi(**self._get_exp(self._coerce_exp_id(exp), **cache_opts)).using(self)
 
     @pydantic.validate_arguments
     def get_run(self, run: RunIdentifier, **cache_opts: bool) -> RunApi:
-        """Get Run API by ID."""
+        """Get Run API by ID.
+
+        :param run: Run ID or object.
+        """
         return RunApi(**self._get_run(self._coerce_run_id(run), **cache_opts)).using(self)
 
     @pydantic.validate_arguments
     def get_model(self, model: ModelIdentifier, **cache_opts: bool) -> ModelApi:
-        """Get Model API by name."""
+        """Get Model API by name.
+
+        :param model: Model name or object.
+        """
         return ModelApi(**self._get_model(self._coerce_model_name(model), **cache_opts)).using(self)
 
     @pydantic.validate_arguments
     def get_model_version(self, model_version: ModelVersionIdentifier, **cache_opts: bool) -> ModelVersionApi:
-        """Get ModelVersion API by name and version."""
+        """Get ModelVersion API by name and version.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         return ModelVersionApi(**self._get_mv(self._coerce_mv_tuple(model_version), **cache_opts)).using(self)
 
     @pydantic.validate_arguments
     def find_exps(self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None) -> Iterator[ExpApi]:
-        """Search experiments with query in MongoDB query language."""
+        """Search experiments with query in MongoDB query language.
+
+        :param query: Query in MongoDB query language.
+        :param sorting: Sorting criteria (e.g.: `[("asc_field", 1), ("desc_field", -1)]`).
+        """
         return (ExpApi(**x).using(self) for x in self._find_experiments(query or {}, sorting or []))
 
     @pydantic.validate_arguments
     def find_runs(self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None) -> Iterator[RunApi]:
-        """Search runs with query in MongoDB query language."""
+        """Search runs with query in MongoDB query language.
+
+        :param query: Query in MongoDB query language.
+        :param sorting: Sorting criteria (e.g.: `[("asc_field", 1), ("desc_field", -1)]`).
+        """
         return (RunApi(**x).using(self) for x in self._find_runs(query or {}, sorting or []))
 
     @pydantic.validate_arguments
     def find_models(self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None) -> Iterator[ModelApi]:
-        """Search registered models with query in MongoDB query language."""
+        """Search registered models with query in MongoDB query language.
+
+        :param query: Query in MongoDB query language.
+        :param sorting: Sorting criteria (e.g.: `[("asc_field", 1), ("desc_field", -1)]`).
+        """
         return (ModelApi(**x).using(self) for x in self._find_models(query or {}, sorting or []))
 
     @pydantic.validate_arguments
     def find_model_versions(
         self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None
     ) -> Iterator[ModelVersionApi]:
-        """Search model versions with query in MongoDB query language."""
+        """Search model versions with query in MongoDB query language.
+
+        :param query: Query in MongoDB query language.
+        :param sorting: Sorting criteria (e.g.: `[("asc_field", 1), ("desc_field", -1)]`).
+        """
         return (ModelVersionApi(**x).using(self) for x in self._find_mv(query or {}, sorting or []))
 
     @pydantic.validate_arguments
     def find_child_runs(self, parent: RunIdentifier) -> Iterator[RunApi]:
-        """Find child runs."""
+        """Find child runs.
+
+        :param parent: Run ID or object.
+        """
         return (RunApi(**x).using(self) for x in self._impl_find_child_runs(self._coerce_run(parent)))
 
     @pydantic.validate_arguments
     def cache_exp_meta(self, exp: ExpIdentifier) -> ExpApi:
-        """Get latest Experiment metadata and save to local cache."""
+        """Get latest Experiment metadata and save to local cache.
+
+        :param exp: Experiment ID or object.
+        """
         return self.get_exp(exp, force_cache_refresh=True)
 
     @pydantic.validate_arguments
     def cache_run_meta(self, run: RunIdentifier) -> RunApi:
-        """Get latest Run metadata and save to local cache."""
+        """Get latest Run metadata and save to local cache.
+
+        :param run: Run ID or object.
+        """
         return self.get_run(run, force_cache_refresh=True)
 
     @pydantic.validate_arguments
     def cache_model_meta(self, model: ModelIdentifier) -> ModelApi:
-        """Get latest Model metadata and save to local cache."""
+        """Get latest Model metadata and save to local cache.
+
+        :param model: Model name or object.
+        """
         return self.get_model(model, force_cache_refresh=True)
 
     @pydantic.validate_arguments
     def cache_model_version_meta(self, model_version: ModelVersionIdentifier) -> ModelVersionApi:
-        """Get latest model version metadata and save to local cache."""
+        """Get latest model version metadata and save to local cache.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         return self.get_model_version(model_version, force_cache_refresh=True)
 
     @pydantic.validate_arguments
     def export_exp_meta(self, exp: ExpIdentifier, target: Path) -> ExpApi:
-        """Export experiment metadata cache to target."""
+        """Export experiment metadata cache to target.
+
+        :param exp: Experiment ID or object.
+        :param target: Cache export path.
+        """
         self._export_meta(exp := self.get_exp(id_ := self._coerce_exp_id(exp)), self._get_exp_cache(id_), target)
         return exp
 
     @pydantic.validate_arguments
     def export_run_meta(self, run: RunIdentifier, target: Path) -> RunApi:
-        """Export run metadata cache to target."""
+        """Export run metadata cache to target.
+
+        :param run: Run ID or object.
+        :param target: Cache export path.
+        """
         self._export_meta(run := self.get_run(id_ := self._coerce_run_id(run)), self._get_run_cache(id_), target)
         self.export_exp_meta(run.exp, target)
         return run
 
     @pydantic.validate_arguments
     def export_model_meta(self, model: ModelIdentifier, target: Path) -> ModelApi:
-        """Export model metadata cache to target."""
+        """Export model metadata cache to target.
+
+        :param model: Model name or object.
+        :param target: Cache export path.
+        """
         name = self._coerce_model_name(model)
         self._export_meta(model := self.get_model(name), self._get_model_cache(name), target)
         return model
 
     @pydantic.validate_arguments
     def export_model_version_meta(self, mv: ModelVersionIdentifier, target: Path) -> ModelVersionApi:
-        """Export model version metadata cache to target."""
+        """Export model version metadata cache to target.
+
+        :param mv: Model version object or `(name, version)` tuple.
+        :param target: Cache export path.
+        """
         tup = self._coerce_mv_tuple(mv)
         self._export_meta(mv := self.get_model_version(tup), self._get_mv_cache(*tup), target)
         self.export_model_meta(mv.model, target)
@@ -1177,12 +1253,19 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def create_exp(self, name: str, tags: Mapping | None = None) -> ExpApi:
-        """Create Experiment and return its API."""
+        """Create Experiment and return its API.
+
+        :param name: See :attr:`schema.Experiment.name`.
+        :param tags: See :attr:`schema.Experiment.tags`.
+        """
         return ExpApi(**self._create_exp(name, tags or {})).using(self)
 
     @pydantic.validate_arguments
     def get_or_create_exp(self, name: str) -> ExpApi:
-        """Get or create Experiment and return its API."""
+        """Get or create Experiment and return its API.
+
+        :param name: See :attr:`schema.Experiment.name`.
+        """
         for exp in self._find_experiments({"name": name}, []):
             break
         else:
@@ -1192,12 +1275,19 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def create_model(self, name: str, tags: Mapping | None = None) -> ModelApi:
-        """Create registered model and return its API."""
+        """Create registered model and return its API.
+
+        :param name: See :attr:`schema.Model.name`.
+        :param tags: See :attr:`schema.Model.tags`.
+        """
         return ModelApi(**self._create_model(name, tags or {})).using(self)
 
     @pydantic.validate_arguments
     def get_or_create_model(self, name: str) -> ModelApi:
-        """Get or create registered Model and return its API."""
+        """Get or create registered Model and return its API.
+
+        :param name: See :attr:`schema.Model.name`.
+        """
         for model in self._find_models({"name": name}, []):
             break
         else:
@@ -1214,7 +1304,14 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         repo: str | urls.Url | None = None,
         parent: RunIdentifier | None = None,
     ) -> RunApi:
-        """Declare a new experiment run to be used later."""
+        """Declare a new experiment run to be used later.
+
+        :param exp: Experiment ID or object.
+        :param name: See :attr:`schema.Run.name`.
+        :param tags: See :attr:`schema.Run.tags`.
+        :param repo: (Experimental) Cloud storage URL to be used as alternative run artifacts repository.
+        :param parent: Parent run ID or object.
+        """
         return RunApi(**self._create_run(exp, name, repo, tags or {}, schema.RunStatus.SCHEDULED, parent)).using(self)
 
     @pydantic.validate_arguments
@@ -1226,18 +1323,32 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         repo: str | urls.Url | None = None,
         parent: RunIdentifier | None = None,
     ) -> RunApi:
-        """Start a new experiment run."""
+        """Start a new experiment run.
+
+        :param exp: Experiment ID or object.
+        :param name: See :attr:`schema.Run.name`.
+        :param tags: See :attr:`schema.Run.tags`.
+        :param repo: (Experimental) Cloud storage URL to be used as alternative run artifacts repository.
+        :param parent: Parent run ID or object.
+        """
         return RunApi(**self._create_run(exp, name, repo, tags or {}, schema.RunStatus.RUNNING, parent)).using(self)
 
     @pydantic.validate_arguments
     def resume_run(self, run: RunIdentifier) -> RunApi:
-        """Resume a previous experiment run."""
+        """Resume a previous experiment run.
+
+        :param run: Run ID or object.
+        """
         self._set_run_status(run_id := self._coerce_run_id(run), schema.RunStatus.RUNNING)
         return self.get_run(run_id)
 
     @pydantic.validate_arguments
     def end_run(self, run: RunIdentifier, succeeded: bool = True) -> RunApi:
-        """End experiment run."""
+        """End experiment run.
+
+        :param run: Run ID or object.
+        :param succeeded: Whether the run was successful.
+        """
         status = schema.RunStatus.FINISHED if succeeded else schema.RunStatus.FAILED
         self._set_run_status(run_id := self._coerce_run_id(run), status)
         self._set_run_end_time(run_id, datetime.now())
@@ -1245,30 +1356,54 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def set_tags_on_exp(self, exp: ExpIdentifier, tags: Mapping):
-        """Set tags on experiment."""
+        """Set tags on experiment.
+
+        :param exp: Experiment ID or object.
+        :param tags: See :attr:`schema.Experiment.tags`.
+        """
         self._update_exp_tags(exp, tags)
 
     @pydantic.validate_arguments
     def set_tags_on_run(self, run: RunIdentifier, tags: Mapping):
-        """Set tags on experiment run."""
+        """Set tags on experiment run.
+
+        :param run: Run ID or object.
+        :param tags: See :attr:`schema.Run.tags`.
+        """
         self._update_run_tags(run, tags)
 
     @pydantic.validate_arguments
     def set_tags_on_model(self, model: ModelIdentifier, tags: Mapping):
-        """Set tags on registered model."""
+        """Set tags on registered model.
+
+        :param model: Model name or object.
+        :param tags: See :attr:`schema.Model.tags`.
+        """
         self._update_model_tags(model, tags)
 
     @pydantic.validate_arguments
     def set_tags_on_model_version(self, model_version: ModelVersionIdentifier, tags: Mapping):
-        """Set tags on model version."""
+        """Set tags on model version.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        :param tags: See :attr:`schema.Model.tags`.
+        """
         self._update_mv_tags(model_version, tags)
 
     @pydantic.validate_arguments
     def log_params(self, run: RunIdentifier, params: Mapping):
-        """Log params to experiment run."""
+        """Log params to experiment run.
+
+        :param run: Run ID or object.
+        :param params: See :attr:`schema.Run.params`.
+        """
         self._log_run_params(run, params)
 
     @pydantic.validate_arguments
     def log_metrics(self, run: RunIdentifier, metrics: Mapping):
-        """Log metrics to experiment run."""
+        """Log metrics to experiment run.
+
+        :param run: Run ID or object.
+        :param metrics: See :attr:`schema.Run.metrics`.
+        """
         self._log_run_metrics(run, metrics)

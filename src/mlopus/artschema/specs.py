@@ -157,14 +157,20 @@ class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
     """Specification for loading an artifact."""
 
     schema_: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = pydantic.Field(
-        default_factory=_DummySchema, alias="schema", description="See :paramref:`load_artifact.schema`"
+        alias="schema",
+        default_factory=_DummySchema,
+        description="See :paramref:`load_artifact.schema`",
     )
 
     loader_conf: Dict[str, Any] | None = pydantic.Field(
-        default=None, description="See :paramref:`Schema.get_loader.loader`"
+        default=None,
+        description="See :paramref:`Schema.get_loader.loader`",
     )
 
-    skip_reqs_check: bool = pydantic.Field(default=False, description="See :paramref:`load_artifact.skip_reqs_check`")
+    skip_reqs_check: bool = pydantic.Field(
+        default=False,
+        description="See :paramref:`load_artifact.skip_reqs_check`",
+    )
 
     subject: ArtifactSubject[T, LA] = pydantic.Field(
         description=(
@@ -243,20 +249,60 @@ class LogArtifactSpec(MlflowApiMixin, Generic[T, LA]):
     """Specification for logging an artifact."""
 
     schema_: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = pydantic.Field(
-        alias="schema", default_factory=_DummySchema
+        alias="schema",
+        default_factory=_DummySchema,
+        description="See :paramref:`load_artifact.schema`",
     )
-    dumper_conf: Dict[str, Any] | None = None
-    skip_reqs_check: bool = False
-    auto_register: bool | Dict[str, Any] = False
-    keep_the_source: bool | None = None
-    allow_duplication: bool | None = None
-    use_cache: bool | None = None
-    subject: ArtifactSubject[T, LA]
+
+    dumper_conf: Dict[str, Any] | None = pydantic.Field(
+        default=None,
+        description="See :paramref:`Schema.get_dumper.dumper`",
+    )
+
+    skip_reqs_check: bool = pydantic.Field(
+        default=False,
+        description="See :paramref:`load_artifact.skip_reqs_check`",
+    )
+
+    auto_register: bool | Dict[str, Any] = pydantic.Field(
+        default=False,
+        description="See :paramref:`log_run_artifact.auto_register` and :paramref:`log_model_version.auto_register`",
+    )
+
+    keep_the_source: bool | None = pydantic.Field(
+        default=None,
+        description="See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.keep_the_source`",
+    )
+
+    allow_duplication: bool | None = pydantic.Field(
+        default=None,
+        description="See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.allow_duplication`",
+    )
+
+    use_cache: bool | None = pydantic.Field(
+        default=None,
+        description="See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.use_cache`",
+    )
+
+    subject: ArtifactSubject[T, LA] = pydantic.Field(
+        description=(
+            "Instance (or `dict` to be parsed into instance) of :class:`RunArtifact` or :class:`ModelVersionArtifact`. "
+            "See also: :paramref:`load_artifact.subject`."
+        )
+    )
 
     _parse_subject = pydantic.validator("subject", pre=True, allow_reuse=True)(_parse_subject)
 
     def log(self, artifact: A | dict | Path, schema: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = None) -> T:
-        """Log artifact."""
+        """Log artifact.
+
+        See also:
+            - :meth:`mlopus.mlflow.RunApi.log_artifact`
+            - :meth:`mlopus.mlflow.ModelApi.log_version`
+
+        :param schema: | Override :attr:`schema_`
+        :param artifact: | See :paramref:`Schema.get_dumper.artifact`
+        """
         return self._log(artifact, schema)[1]
 
     def _log(

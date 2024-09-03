@@ -142,4 +142,4 @@ select = [
     "TID",
     "SIM",
 ]
-ignore = []
+ignore = ["E501"]
