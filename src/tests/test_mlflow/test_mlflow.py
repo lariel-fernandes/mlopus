@@ -178,8 +178,8 @@ class TestMlflow(ApiTester[API]):
             assert "foo" not in run.tags
             assert "foo" not in run.params
 
-        api.data_translation.compress_long_tags = True
-        api.data_translation.compress_long_params = True
+        api.data_translation.tags_compression = True
+        api.data_translation.param_compression = True
 
         with (
             self._ctx_exp(request, api, "test2", {}) as exp_id,

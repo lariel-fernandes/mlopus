@@ -80,9 +80,9 @@ class MlflowDataTranslation(pydantic.BaseModel):
 
     tag_encoding: str = "UTF-8"
     param_encoding: str = "UTF-8"
+    tags_compression: bool = False
+    param_compression: bool = False
     ignore_json_errors: bool = True
-    compress_long_tags: bool = False
-    compress_long_params: bool = False
     max_length: MaxLength = MaxLength()
     keep_untouched: KeepUntouched = KeepUntouched()
 
@@ -200,7 +200,7 @@ class MlflowDataTranslation(pydantic.BaseModel):
         val = string_utils.escape_sql_single_quote(json_utils.dumps(val))
 
         if len(val) > self.max_length.tag:
-            if self.compress_long_params and len(val := self._compress_tag(key_parts, val)) <= self.max_length.tag:
+            if self.tags_compression and len(val := self._compress_tag(key_parts, val)) <= self.max_length.tag:
                 logger.debug("Using compression for tag above max length of %s: %s", self.max_length.tag, key_parts)
             else:
                 val = None
@@ -219,7 +219,7 @@ class MlflowDataTranslation(pydantic.BaseModel):
         if self.keep_untouched(key_parts, scope="tags"):
             return val
 
-        if self.compress_long_tags:
+        if self.tags_compression:
             val = self._decompress_tag(key_parts, val)
 
         return json_utils.loads(string_utils.unscape_sql_single_quote(val), ignore_errors=self.ignore_json_errors)
@@ -236,7 +236,7 @@ class MlflowDataTranslation(pydantic.BaseModel):
         val = string_utils.escape_sql_single_quote(json_utils.dumps(val))
 
         if len(val) > self.max_length.param:
-            if self.compress_long_params and len(val := self._compress_param(key_parts, val)) <= self.max_length.param:
+            if self.param_compression and len(val := self._compress_param(key_parts, val)) <= self.max_length.param:
                 logger.debug("Using compression for param above max length of %s: %s", self.max_length.param, key_parts)
             else:
                 val = None
@@ -255,7 +255,7 @@ class MlflowDataTranslation(pydantic.BaseModel):
         if self.keep_untouched(key_parts, scope="params"):
             return val
 
-        if self.compress_long_tags:
+        if self.param_compression:
             val = self._decompress_tag(key_parts, val)
 
         return json_utils.loads(string_utils.unscape_sql_single_quote(val), ignore_errors=self.ignore_json_errors)
