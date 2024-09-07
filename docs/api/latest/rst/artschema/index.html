@@ -8,6 +8,8 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -89,23 +91,13 @@
 <p>This module provides a framework for defining
 reusable dumpers/loaders for custom model/dataset classes.</p>
 <p>Schemas can be used standalone or registered in the tags of MLflow entities
-such as experiments, runs, models and model versions, which allows loading
-artifacts from these entities.</p>
-<p>Then, artifacts associated to those entities can be saved/loaded/verified
-just by providing the alias of a previously registered schema.</p>
+such as experiments, runs, models and model versions. In the second case,
+artifacts associated to those entities can be saved/loaded/verified
+just by providing the alias of a registered schema.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="framework.html">Framework</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="framework.html#mlopus.artschema.Dumper"><code class="docutils literal notranslate"><span class="pre">Dumper</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="framework.html#mlopus.artschema.Loader"><code class="docutils literal notranslate"><span class="pre">Loader</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="framework.html#mlopus.artschema.Schema"><code class="docutils literal notranslate"><span class="pre">Schema</span></code></a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="framework.html">Framework</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tags.html">Tags</a></li>
 <li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="specs.html">Specs &amp; Catalog</a></li>

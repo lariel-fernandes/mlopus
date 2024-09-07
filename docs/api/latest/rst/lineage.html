@@ -8,6 +8,8 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -125,8 +127,11 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <span class="sig-prename descclassname"><span class="pre">mlopus.lineage.</span></span><span class="sig-name descname"><span class="pre">of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlopus/lineage.html#of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.lineage.of" title="Permalink to this definition"></a></dt>
 <dd><p>Parse lineage tags from run API.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#mlopus.lineage.Lineage" title="mlopus.lineage.Lineage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lineage</span></code></a></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="mlopus.lineage.of.params.run"></span><a class="paramname reference internal" href="#mlopus.lineage.of.params.run"><strong>run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.of.params.run">¶</a> (<a class="reference internal" href="mlflow/apis/run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>) – Run metadata with API handle.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#mlopus.lineage.Lineage" title="mlopus.lineage.Lineage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lineage</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -134,7 +139,8 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.lineage.Lineage">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.lineage.</span></span><span class="sig-name descname"><span class="pre">Lineage</span></span><a class="reference internal" href="../_modules/mlopus/lineage.html#Lineage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.lineage.Lineage" title="Permalink to this definition"></a></dt>
-<dd><p>Representation of an experiment run’s lineage tags (i.e.: inputs and outputs).</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<p>Representation of an experiment run’s lineage tags (i.e.: inputs and outputs).</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">run</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span> \
     <span class="n">get_api</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> \
@@ -170,8 +176,11 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mlopus/lineage.html#Lineage.of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.lineage.Lineage.of" title="Permalink to this definition"></a></dt>
 <dd><p>Parse lineage tags from experiment run with API handle.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#mlopus.lineage.Lineage" title="mlopus.lineage.Lineage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lineage</span></code></a></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="mlopus.lineage.Lineage.of.params.run"></span><a class="paramname reference internal" href="#mlopus.lineage.Lineage.of.params.run"><strong>run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Lineage.of.params.run">¶</a> (<a class="reference internal" href="mlflow/apis/run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>) – Run metadata with API handle.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#mlopus.lineage.Lineage" title="mlopus.lineage.Lineage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lineage</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -192,8 +201,14 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <span class="sig-name descname"><span class="pre">with_input_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.lineage.Lineage.with_input_artifact" title="Permalink to this definition"></a></dt>
 <dd><p>Add input run artifact.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.lineage.Lineage.with_input_artifact.params.run_id"></span><a class="paramname reference internal" href="#mlopus.lineage.Lineage.with_input_artifact.params.run_id"><strong>run_id</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Lineage.with_input_artifact.params.run_id">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Run ID.</p></li>
+<li><p><span class="target" id="mlopus.lineage.Lineage.with_input_artifact.params.path_in_run"></span><a class="paramname reference internal" href="#mlopus.lineage.Lineage.with_input_artifact.params.path_in_run"><strong>path_in_run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Lineage.with_input_artifact.params.path_in_run">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Plain relative path inside run artifacts (e.g.: <cite>a/b/c</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -203,8 +218,14 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <span class="sig-name descname"><span class="pre">with_input_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.lineage.Lineage.with_input_model" title="Permalink to this definition"></a></dt>
 <dd><p>Add input model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.lineage.Lineage.with_input_model.params.name"></span><a class="paramname reference internal" href="#mlopus.lineage.Lineage.with_input_model.params.name"><strong>name</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Lineage.with_input_model.params.name">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Model name.</p></li>
+<li><p><span class="target" id="mlopus.lineage.Lineage.with_input_model.params.version"></span><a class="paramname reference internal" href="#mlopus.lineage.Lineage.with_input_model.params.version"><strong>version</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Lineage.with_input_model.params.version">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Model version.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -214,8 +235,14 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <span class="sig-name descname"><span class="pre">with_output_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.lineage.Lineage.with_output_artifact" title="Permalink to this definition"></a></dt>
 <dd><p>Add output run artifact.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.lineage.Lineage.with_output_artifact.params.run_id"></span><a class="paramname reference internal" href="#mlopus.lineage.Lineage.with_output_artifact.params.run_id"><strong>run_id</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Lineage.with_output_artifact.params.run_id">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Run ID.</p></li>
+<li><p><span class="target" id="mlopus.lineage.Lineage.with_output_artifact.params.path_in_run"></span><a class="paramname reference internal" href="#mlopus.lineage.Lineage.with_output_artifact.params.path_in_run"><strong>path_in_run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Lineage.with_output_artifact.params.path_in_run">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Plain relative path inside run artifacts (e.g.: <cite>a/b/c</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -225,8 +252,14 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <span class="sig-name descname"><span class="pre">with_output_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.lineage.Lineage.with_output_model" title="Permalink to this definition"></a></dt>
 <dd><p>Add output model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.lineage.Lineage.with_output_model.params.name"></span><a class="paramname reference internal" href="#mlopus.lineage.Lineage.with_output_model.params.name"><strong>name</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Lineage.with_output_model.params.name">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Model name.</p></li>
+<li><p><span class="target" id="mlopus.lineage.Lineage.with_output_model.params.version"></span><a class="paramname reference internal" href="#mlopus.lineage.Lineage.with_output_model.params.version"><strong>version</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Lineage.with_output_model.params.version">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Model version.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -236,7 +269,8 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.lineage.Inputs">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.lineage.</span></span><span class="sig-name descname"><span class="pre">Inputs</span></span><a class="reference internal" href="../_modules/mlopus/lineage.html#Inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.lineage.Inputs" title="Permalink to this definition"></a></dt>
-<dd><p>Mapping of run artifacts and models that have been used as input.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageInfo</span></code></p>
+<p>Mapping of run artifacts and models that have been used as input.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.lineage.Inputs.models">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">models</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#mlopus.lineage.Inputs.models" title="Permalink to this definition"></a></dt>
@@ -260,7 +294,8 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.lineage.Outputs">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.lineage.</span></span><span class="sig-name descname"><span class="pre">Outputs</span></span><a class="reference internal" href="../_modules/mlopus/lineage.html#Outputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.lineage.Outputs" title="Permalink to this definition"></a></dt>
-<dd><p>Mapping of run artifacts and models that have been used as output.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageInfo</span></code></p>
+<p>Mapping of run artifacts and models that have been used as output.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.lineage.Outputs.models">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">models</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#mlopus.lineage.Outputs.models" title="Permalink to this definition"></a></dt>
@@ -284,7 +319,8 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.lineage.Query">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.lineage.</span></span><span class="sig-name descname"><span class="pre">Query</span></span><a class="reference internal" href="../_modules/mlopus/lineage.html#Query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.lineage.Query" title="Permalink to this definition"></a></dt>
-<dd><p>Query builder for searching runs by their inputs/outputs.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<p>Query builder for searching runs by their inputs/outputs.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">lineage</span><span class="o">.</span><span class="n">Query</span><span class="p">()</span> \
     <span class="o">.</span><span class="n">with_input_model</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> \
@@ -327,8 +363,14 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <span class="sig-name descname"><span class="pre">with_input_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.lineage.Query.with_input_artifact" title="Permalink to this definition"></a></dt>
 <dd><p>Add input run artifact.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.lineage.Query.with_input_artifact.params.run_id"></span><a class="paramname reference internal" href="#mlopus.lineage.Query.with_input_artifact.params.run_id"><strong>run_id</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Query.with_input_artifact.params.run_id">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Run ID.</p></li>
+<li><p><span class="target" id="mlopus.lineage.Query.with_input_artifact.params.path_in_run"></span><a class="paramname reference internal" href="#mlopus.lineage.Query.with_input_artifact.params.path_in_run"><strong>path_in_run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Query.with_input_artifact.params.path_in_run">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Plain relative path inside run artifacts (e.g.: <cite>a/b/c</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -338,8 +380,14 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <span class="sig-name descname"><span class="pre">with_input_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.lineage.Query.with_input_model" title="Permalink to this definition"></a></dt>
 <dd><p>Add input model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.lineage.Query.with_input_model.params.name"></span><a class="paramname reference internal" href="#mlopus.lineage.Query.with_input_model.params.name"><strong>name</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Query.with_input_model.params.name">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Model name.</p></li>
+<li><p><span class="target" id="mlopus.lineage.Query.with_input_model.params.version"></span><a class="paramname reference internal" href="#mlopus.lineage.Query.with_input_model.params.version"><strong>version</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Query.with_input_model.params.version">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Model version.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -349,8 +397,14 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <span class="sig-name descname"><span class="pre">with_output_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.lineage.Query.with_output_artifact" title="Permalink to this definition"></a></dt>
 <dd><p>Add output run artifact.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.lineage.Query.with_output_artifact.params.run_id"></span><a class="paramname reference internal" href="#mlopus.lineage.Query.with_output_artifact.params.run_id"><strong>run_id</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Query.with_output_artifact.params.run_id">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Run ID.</p></li>
+<li><p><span class="target" id="mlopus.lineage.Query.with_output_artifact.params.path_in_run"></span><a class="paramname reference internal" href="#mlopus.lineage.Query.with_output_artifact.params.path_in_run"><strong>path_in_run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Query.with_output_artifact.params.path_in_run">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Plain relative path inside run artifacts (e.g.: <cite>a/b/c</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -360,8 +414,14 @@ in MongoDB query syntax using the <cite>find_runs</cite> method of the <cite>Bas
 <span class="sig-name descname"><span class="pre">with_output_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.lineage.Query.with_output_model" title="Permalink to this definition"></a></dt>
 <dd><p>Add output model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.lineage.Query.with_output_model.params.name"></span><a class="paramname reference internal" href="#mlopus.lineage.Query.with_output_model.params.name"><strong>name</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Query.with_output_model.params.name">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Model name.</p></li>
+<li><p><span class="target" id="mlopus.lineage.Query.with_output_model.params.version"></span><a class="paramname reference internal" href="#mlopus.lineage.Query.with_output_model.params.version"><strong>version</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.lineage.Query.with_output_model.params.version">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Model version.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LineageTags</span></code></p>
 </dd>
 </dl>
 </dd></dl>

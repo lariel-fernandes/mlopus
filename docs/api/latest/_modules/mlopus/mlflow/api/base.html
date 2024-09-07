@@ -7,6 +7,8 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -106,14 +108,19 @@
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">BaseEntity</span><span class="p">)</span>
 
 <span class="c1"># Identifier types</span>
-<span class="n">ExpIdentifier</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">ExpIdentifier</span>
-<span class="n">RunIdentifier</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">RunIdentifier</span>
-<span class="n">ModelIdentifier</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">ModelIdentifier</span>
-<span class="n">ModelVersionIdentifier</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">ModelVersionIdentifier</span>
+<span class="n">ExpIdentifier</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">ExpIdentifier</span> <span class="o">|</span> <span class="n">ExpApi</span>
+<span class="n">RunIdentifier</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">RunIdentifier</span> <span class="o">|</span> <span class="n">RunApi</span>
+<span class="n">ModelIdentifier</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">ModelIdentifier</span> <span class="o">|</span> <span class="n">ModelApi</span>
+<span class="n">ModelVersionIdentifier</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">ModelVersionIdentifier</span> <span class="o">|</span> <span class="n">ModelVersionApi</span>
 
 
 <div class="viewcode-block" id="BaseMlflowApi"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi">[docs]</a><span class="k">class</span> <span class="nc">BaseMlflowApi</span><span class="p">(</span><span class="n">contract</span><span class="o">.</span><span class="n">MlflowApiContract</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for API clients that use &quot;MLflow-like&quot; backends for experiment tracking and model registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for API clients that use &quot;MLflow-like&quot; backends for experiment tracking and model registry.</span>
+
+<span class="sd">    Important:</span>
+<span class="sd">        Implementations of this interface are meant to be thread-safe and independent of env vars/globals,</span>
+<span class="sd">        so multiple API instances can coexist in the same program if necessary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -795,44 +802,80 @@
 
 <div class="viewcode-block" id="BaseMlflowApi.clean_cached_run_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.clean_cached_run_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">clean_cached_run_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean cached artifact for specified run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean cached artifact for specified run.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clean_run_artifact</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run_id</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="n">path_in_run</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.clean_cached_model_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.clean_cached_model_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">clean_cached_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean cached artifact for specified model version.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean cached artifact for specified model version.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv</span><span class="p">(</span><span class="n">model_version</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_cached_run_artifact</span><span class="p">(</span><span class="n">mv</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">mv</span><span class="o">.</span><span class="n">path_in_run</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.list_run_artifacts"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.list_run_artifacts">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">list_run_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">transfer</span><span class="o">.</span><span class="n">LsResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List run artifacts in repo.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List run artifacts in repo.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_run_artifacts</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.list_model_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.list_model_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
-    <span class="k">def</span> <span class="nf">list_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">transfer</span><span class="o">.</span><span class="n">LsResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List model version artifacts in repo.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_run_artifacts</span><span class="p">((</span><span class="n">mv</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv</span><span class="p">(</span><span class="n">model_version</span><span class="p">))</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">mv</span><span class="o">.</span><span class="n">path_in_run</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">list_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">,</span> <span class="n">path_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">transfer</span><span class="o">.</span><span class="n">LsResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List model version artifacts in repo.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        :param path_suffix: Plain relative path inside model artifact dir (e.g.: `a/b/c`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_run_artifacts</span><span class="p">(</span>
+            <span class="n">run</span><span class="o">=</span><span class="p">(</span><span class="n">mv</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv</span><span class="p">(</span><span class="n">model_version</span><span class="p">))</span><span class="o">.</span><span class="n">run</span><span class="p">,</span>
+            <span class="n">path_in_run</span><span class="o">=</span><span class="n">mv</span><span class="o">.</span><span class="n">path_in_run</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">path_suffix</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">),</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.cache_run_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.cache_run_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">cache_run_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pull run artifact from MLflow server to local cache.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pull run artifact from MLflow server to local cache.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pull_run_artifact</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.cache_model_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.cache_model_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">cache_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pull model version artifact from MLflow server to local cache.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pull model version artifact from MLflow server to local cache.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv</span><span class="p">(</span><span class="n">model_version</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_run_artifact</span><span class="p">(</span><span class="n">mv</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">mv</span><span class="o">.</span><span class="n">path_in_run</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_run_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_run_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_run_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get local path to run artifact.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get local path to run artifact.</span>
+
+<span class="sd">        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_artifact</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run_id</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="n">path_in_run</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_model_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_model_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get local path to model artifact.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get local path to model artifact.</span>
+
+<span class="sd">        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv</span><span class="p">(</span><span class="n">model_version</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run_artifact</span><span class="p">(</span><span class="n">mv</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">mv</span><span class="o">.</span><span class="n">path_in_run</span><span class="p">)</span></div>
 
@@ -845,7 +888,16 @@
         <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">link</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Place run artifact on target path.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Place run artifact on target path.</span>
+
+<span class="sd">        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param target: Target path.</span>
+<span class="sd">        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)</span>
+<span class="sd">        :param overwrite: Overwrite target path if exists.</span>
+<span class="sd">        :param link: Use symbolic link instead of copy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_place_run_artifact</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run_id</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="n">path_in_run</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.place_model_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.place_model_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
@@ -856,7 +908,15 @@
         <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">link</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Place model version artifact on target path.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Place model version artifact on target path.</span>
+
+<span class="sd">        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        :param target: Target path.</span>
+<span class="sd">        :param overwrite: Overwrite target path if exists.</span>
+<span class="sd">        :param link: Use symbolic link instead of copy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv</span><span class="p">(</span><span class="n">model_version</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">place_run_artifact</span><span class="p">(</span><span class="n">mv</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">mv</span><span class="o">.</span><span class="n">path_in_run</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span></div>
 
@@ -867,7 +927,14 @@
         <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export run artifact cache to target path.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export run artifact cache to target path while keeping the original cache structure.</span>
+
+<span class="sd">        The target path can then be used as cache dir by the `generic` MLflow API in offline mode.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">paths</span><span class="o">.</span><span class="n">is_sub_dir</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">)</span> <span class="ow">or</span> <span class="n">paths</span><span class="o">.</span><span class="n">is_sub_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">paths</span><span class="o">.</span><span class="n">IllegalPath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot export cache to itself, its subdirs or parents: </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_artifact</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span>
@@ -882,18 +949,37 @@
         <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">,</span>
         <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model version artifact cache to target path.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model version artifact cache to target path while keeping the original cache structure.</span>
+
+<span class="sd">        The target path can then be used as cache dir by the `generic` MLflow API in offline mode.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv</span><span class="p">(</span><span class="n">model_version</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_run_artifact</span><span class="p">(</span><span class="n">mv</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">mv</span><span class="o">.</span><span class="n">path_in_run</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.load_run_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.load_run_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">load_run_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">loader</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="n">A</span><span class="p">],</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load run artifact.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load run artifact.</span>
+
+<span class="sd">        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param loader: Loader callback.</span>
+<span class="sd">        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">loader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_run_artifact</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run_id</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="n">path_in_run</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.load_model_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.load_model_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">load_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">,</span> <span class="n">loader</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load model artifact.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load model version artifact.</span>
+
+<span class="sd">        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        :param loader: Loader callback.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv</span><span class="p">(</span><span class="n">model_version</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading model: </span><span class="si">%s</span><span class="s2"> v</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mv</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mv</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_run_artifact</span><span class="p">(</span><span class="n">mv</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">mv</span><span class="o">.</span><span class="n">path_in_run</span><span class="p">)</span></div>
@@ -909,7 +995,33 @@
         <span class="n">allow_duplication</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish artifact file or dir to experiment run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish artifact file or dir to experiment run.</span>
+
+<span class="sd">        The flags :paramref:`keep_the_source`, :paramref:`allow_duplication` and :paramref:`use_cache` are</span>
+<span class="sd">        experimental and may conflict with one another. It is recommended to leave them unspecified, so this</span>
+<span class="sd">        method will do a best-effort to use cache if it makes sense to, keep the source files if it makes</span>
+<span class="sd">        sense to (possibly as a symbolic link) and avoid duplicated disk usage when possible.</span>
+
+<span class="sd">        :param run: | Run ID or object.</span>
+
+<span class="sd">        :param source: | Path to artifact file or dir, or a dumper callback.</span>
+<span class="sd">                       | If it&#39;s a callback and the upload is interrupted, the temporary artifact is kept.</span>
+
+<span class="sd">        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)</span>
+
+<span class="sd">            - If `source` is a `Path`: Defaults to file or dir name.</span>
+<span class="sd">            - If `source` is a callback: No default available.</span>
+
+<span class="sd">        :param keep_the_source:</span>
+<span class="sd">            - If `source` is a `Path`: Keep that file or dir (defaults to `True`).</span>
+<span class="sd">            - If `source` is a callback: Keep the temporary artifact, even after a successful upload (defaults to `False`).</span>
+
+<span class="sd">        :param allow_duplication: | If `False`, a `source` file or dir may be replaced with a symbolic link to the local cache in order to avoid duplicated disk usage.</span>
+<span class="sd">                                  | Defaults to `True` if :paramref:`keep_the_source` is `True` and the run artifacts repo is local.</span>
+
+<span class="sd">        :param use_cache: | If `True`, keep artifact in local cache after publishing.</span>
+<span class="sd">                          | Defaults to `True` if the run artifacts repo is remote.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">using_dumper</span> <span class="o">:=</span> <span class="nb">callable</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
@@ -1003,7 +1115,31 @@
         <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelVersionApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish artifact file or dir as model version inside the specified experiment run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish artifact file or dir as model version inside the specified experiment run.</span>
+
+<span class="sd">        :param model: | Model name or object.</span>
+
+<span class="sd">        :param run: | Run ID or object.</span>
+
+<span class="sd">        :param source: | See :paramref:`log_run_artifact.source`</span>
+
+<span class="sd">        :param path_in_run: | Plain relative path inside run artifacts (e.g.: `a/b/c`).</span>
+<span class="sd">                            | Defaults to model name.</span>
+
+<span class="sd">        :param keep_the_source: | See :paramref:`log_run_artifact.keep_the_source`</span>
+
+<span class="sd">        :param allow_duplication: | See :paramref:`log_run_artifact.allow_duplication`</span>
+
+<span class="sd">        :param use_cache: | See :paramref:`log_run_artifact.use_cache`</span>
+
+<span class="sd">        :param version: | Arbitrary model version</span>
+<span class="sd">                        | (not supported by all backends).</span>
+
+<span class="sd">        :param tags: | Model version tags.</span>
+<span class="sd">                     | See :class:`schema.ModelVersion.tags`</span>
+
+<span class="sd">        :return: New model version metadata with API handle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Logging version of model &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_model_name</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
         <span class="n">path_in_run</span> <span class="o">=</span> <span class="n">path_in_run</span> <span class="ow">or</span> <span class="n">patterns</span><span class="o">.</span><span class="n">encode_model_name</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_run_artifact</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">,</span> <span class="n">keep_the_source</span><span class="p">,</span> <span class="n">allow_duplication</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">)</span>
@@ -1011,115 +1147,191 @@
 
 <div class="viewcode-block" id="BaseMlflowApi.get_exp_url"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_exp_url">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_exp_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp</span><span class="p">:</span> <span class="n">ExpIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Experiment URL.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Experiment URL.</span>
+
+<span class="sd">        :param exp: Exp ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_impl_get_exp_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_exp_id</span><span class="p">(</span><span class="n">exp</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_run_url"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_run_url">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_run_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">exp</span><span class="p">:</span> <span class="n">ExpIdentifier</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Run URL.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Run URL.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param exp: Exp ID or object.</span>
+
+<span class="sd">        Caveats:</span>
+<span class="sd">            - :paramref:`exp` must be specified on :attr:`~BaseMlflowApi.offline_mode`</span>
+<span class="sd">              if :paramref:`run` is an ID and the run metadata is not in cache.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run</span><span class="p">(</span><span class="n">run</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span> <span class="k">if</span> <span class="n">exp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">exp</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_impl_get_run_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run_id</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_exp_id</span><span class="p">(</span><span class="n">exp</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_model_url"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_model_url">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_model_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">ModelIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get URL to registered model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get URL to registered model.</span>
+
+<span class="sd">        :param model: Model name or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_impl_get_model_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_model_name</span><span class="p">(</span><span class="n">model</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_model_version_url"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_model_version_url">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_model_version_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get model version URL.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get model version URL.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_impl_get_mv_url</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv_tuple</span><span class="p">(</span><span class="n">model_version</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_exp"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_exp">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp</span><span class="p">:</span> <span class="n">ExpIdentifier</span><span class="p">,</span> <span class="o">**</span><span class="n">cache_opts</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExpApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Experiment API by ID.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Experiment API by ID.</span>
+
+<span class="sd">        :param exp: Exp ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ExpApi</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_exp_id</span><span class="p">(</span><span class="n">exp</span><span class="p">),</span> <span class="o">**</span><span class="n">cache_opts</span><span class="p">))</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_run"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_run">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="o">**</span><span class="n">cache_opts</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Run API by ID.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Run API by ID.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">RunApi</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run_id</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="o">**</span><span class="n">cache_opts</span><span class="p">))</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_model"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_model">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">ModelIdentifier</span><span class="p">,</span> <span class="o">**</span><span class="n">cache_opts</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Model API by name.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Model API by name.</span>
+
+<span class="sd">        :param model: Model name or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ModelApi</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_model_name</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="o">**</span><span class="n">cache_opts</span><span class="p">))</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_model_version"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_model_version">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_model_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">,</span> <span class="o">**</span><span class="n">cache_opts</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelVersionApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ModelVersion API by name and version.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ModelVersion API by name and version.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ModelVersionApi</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_mv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv_tuple</span><span class="p">(</span><span class="n">model_version</span><span class="p">),</span> <span class="o">**</span><span class="n">cache_opts</span><span class="p">))</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.find_exps"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.find_exps">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">find_exps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">ExpApi</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search experiments with query in MongoDB query language.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search experiments with query in MongoDB query language.</span>
+
+<span class="sd">        :param query: Query in MongoDB query language.</span>
+<span class="sd">        :param sorting: Sorting criteria (e.g.: `[(&quot;asc_field&quot;, 1), (&quot;desc_field&quot;, -1)]`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">ExpApi</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_experiments</span><span class="p">(</span><span class="n">query</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">sorting</span> <span class="ow">or</span> <span class="p">[]))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.find_runs"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.find_runs">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">find_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">RunApi</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search runs with query in MongoDB query language.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search runs with query in MongoDB query language.</span>
+
+<span class="sd">        :param query: Query in MongoDB query language.</span>
+<span class="sd">        :param sorting: Sorting criteria (e.g.: `[(&quot;asc_field&quot;, 1), (&quot;desc_field&quot;, -1)]`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">RunApi</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_runs</span><span class="p">(</span><span class="n">query</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">sorting</span> <span class="ow">or</span> <span class="p">[]))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.find_models"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.find_models">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">find_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">ModelApi</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search registered models with query in MongoDB query language.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search registered models with query in MongoDB query language.</span>
+
+<span class="sd">        :param query: Query in MongoDB query language.</span>
+<span class="sd">        :param sorting: Sorting criteria (e.g.: `[(&quot;asc_field&quot;, 1), (&quot;desc_field&quot;, -1)]`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">ModelApi</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_models</span><span class="p">(</span><span class="n">query</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">sorting</span> <span class="ow">or</span> <span class="p">[]))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.find_model_versions"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.find_model_versions">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">find_model_versions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">ModelVersionApi</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search model versions with query in MongoDB query language.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search model versions with query in MongoDB query language.</span>
+
+<span class="sd">        :param query: Query in MongoDB query language.</span>
+<span class="sd">        :param sorting: Sorting criteria (e.g.: `[(&quot;asc_field&quot;, 1), (&quot;desc_field&quot;, -1)]`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">ModelVersionApi</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_mv</span><span class="p">(</span><span class="n">query</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">sorting</span> <span class="ow">or</span> <span class="p">[]))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.find_child_runs"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.find_child_runs">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">find_child_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">RunApi</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find child runs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find child runs.</span>
+
+<span class="sd">        :param parent: Run ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">RunApi</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_impl_find_child_runs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run</span><span class="p">(</span><span class="n">parent</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.cache_exp_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.cache_exp_meta">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">cache_exp_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp</span><span class="p">:</span> <span class="n">ExpIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExpApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get latest Experiment metadata and save to local cache.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get latest Experiment metadata and save to local cache.</span>
+
+<span class="sd">        :param exp: Experiment ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_exp</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">force_cache_refresh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.cache_run_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.cache_run_meta">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">cache_run_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get latest Run metadata and save to local cache.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get latest Run metadata and save to local cache.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">force_cache_refresh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.cache_model_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.cache_model_meta">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">cache_model_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">ModelIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get latest Model metadata and save to local cache.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get latest Model metadata and save to local cache.</span>
+
+<span class="sd">        :param model: Model name or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">force_cache_refresh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.cache_model_version_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.cache_model_version_meta">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">cache_model_version_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelVersionApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get latest model version metadata and save to local cache.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get latest model version metadata and save to local cache.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_version</span><span class="p">(</span><span class="n">model_version</span><span class="p">,</span> <span class="n">force_cache_refresh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.export_exp_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.export_exp_meta">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">export_exp_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp</span><span class="p">:</span> <span class="n">ExpIdentifier</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExpApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export experiment metadata cache to target.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export experiment metadata cache to target.</span>
+
+<span class="sd">        :param exp: Experiment ID or object.</span>
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_export_meta</span><span class="p">(</span><span class="n">exp</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_exp</span><span class="p">(</span><span class="n">id_</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_exp_id</span><span class="p">(</span><span class="n">exp</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_exp_cache</span><span class="p">(</span><span class="n">id_</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">exp</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.export_run_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.export_run_meta">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">export_run_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export run metadata cache to target.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export run metadata cache to target.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_export_meta</span><span class="p">(</span><span class="n">run</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">id_</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run_id</span><span class="p">(</span><span class="n">run</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_cache</span><span class="p">(</span><span class="n">id_</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_exp_meta</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">run</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.export_model_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.export_model_meta">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">export_model_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">ModelIdentifier</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model metadata cache to target.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model metadata cache to target.</span>
+
+<span class="sd">        :param model: Model name or object.</span>
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_model_name</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_export_meta</span><span class="p">(</span><span class="n">model</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_cache</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">model</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.export_model_version_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.export_model_version_meta">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">export_model_version_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mv</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelVersionApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model version metadata cache to target.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model version metadata cache to target.</span>
+
+<span class="sd">        :param mv: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_mv_tuple</span><span class="p">(</span><span class="n">mv</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_export_meta</span><span class="p">(</span><span class="n">mv</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_version</span><span class="p">(</span><span class="n">tup</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mv_cache</span><span class="p">(</span><span class="o">*</span><span class="n">tup</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_model_meta</span><span class="p">(</span><span class="n">mv</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
@@ -1127,12 +1339,19 @@
 
 <div class="viewcode-block" id="BaseMlflowApi.create_exp"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.create_exp">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">create_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExpApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Experiment and return its API.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Experiment and return its API.</span>
+
+<span class="sd">        :param name: See :attr:`schema.Experiment.name`.</span>
+<span class="sd">        :param tags: See :attr:`schema.Experiment.tags`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ExpApi</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_exp</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">{}))</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_or_create_exp"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_or_create_exp">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_or_create_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExpApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or create Experiment and return its API.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or create Experiment and return its API.</span>
+
+<span class="sd">        :param name: See :attr:`schema.Experiment.name`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_experiments</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span> <span class="p">[]):</span>
             <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1142,12 +1361,19 @@
 
 <div class="viewcode-block" id="BaseMlflowApi.create_model"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.create_model">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create registered model and return its API.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create registered model and return its API.</span>
+
+<span class="sd">        :param name: See :attr:`schema.Model.name`.</span>
+<span class="sd">        :param tags: See :attr:`schema.Model.tags`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ModelApi</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_model</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">{}))</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.get_or_create_model"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.get_or_create_model">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_or_create_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or create registered Model and return its API.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or create registered Model and return its API.</span>
+
+<span class="sd">        :param name: See :attr:`schema.Model.name`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_models</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span> <span class="p">[]):</span>
             <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1164,7 +1390,14 @@
         <span class="n">repo</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">urls</span><span class="o">.</span><span class="n">Url</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">parent</span><span class="p">:</span> <span class="n">RunIdentifier</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Declare a new experiment run to be used later.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Declare a new experiment run to be used later.</span>
+
+<span class="sd">        :param exp: Experiment ID or object.</span>
+<span class="sd">        :param name: See :attr:`schema.Run.name`.</span>
+<span class="sd">        :param tags: See :attr:`schema.Run.tags`.</span>
+<span class="sd">        :param repo: (Experimental) Cloud storage URL to be used as alternative run artifacts repository.</span>
+<span class="sd">        :param parent: Parent run ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">RunApi</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_run</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">SCHEDULED</span><span class="p">,</span> <span class="n">parent</span><span class="p">))</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.start_run"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.start_run">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
@@ -1176,18 +1409,32 @@
         <span class="n">repo</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">urls</span><span class="o">.</span><span class="n">Url</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">parent</span><span class="p">:</span> <span class="n">RunIdentifier</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start a new experiment run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start a new experiment run.</span>
+
+<span class="sd">        :param exp: Experiment ID or object.</span>
+<span class="sd">        :param name: See :attr:`schema.Run.name`.</span>
+<span class="sd">        :param tags: See :attr:`schema.Run.tags`.</span>
+<span class="sd">        :param repo: (Experimental) Cloud storage URL to be used as alternative run artifacts repository.</span>
+<span class="sd">        :param parent: Parent run ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">RunApi</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_run</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span> <span class="n">parent</span><span class="p">))</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.resume_run"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.resume_run">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">resume_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resume a previous experiment run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resume a previous experiment run.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_run_status</span><span class="p">(</span><span class="n">run_id</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run_id</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">run_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.end_run"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.end_run">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">end_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">succeeded</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;End experiment run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;End experiment run.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param succeeded: Whether the run was successful.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">status</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">FINISHED</span> <span class="k">if</span> <span class="n">succeeded</span> <span class="k">else</span> <span class="n">schema</span><span class="o">.</span><span class="n">RunStatus</span><span class="o">.</span><span class="n">FAILED</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_run_status</span><span class="p">(</span><span class="n">run_id</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run_id</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="n">status</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_run_end_time</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
@@ -1195,32 +1442,56 @@
 
 <div class="viewcode-block" id="BaseMlflowApi.set_tags_on_exp"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.set_tags_on_exp">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">set_tags_on_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp</span><span class="p">:</span> <span class="n">ExpIdentifier</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on experiment.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on experiment.</span>
+
+<span class="sd">        :param exp: Experiment ID or object.</span>
+<span class="sd">        :param tags: See :attr:`schema.Experiment.tags`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_exp_tags</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.set_tags_on_run"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.set_tags_on_run">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">set_tags_on_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on experiment run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on experiment run.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param tags: See :attr:`schema.Run.tags`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_run_tags</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.set_tags_on_model"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.set_tags_on_model">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">set_tags_on_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">ModelIdentifier</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on registered model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on registered model.</span>
+
+<span class="sd">        :param model: Model name or object.</span>
+<span class="sd">        :param tags: See :attr:`schema.Model.tags`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_model_tags</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.set_tags_on_model_version"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.set_tags_on_model_version">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">set_tags_on_model_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_version</span><span class="p">:</span> <span class="n">ModelVersionIdentifier</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on model version.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on model version.</span>
+
+<span class="sd">        :param model_version: Model version object or `(name, version)` tuple.</span>
+<span class="sd">        :param tags: See :attr:`schema.Model.tags`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_mv_tags</span><span class="p">(</span><span class="n">model_version</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.log_params"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_params">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">log_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log params to experiment run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log params to experiment run.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param params: See :attr:`schema.Run.params`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_run_params</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMlflowApi.log_metrics"><a class="viewcode-back" href="../../../../rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_metrics">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log metrics to experiment run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log metrics to experiment run.</span>
+
+<span class="sd">        :param run: Run ID or object.</span>
+<span class="sd">        :param metrics: See :attr:`schema.Run.metrics`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_run_metrics</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">metrics</span><span class="p">)</span></div></div>
 </pre></div>
 

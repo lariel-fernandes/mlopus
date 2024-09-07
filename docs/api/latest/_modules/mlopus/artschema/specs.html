@@ -7,6 +7,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -92,18 +94,14 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span>
 
+<span class="kn">from</span> <span class="nn">mlopus.lineage</span> <span class="kn">import</span> <span class="n">_LineageArg</span><span class="p">,</span> <span class="n">_ModelLineageArg</span><span class="p">,</span> <span class="n">_RunLineageArg</span>
 <span class="kn">from</span> <span class="nn">mlopus.mlflow.api.entity</span> <span class="kn">import</span> <span class="n">EntityApi</span>
 <span class="kn">from</span> <span class="nn">mlopus.mlflow.api.mv</span> <span class="kn">import</span> <span class="n">ModelVersionApi</span>
 <span class="kn">from</span> <span class="nn">mlopus.mlflow.api.run</span> <span class="kn">import</span> <span class="n">RunApi</span>
 <span class="kn">from</span> <span class="nn">mlopus.mlflow.traits</span> <span class="kn">import</span> <span class="n">MlflowApiMixin</span>
 <span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span>
-<span class="kn">from</span> <span class="nn">mlopus.lineage</span> <span class="kn">import</span> <span class="n">_LineageArg</span><span class="p">,</span> <span class="n">_ModelLineageArg</span><span class="p">,</span> <span class="n">_RunLineageArg</span>
-<span class="kn">from</span> <span class="nn">.framework</span> <span class="kn">import</span> <span class="n">Dumper</span><span class="p">,</span> <span class="n">Loader</span><span class="p">,</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">_DummySchema</span>
+<span class="kn">from</span> <span class="nn">.framework</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">_DummySchema</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span>
 <span class="kn">from</span> <span class="nn">.helpers</span> <span class="kn">import</span> <span class="n">load_artifact</span><span class="p">,</span> <span class="n">log_model_version</span><span class="p">,</span> <span class="n">log_run_artifact</span>
-
-<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>  <span class="c1"># Type of artifact</span>
-<span class="n">D</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Dumper</span><span class="p">)</span>  <span class="c1"># Type of Dumper</span>
-<span class="n">L</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Loader</span><span class="p">)</span>  <span class="c1"># Type of Loader</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">EntityApi</span><span class="p">)</span>  <span class="c1"># Type of entity API</span>
 <span class="n">LA</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;LA&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">_LineageArg</span><span class="p">)</span>  <span class="c1"># Type of lineage argument</span>
@@ -134,16 +132,28 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adjust missing or incomplete params of artifact subject based on provided defaults.&quot;&quot;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">ModelVersionArtifact</span><span class="p">(</span><span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">ModelVersionApi</span><span class="p">,</span> <span class="n">_ModelLineageArg</span><span class="p">]):</span>
+<div class="viewcode-block" id="ModelVersionArtifact"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.ModelVersionArtifact">[docs]</a><span class="k">class</span> <span class="nc">ModelVersionArtifact</span><span class="p">(</span><span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">ModelVersionApi</span><span class="p">,</span> <span class="n">_ModelLineageArg</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Specification of a model version artifact.&quot;&quot;&quot;</span>
 
-    <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">model_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Required when loading an existing model version</span>
+    <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Parent model name.&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Params bellow are only used when logging a new model version!</span>
-    <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">model_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Required when loading, optional when publishing.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Parent run ID. Required when publishing.&quot;</span><span class="p">)</span>
+
+    <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional, only used when publishing. See :attr:`mlopus.mlflow.schema.ModelVersion.tags`.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Only used when publishing. See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_model_version.path_in_run`.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_version_api</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelVersionApi</span><span class="p">:</span>
@@ -175,10 +185,10 @@
 
     <span class="k">def</span> <span class="nf">apply_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adjust missing or incomplete params of artifact subject based on provided defaults.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="ow">or</span> <span class="n">run_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="ow">or</span> <span class="n">run_id</span></div>
 
 
-<span class="k">class</span> <span class="nc">RunArtifact</span><span class="p">(</span><span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">RunApi</span><span class="p">,</span> <span class="n">_RunLineageArg</span><span class="p">]):</span>
+<div class="viewcode-block" id="RunArtifact"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.RunArtifact">[docs]</a><span class="k">class</span> <span class="nc">RunArtifact</span><span class="p">(</span><span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">RunApi</span><span class="p">,</span> <span class="n">_RunLineageArg</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Specification of a run artifact.&quot;&quot;&quot;</span>
 
     <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
@@ -214,7 +224,7 @@
     <span class="k">def</span> <span class="nf">apply_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adjust missing or incomplete params of artifact subject based on provided defaults.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="ow">or</span> <span class="n">run_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">path_in_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_in_run</span> <span class="ow">or</span> <span class="n">path_in_run</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_in_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_in_run</span> <span class="ow">or</span> <span class="n">path_in_run</span></div>
 
 
 <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
@@ -226,23 +236,70 @@
 <div class="viewcode-block" id="LoadArtifactSpec"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.LoadArtifactSpec">[docs]</a><span class="k">class</span> <span class="nc">LoadArtifactSpec</span><span class="p">(</span><span class="n">MlflowApiMixin</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">LA</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Specification for loading an artifact.&quot;&quot;&quot;</span>
 
-    <span class="n">schema_</span><span class="p">:</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">_DummySchema</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
-    <span class="n">loader_conf</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">skip_reqs_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">subject</span><span class="p">:</span> <span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">LA</span><span class="p">]</span>
+    <span class="n">schema_</span><span class="p">:</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">_DummySchema</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`load_artifact.schema`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">loader_conf</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`Schema.get_loader.loader`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">skip_reqs_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`load_artifact.skip_reqs_check`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">subject</span><span class="p">:</span> <span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">LA</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Instance (or `dict` to be parsed into instance) of :class:`RunArtifact` or :class:`ModelVersionArtifact`. &quot;</span>
+            <span class="s2">&quot;See also: :paramref:`load_artifact.subject`.&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="n">_parse_subject</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">validator</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">_parse_subject</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LoadArtifactSpec.download"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.LoadArtifactSpec.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cache subject metadata and artifact.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cache subject metadata and artifact.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`mlopus.mlflow.RunApi.cache_meta`</span>
+<span class="sd">            - :meth:`mlopus.mlflow.RunApi.cache_artifact`</span>
+<span class="sd">            - :meth:`mlopus.mlflow.ModelVersionApi.cache_meta`</span>
+<span class="sd">            - :meth:`mlopus.mlflow.ModelVersionApi.cache_artifact`</span>
+
+<span class="sd">        :return: A `Path` to the cached artifact.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="p">)</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="LoadArtifactSpec.export"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.LoadArtifactSpec.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export subject metadata and artifact cache.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export subject metadata and artifact cache.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`mlopus.mlflow.RunApi.export_meta`</span>
+<span class="sd">            - :meth:`mlopus.mlflow.RunApi.export_artifact`</span>
+<span class="sd">            - :meth:`mlopus.mlflow.ModelVersionApi.export_meta`</span>
+<span class="sd">            - :meth:`mlopus.mlflow.ModelVersionApi.export_artifact`</span>
+
+<span class="sd">        :param target: Target cache export `Path`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="p">)</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">target</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LoadArtifactSpec.load"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.LoadArtifactSpec.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifact.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifact.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`mlopus.mlflow.RunApi.load_artifact`</span>
+<span class="sd">            - :meth:`mlopus.mlflow.ModelVersionApi.load_artifact`</span>
+
+<span class="sd">        :param schema: | Override :attr:`schema_`</span>
+<span class="sd">        :param dry_run: | See :paramref:`~mlopus.artschema.Loader.load.dry_run`</span>
+<span class="sd">        :return:</span>
+<span class="sd">            - If :paramref:`dry_run` is `True`: A `Path` to the cached artifact.</span>
+<span class="sd">            - Otherwise: An instance of :attr:`Schema.Artifact`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span>
@@ -272,20 +329,60 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Specification for logging an artifact.&quot;&quot;&quot;</span>
 
     <span class="n">schema_</span><span class="p">:</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="n">_DummySchema</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">_DummySchema</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`load_artifact.schema`&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">dumper_conf</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">skip_reqs_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">auto_register</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">keep_the_source</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">allow_duplication</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">subject</span><span class="p">:</span> <span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">LA</span><span class="p">]</span>
+
+    <span class="n">dumper_conf</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`Schema.get_dumper.dumper`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">skip_reqs_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`load_artifact.skip_reqs_check`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">auto_register</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`log_run_artifact.auto_register` and :paramref:`log_model_version.auto_register`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">keep_the_source</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.keep_the_source`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">allow_duplication</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.allow_duplication`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.use_cache`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">subject</span><span class="p">:</span> <span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">LA</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Instance (or `dict` to be parsed into instance) of :class:`RunArtifact` or :class:`ModelVersionArtifact`. &quot;</span>
+            <span class="s2">&quot;See also: :paramref:`load_artifact.subject`.&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="n">_parse_subject</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">validator</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">_parse_subject</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LogArtifactSpec.log"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.LogArtifactSpec.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log artifact.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log artifact.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`mlopus.mlflow.RunApi.log_artifact`</span>
+<span class="sd">            - :meth:`mlopus.mlflow.ModelApi.log_version`</span>
+
+<span class="sd">        :param schema: | Override :attr:`schema_`</span>
+<span class="sd">        :param artifact: | See :paramref:`Schema.get_dumper.artifact`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="n">schema</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span>

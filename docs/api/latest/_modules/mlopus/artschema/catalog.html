@@ -7,6 +7,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -93,19 +95,32 @@
 <span class="sd">    Useful for type-safe loading/downloading/exporting</span>
 <span class="sd">    artifacts based on parsed application settings.</span>
 
+<span class="sd">    Example settings:</span>
+
+<span class="sd">    .. code-block:: yaml</span>
+
+<span class="sd">        foo:</span>
+<span class="sd">            schema: package.module:Schema  # Schema specified explicitly by fully qualified class name</span>
+<span class="sd">            subject:</span>
+<span class="sd">                run_id: 12345678</span>
+<span class="sd">                path_in_run: foo</span>
+<span class="sd">        bar:</span>
+<span class="sd">            schema: default  # Schema obtained by alias from model version tags or parent model tags</span>
+<span class="sd">            subject:</span>
+<span class="sd">                model_name: foo</span>
+<span class="sd">                model_version: 3</span>
+
 <span class="sd">    Example usage:</span>
 
 <span class="sd">    .. code-block:: python</span>
 
+<span class="sd">        # Load the YAML settings above</span>
+<span class="sd">        artifact_specs: dict = ...</span>
+
+<span class="sd">        # Declare an artifact catalog</span>
 <span class="sd">        class ArtifactsCatalog(mlopus.artschema.ArtifactsCatalog):</span>
 <span class="sd">            foo: FooArtifact</span>
 <span class="sd">            bar: BarArtifact</span>
-
-<span class="sd">        # Configure artifact sources</span>
-<span class="sd">        artifact_specs = {</span>
-<span class="sd">            &quot;foo&quot;: {&quot;subject&quot;: {&quot;model_name&quot;: &quot;foo&quot;, &quot;model_version&quot;: &quot;3&quot;}},  # specs for a model artifact</span>
-<span class="sd">            &quot;bar&quot;: {&quot;subject&quot;: {&quot;run_id&quot;: &quot;1234567&quot;, &quot;path_in_run&quot;: &quot;bar&quot;}},  # specs for a run artifact</span>
-<span class="sd">        }</span>
 
 <span class="sd">        # Cache all artifacts and metadata and verify their files using the specified schemas</span>
 <span class="sd">        ArtifactsCatalog.download(mlflow_api, artifact_specs)</span>
@@ -115,6 +130,10 @@
 
 <span class="sd">        artifacts_catalog.foo  # `FooArtifact`</span>
 <span class="sd">        artifacts_catalog.bar  # `BarArtifact`</span>
+
+<span class="sd">    In the example above, `artifact_specs` is implicitly parsed into a mapping of `str` to :class:`LoadArtifactSpec`,</span>
+<span class="sd">    while the :attr:`~LoadArtifactSpec.subject` values of `foo` and `bar` are parsed into</span>
+<span class="sd">    :class:`~mlopus.artschema.RunArtifact` and :class:`~mlopus.artschema.ModelVersionArtifact`, respectively.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ArtifactsCatalog.load"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.load">[docs]</a>    <span class="nd">@classmethod</span>
@@ -125,6 +144,9 @@
         <span class="n">artifact_specs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LoadArtifactSpec</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ArtifactsCatalog&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifacts from specs using their respective schemas.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`LoadArtifactSpec.load`</span>
 
 <span class="sd">        :param mlflow_api:</span>
 <span class="sd">        :param artifact_specs:</span>
@@ -141,9 +163,13 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cache artifacts and metadata and verify the files against the schemas.</span>
 
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`LoadArtifactSpec.download`</span>
+
 <span class="sd">        :param mlflow_api:</span>
 <span class="sd">        :param artifact_specs:</span>
-<span class="sd">        :param verify: Use schemas for verification after download.</span>
+<span class="sd">        :param verify: | Use schemas for verification after download.</span>
+<span class="sd">                       | See :meth:`~mlopus.artschema.Dumper.verify`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -165,10 +191,14 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Export artifacts and metadata caches while preserving cache structure.</span>
 
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`LoadArtifactSpec.export`</span>
+
 <span class="sd">        :param mlflow_api:</span>
 <span class="sd">        :param artifact_specs:</span>
 <span class="sd">        :param target: Cache export target path.</span>
-<span class="sd">        :param verify: Use schemas for verification after export.</span>
+<span class="sd">        :param verify: | Use schemas for verification after export.</span>
+<span class="sd">                       | See :meth:`~mlopus.artschema.Dumper.verify`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">{}</span>
 

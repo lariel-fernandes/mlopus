@@ -8,6 +8,8 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -87,17 +89,12 @@
              
   <section id="module-mlopus.mlflow">
 <span id="mlflow"></span><h1>MLflow<a class="headerlink" href="#module-mlopus.mlflow" title="Permalink to this heading"></a></h1>
-<p>This module offers tools for configuring and using standardized, plugin-based MLflow APIs.</p>
-<p>Plugins must implement the interface <cite>mlopus.mlflow.BaseMlflowApi</cite>
-and be included in the entry-points group <cite>mlopus.mlflow_api_providers</cite>.</p>
-<p>While each plugin may offer access to a different MLflow-like backend/provider,
-all plugins are meant to be thread-safe and independent of env vars/global vars,
-so multiple API instances can coexist in the same program if necessary.</p>
-<p>The default plugin, aliased in the entry-points as <cite>mlflow</cite>,
-handles communication to open-source MLflow servers (assuming
-no artifacts proxy and server-managed SQL database).</p>
-<p>Another built-in alternative is the minimal-dependency <cite>generic</cite> plugin,
-which works exclusively with the local cache and does not implement any client-server communication.</p>
+<p>This module is based on the interface <a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>,
+which may be implemented in order to work with different MLflow backends/providers
+in the scope of experiment tracking and model registry.</p>
+<p>Built-in implementations can be found under the module <a class="reference internal" href="providers/index.html#module-mlopus.mlflow.providers" title="mlopus.mlflow.providers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlopus.mlflow.providers</span></code></a>
+and are also available under the plugin group <cite>mlopus.mlflow_api_providers</cite>.</p>
+<p>Third-party implementations may also be added to that group in order to expand funcionality.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
