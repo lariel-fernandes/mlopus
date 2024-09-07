@@ -7,6 +7,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -81,42 +83,59 @@
 <span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">import_utils</span><span class="p">,</span> <span class="n">dicts</span>
 <span class="kn">from</span> <span class="nn">.api.base</span> <span class="kn">import</span> <span class="n">BaseMlflowApi</span>
 
-<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseMlflowApi</span><span class="p">)</span>
+<span class="n">API</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;API&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseMlflowApi</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Type of :class:`BaseMlflowApi`&quot;&quot;&quot;</span>
 
 <span class="n">PLUGIN_GROUP</span> <span class="o">=</span> <span class="s2">&quot;mlopus.mlflow_api_providers&quot;</span>
 
 
 <div class="viewcode-block" id="list_api_plugins"><a class="viewcode-back" href="../../../rst/mlflow/utils.html#mlopus.mlflow.list_api_plugins">[docs]</a><span class="k">def</span> <span class="nf">list_api_plugins</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">import_utils</span><span class="o">.</span><span class="n">EntryPoint</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get list of all API plugins available in this environment.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List all API plugins available in this environment.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">import_utils</span><span class="o">.</span><span class="n">list_plugins</span><span class="p">(</span><span class="n">PLUGIN_GROUP</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_api"><a class="viewcode-back" href="../../../rst/mlflow/utils.html#mlopus.mlflow.get_api">[docs]</a><span class="k">def</span> <span class="nf">get_api</span><span class="p">(</span>
     <span class="n">plugin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">API</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">conf</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseMlflowApi</span> <span class="o">|</span> <span class="n">A</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseMlflowApi</span> <span class="o">|</span> <span class="n">API</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load MLflow API class or plugin with specified configuration.</span>
 
-<span class="sd">    The default API class is `mlopus.mlflow.providers.mlflow.MlflowApi`,</span>
-<span class="sd">    which manages communication with an open source MLflow server</span>
-<span class="sd">    (assuming no artifacts proxy and database is server-managed).</span>
+<span class="sd">    The default API class is :class:`~mlopus.mlflow.providers.mlflow.MlflowApi`</span>
+<span class="sd">    (registered under the plugin name `mlflow`).</span>
+
+<span class="sd">    :param plugin: | Plugin name from group `mlopus.mlflow_api_providers`.</span>
+<span class="sd">                   | Incompatible with :paramref:`cls`.</span>
+
+<span class="sd">    :param cls: | A type that implements :class:`BaseMlflowApi` or a fully qualified class name of such a type</span>
+<span class="sd">                  (e.g.: `package.module:Class`).</span>
+<span class="sd">                | Incompatible with :paramref:`plugin`.</span>
+
+<span class="sd">    :param conf: | A `dict` of keyword arguments for the resolved API class.</span>
+<span class="sd">                 | See :func:`api_conf_schema`</span>
+
+<span class="sd">    :return: API instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_get_api_cls</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">conf</span> <span class="ow">or</span> <span class="p">{})</span></div>
 
 
 <div class="viewcode-block" id="api_conf_schema"><a class="viewcode-back" href="../../../rst/mlflow/utils.html#mlopus.mlflow.api_conf_schema">[docs]</a><span class="k">def</span> <span class="nf">api_conf_schema</span><span class="p">(</span>
     <span class="n">plugin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">API</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dicts</span><span class="o">.</span><span class="n">AnyDict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get configuration schema for MLflow API class or plugin.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get configuration schema for MLflow API class or plugin.</span>
+
+<span class="sd">    :param plugin: | See :paramref:`get_api.plugin`.</span>
+
+<span class="sd">    :param cls: | See :paramref:`get_api.cls`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_get_api_cls</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span></div>
 
 
 <span class="k">def</span> <span class="nf">_get_api_cls</span><span class="p">(</span>
     <span class="n">plugin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">API</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">API</span><span class="p">]:</span>
     <span class="k">assert</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="bp">cls</span><span class="p">),</span> <span class="s2">&quot;`plugin` and `cls` are mutually excluding.&quot;</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>

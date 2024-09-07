@@ -7,6 +7,8 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -107,25 +109,38 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cache_model_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ModelApi.export_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/model.html#mlopus.mlflow.ModelApi.export_meta">[docs]</a>    <span class="k">def</span> <span class="nf">export_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModelApi&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export metadata cache for this model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model metadata cache to target.</span>
+
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">export_model_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ModelApi.set_tags"><a class="viewcode-back" href="../../../../rst/mlflow/apis/model.html#mlopus.mlflow.ModelApi.set_tags">[docs]</a>    <span class="nd">@decorators</span><span class="o">.</span><span class="n">require_update</span>
     <span class="k">def</span> <span class="nf">set_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModelApi&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on this model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on this model.</span>
+
+<span class="sd">        :param tags: See :attr:`schema.Model.tags`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">set_tags_on_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="ModelApi.get_version"><a class="viewcode-back" href="../../../../rst/mlflow/apis/model.html#mlopus.mlflow.ModelApi.get_version">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelVersionApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of specified version of this model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ModelVersion API by version identifier.</span>
+
+<span class="sd">        :param version: Version identifier.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">ModelVersionApi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">get_model_version</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="ModelApi.find_versions"><a class="viewcode-back" href="../../../../rst/mlflow/apis/model.html#mlopus.mlflow.ModelApi.find_versions">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">find_versions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">ModelVersionApi</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search versions of this model with query in MongoDB query language.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search versions of this model with query in MongoDB query language.</span>
+
+<span class="sd">        :param query: Query in MongoDB query language.</span>
+<span class="sd">        :param sorting: Sorting criteria (e.g.: `[(&quot;asc_field&quot;, 1), (&quot;desc_field&quot;, -1)]`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">find_model_versions</span><span class="p">(</span><span class="n">dicts</span><span class="o">.</span><span class="n">set_reserved_key</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;model.name&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">sorting</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">ModelVersionApi</span><span class="p">],</span> <span class="n">results</span><span class="p">)</span></div>
 
@@ -141,7 +156,27 @@
         <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelVersionApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish artifact file or dir as version of this model inside the specified experiment run.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish artifact file or dir as model version inside the specified experiment run.</span>
+
+<span class="sd">        :param run: | Run ID or object.</span>
+
+<span class="sd">        :param source: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.source`</span>
+
+<span class="sd">        :param path_in_run: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_model_version.path_in_run`</span>
+
+<span class="sd">        :param keep_the_source: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.keep_the_source`</span>
+
+<span class="sd">        :param allow_duplication: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.allow_duplication`</span>
+
+<span class="sd">        :param use_cache: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.use_cache`</span>
+
+<span class="sd">        :param version: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_model_version.version`</span>
+
+<span class="sd">        :param tags: | Model version tags.</span>
+<span class="sd">                     | See :class:`schema.ModelVersion.tags`</span>
+
+<span class="sd">        :return: New model version metadata with API handle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.run</span> <span class="kn">import</span> <span class="n">RunApi</span>
 
         <span class="n">mv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">log_model_version</span><span class="p">(</span>

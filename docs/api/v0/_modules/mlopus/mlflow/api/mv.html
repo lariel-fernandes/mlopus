@@ -7,6 +7,8 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -112,13 +114,22 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get model version URL.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">get_model_version_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
+<div class="viewcode-block" id="ModelVersionApi.clean_cached_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.clean_cached_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
+    <span class="k">def</span> <span class="nf">clean_cached_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModelVersionApi&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean cached artifact for this model version.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">clean_cached_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
 <div class="viewcode-block" id="ModelVersionApi.cache"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.cache">[docs]</a>    <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cache metadata and artifact for this model version.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache_meta</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache_artifact</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ModelVersionApi.export"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export metadata and artifact cache of this model version to target path.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export metadata and artifact cache of this model version to target path.</span>
+
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_meta</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_artifact</span><span class="p">(</span><span class="n">target</span><span class="p">)</span></div>
 
@@ -127,12 +138,18 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cache_model_version_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ModelVersionApi.export_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.export_meta">[docs]</a>    <span class="k">def</span> <span class="nf">export_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModelVersionApi&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export metadata cache for this model version.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model version metadata cache to target.</span>
+
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">export_model_version_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ModelVersionApi.set_tags"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.set_tags">[docs]</a>    <span class="nd">@decorators</span><span class="o">.</span><span class="n">require_update</span>
     <span class="k">def</span> <span class="nf">set_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModelVersionApi&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on this model version.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on this model version.</span>
+
+<span class="sd">        :param tags: See :attr:`schema.Model.tags`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">set_tags_on_model_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -142,26 +159,53 @@
 
 <div class="viewcode-block" id="ModelVersionApi.export_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.export_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">export_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model version artifact cache to target path.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export model version artifact cache to target.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`mlopus.mlflow.BaseMlflowApi.export_model_artifact`</span>
+
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">export_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ModelVersionApi.list_artifacts"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.list_artifacts">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">list_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">transfer</span><span class="o">.</span><span class="n">LsResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List artifacts in this model version.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">list_run_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_in_run</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">path_suffix</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List artifacts in this model version.</span>
+
+<span class="sd">        :param path_suffix: Plain relative path inside model artifact dir (e.g.: `a/b/c`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">list_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">path_suffix</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ModelVersionApi.get_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.get_artifact">[docs]</a>    <span class="k">def</span> <span class="nf">get_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get local path to artifact of this model version.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get local path to model artifact.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`mlopus.mlflow.BaseMlflowApi.get_model_artifact`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">get_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ModelVersionApi.place_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.place_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">place_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">link</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Place artifact of this model version on target path.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Place model version artifact on target path.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`mlopus.mlflow.BaseMlflowApi.place_model_artifact`</span>
+
+<span class="sd">        :param target: Target path.</span>
+<span class="sd">        :param overwrite: Overwrite target path if exists.</span>
+<span class="sd">        :param link: Use symbolic link instead of copy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">place_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ModelVersionApi.load_artifact"><a class="viewcode-back" href="../../../../rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.load_artifact">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">load_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifact of this model version.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load model version artifact.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            - :meth:`mlopus.mlflow.BaseMlflowApi.load_model_artifact`</span>
+
+<span class="sd">        :param loader: Loader callback.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">load_model_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">)</span></div></div>
 </pre></div>
 

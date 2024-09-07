@@ -8,6 +8,8 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -51,8 +53,8 @@
 <li class="toctree-l2"><a class="reference internal" href="schema.html">Schema</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Utilities</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#mlopus.mlflow.list_api_plugins"><code class="docutils literal notranslate"><span class="pre">list_api_plugins()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mlopus.mlflow.api_conf_schema"><code class="docutils literal notranslate"><span class="pre">api_conf_schema()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mlopus.mlflow.get_api"><code class="docutils literal notranslate"><span class="pre">get_api()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.mlflow.api_conf_schema"><code class="docutils literal notranslate"><span class="pre">api_conf_schema()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="apis/index.html">APIs</a></li>
@@ -96,10 +98,46 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="mlopus.mlflow.list_api_plugins">
 <span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">list_api_plugins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/mlflow/utils.html#list_api_plugins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.list_api_plugins" title="Permalink to this definition"></a></dt>
-<dd><p>Get list of all API plugins available in this environment.</p>
+<dd><p>List all API plugins available in this environment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">EntryPoint</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mlopus.mlflow.get_api">
+<span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">get_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plugin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/mlflow/utils.html#get_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.get_api" title="Permalink to this definition"></a></dt>
+<dd><p>Load MLflow API class or plugin with specified configuration.</p>
+<p>The default API class is <a class="reference internal" href="providers/mlflow.html#mlopus.mlflow.providers.mlflow.MlflowApi" title="mlopus.mlflow.providers.mlflow.MlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowApi</span></code></a>
+(registered under the plugin name <cite>mlflow</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.mlflow.get_api.params.plugin"></span><a class="paramname reference internal" href="#mlopus.mlflow.get_api.params.plugin"><strong>plugin</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.mlflow.get_api.params.plugin">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – <div class="line-block">
+<div class="line">Plugin name from group <cite>mlopus.mlflow_api_providers</cite>.</div>
+<div class="line">Incompatible with <a class="reference internal" href="#mlopus.mlflow.get_api.params.cls" title="mlopus.mlflow.get_api"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">cls</span></code></a>.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.mlflow.get_api.params.cls"></span><a class="paramname reference internal" href="#mlopus.mlflow.get_api.params.cls"><strong>cls</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.mlflow.get_api.params.cls">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">API</span></code>, bound= <a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>)], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – <div class="line-block">
+<div class="line">A type that implements <a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a> or a fully qualified class name of such a type
+(e.g.: <cite>package.module:Class</cite>).</div>
+<div class="line">Incompatible with <a class="reference internal" href="#mlopus.mlflow.get_api.params.plugin" title="mlopus.mlflow.get_api"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">plugin</span></code></a>.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.mlflow.get_api.params.conf"></span><a class="paramname reference internal" href="#mlopus.mlflow.get_api.params.conf"><strong>conf</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.mlflow.get_api.params.conf">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – <div class="line-block">
+<div class="line">A <cite>dict</cite> of keyword arguments for the resolved API class.</div>
+<div class="line">See <a class="reference internal" href="#mlopus.mlflow.api_conf_schema" title="mlopus.mlflow.api_conf_schema"><code class="xref py py-func docutils literal notranslate"><span class="pre">api_conf_schema()</span></code></a></div>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">API</span></code>, bound= <a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>)]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>API instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -109,22 +147,20 @@
 <span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">api_conf_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plugin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/mlflow/utils.html#api_conf_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.api_conf_schema" title="Permalink to this definition"></a></dt>
 <dd><p>Get configuration schema for MLflow API class or plugin.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.mlflow.api_conf_schema.params.plugin"></span><a class="paramname reference internal" href="#mlopus.mlflow.api_conf_schema.params.plugin"><strong>plugin</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.mlflow.api_conf_schema.params.plugin">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="#mlopus.mlflow.get_api.params.plugin" title="mlopus.mlflow.get_api"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">get_api.plugin</span></code></a>.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.mlflow.api_conf_schema.params.cls"></span><a class="paramname reference internal" href="#mlopus.mlflow.api_conf_schema.params.cls"><strong>cls</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.mlflow.api_conf_schema.params.cls">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">API</span></code>, bound= <a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>)], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="#mlopus.mlflow.get_api.params.cls" title="mlopus.mlflow.get_api"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">get_api.cls</span></code></a>.</div>
+</div>
+</p></li>
+</ul>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mlopus.mlflow.get_api">
-<span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.</span></span><span class="sig-name descname"><span class="pre">get_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plugin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/mlflow/utils.html#get_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.get_api" title="Permalink to this definition"></a></dt>
-<dd><p>Load MLflow API class or plugin with specified configuration.</p>
-<p>The default API class is <cite>mlopus.mlflow.providers.mlflow.MlflowApi</cite>,
-which manages communication with an open source MLflow server
-(assuming no artifacts proxy and database is server-managed).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>, bound= <a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>)]</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>

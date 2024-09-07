@@ -8,6 +8,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -99,7 +101,8 @@
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.mlflow.providers.generic.GenericMlflowApi">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.providers.generic.</span></span><span class="sig-name descname"><span class="pre">GenericMlflowApi</span></span><a class="reference internal" href="../../../_modules/mlopus/mlflow/providers/generic.html#GenericMlflowApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.providers.generic.GenericMlflowApi" title="Permalink to this definition"></a></dt>
-<dd><p>MLflow API provider without any implementation of client-server exchange, meant for offline mode only.</p>
+<dd><p>Bases: <a class="reference internal" href="../apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a></p>
+<p>MLflow API provider without any implementation of client-server exchange, meant for offline mode only.</p>
 <p><strong>Plugin name:</strong> <cite>generic</cite></p>
 <p><strong>Requires extras:</strong> <cite>None</cite></p>
 <p><strong>Default cache dir:</strong> <cite>None</cite> (no fall back, must be provided)</p>

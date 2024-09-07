@@ -7,6 +7,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -82,8 +84,7 @@
 
 <span class="kn">import</span> <span class="nn">importlib_metadata</span>
 
-<span class="kn">from</span> <span class="nn">mlopus.mlflow</span> <span class="kn">import</span> <span class="n">schema</span>
-<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.entity</span> <span class="kn">import</span> <span class="n">EntityApi</span>
+<span class="kn">import</span> <span class="nn">mlopus.mlflow</span>
 <span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">packaging</span><span class="p">,</span> <span class="n">dicts</span><span class="p">,</span> <span class="n">import_utils</span><span class="p">,</span> <span class="n">typing_utils</span>
 <span class="kn">from</span> <span class="nn">.framework</span> <span class="kn">import</span> <span class="n">Schema</span>
 
@@ -93,15 +94,16 @@
 
 <span class="n">DEFAULT_CONSTRAINT</span> <span class="o">=</span> <span class="s2">&quot;&gt;=&quot;</span>  <span class="c1"># Default constraint for package version</span>
 
-<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>  <span class="c1"># Any type</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>  <span class="c1"># Any type</span>
 
-<span class="c1"># Entity types</span>
-<span class="n">E</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Experiment</span>
-<span class="n">R</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Run</span>
-<span class="n">M</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Model</span>
-<span class="n">V</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">ModelVersion</span>
+<span class="n">Entity</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">Experiment</span>
+    <span class="o">|</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">Run</span>
+    <span class="o">|</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">Model</span>
+    <span class="o">|</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">ModelVersion</span>
+<span class="p">)</span>
 
-<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">EntityApi</span><span class="p">)</span>  <span class="c1"># Type of Entity API</span>
+<span class="n">API</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">ExpApi</span> <span class="o">|</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">RunApi</span> <span class="o">|</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">ModelApi</span> <span class="o">|</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">ModelVersionApi</span>
 
 
 <span class="k">def</span> <span class="nf">_maybe_warn_editable_dist</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dist</span><span class="p">:</span> <span class="n">importlib_metadata</span><span class="o">.</span><span class="n">Distribution</span><span class="p">):</span>
@@ -147,8 +149,13 @@
     <span class="bp">cls</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">pkg</span><span class="p">:</span> <span class="n">PkgSpec</span>
 
-<div class="viewcode-block" id="ClassSpec.load"><a class="viewcode-back" href="../../../rst/artschema/tags.html#mlopus.artschema.ClassSpec.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_reqs_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load class by fully qualified name, optionally doing package requirement checks.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ClassSpec.load"><a class="viewcode-back" href="../../../rst/artschema/tags.html#mlopus.artschema.ClassSpec.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_reqs_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load class by fully qualified name.</span>
+
+<span class="sd">        :param type_: If specified, the loaded class must inherit this type.</span>
+<span class="sd">        :param skip_reqs_check: Ignore package requirements for the loaded class.</span>
+<span class="sd">        :return: Loaded class as subclass of :paramref:`type_`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_reqs_check</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pkg</span><span class="o">.</span><span class="n">check_requirement</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pkg</span><span class="o">.</span><span class="n">check_extras</span><span class="p">()</span>
@@ -233,7 +240,9 @@
 <span class="sd">        # Package details are inferred automatically unless specified when calling `using(...)`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">schemas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassSpec</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="n">schemas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassSpec</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Mapping of alias to artifact schema class specification.&quot;</span>
+    <span class="p">)</span>
 
 <div class="viewcode-block" id="Tags.using"><a class="viewcode-back" href="../../../rst/artschema/tags.html#mlopus.artschema.Tags.using">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">using</span><span class="p">(</span>
@@ -245,35 +254,55 @@
         <span class="n">with_constraint</span><span class="p">:</span> <span class="n">packaging</span><span class="o">.</span><span class="n">VersionConstraint</span> <span class="o">=</span> <span class="n">DEFAULT_CONSTRAINT</span><span class="p">,</span>
         <span class="n">and_extras</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tags&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add aliased artifact schema to this `Tags` object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add aliased artifact schema to this `Tags` object.</span>
+
+<span class="sd">        If not specified, the params :paramref:`from_package` and :paramref:`at_version` are inferred from</span>
+<span class="sd">        the metadata of the provided :paramref:`cls` and the packages installed in the current environment.</span>
+
+<span class="sd">        :param cls: Artifact schema class.</span>
+<span class="sd">        :param aliased_as: Schema alias. Defaults to `default`.</span>
+<span class="sd">        :param from_package: Required package for this schema.</span>
+<span class="sd">        :param at_version: Required package version.</span>
+<span class="sd">        :param with_constraint: Version requirement constraint.</span>
+<span class="sd">        :param and_extras: Required package extras for using the schema.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">alias</span> <span class="o">:=</span> <span class="n">aliased_as</span> <span class="ow">or</span> <span class="n">DEFAULT_ALIAS</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemas</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found duplicated schema alias: </span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schemas</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">ClassSpec</span><span class="o">.</span><span class="n">parse_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">from_package</span><span class="p">,</span> <span class="n">at_version</span><span class="p">,</span> <span class="n">with_constraint</span><span class="p">,</span> <span class="n">and_extras</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Tags.register"><a class="viewcode-back" href="../../../rst/artschema/tags.html#mlopus.artschema.Tags.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="n">T</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register these artifact schema tags for the specified subject.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Tags.register"><a class="viewcode-back" href="../../../rst/artschema/tags.html#mlopus.artschema.Tags.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="n">API</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register these artifact schema tags for the specified :paramref:`subject`.</span>
+
+<span class="sd">        :param subject: | Experiment, run, model or model version with API handle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering artifact schemas for </span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
         <span class="n">subject</span><span class="o">.</span><span class="n">set_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tags.get_schema"><a class="viewcode-back" href="../../../rst/artschema/tags.html#mlopus.artschema.Tags.get_schema">[docs]</a>    <span class="k">def</span> <span class="nf">get_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassSpec</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassSpec</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get artifact schema by alias.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">cls_spec</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">alias</span> <span class="o">:=</span> <span class="n">alias</span> <span class="ow">or</span> <span class="n">DEFAULT_ALIAS</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No artifact schema configured with alias &#39;</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cls_spec</span></div>
+        <span class="k">return</span> <span class="n">cls_spec</span>
 
 <div class="viewcode-block" id="Tags.parse_subject"><a class="viewcode-back" href="../../../rst/artschema/tags.html#mlopus.artschema.Tags.parse_subject">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">parse_subject</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="n">E</span> <span class="o">|</span> <span class="n">R</span> <span class="o">|</span> <span class="n">M</span> <span class="o">|</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tags&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse experiment, run, registered model, model version or tags dict into artifact schema tags.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">parse_subject</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="n">Entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tags&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse artifact schema tags from :paramref:`subject`.</span>
+
+<span class="sd">        - Runs inherit schemas of their parent experiment.</span>
+<span class="sd">        - Model versions inherit schemas of their parent model.</span>
+
+<span class="sd">        :param subject: | Experiment, run, model or model version.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;schemas&quot;</span>
 
         <span class="k">match</span> <span class="n">subject</span><span class="p">:</span>
-            <span class="k">case</span> <span class="n">M</span><span class="p">()</span> <span class="o">|</span> <span class="n">E</span><span class="p">():</span>
+            <span class="k">case</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span> <span class="o">|</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">Experiment</span><span class="p">():</span>
                 <span class="n">tags</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
-            <span class="k">case</span> <span class="n">R</span><span class="p">():</span>
+            <span class="k">case</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">Run</span><span class="p">():</span>
                 <span class="c1"># Merge schema tags from run and parent exp (run takes precedence)</span>
                 <span class="n">tags</span> <span class="o">=</span> <span class="n">dicts</span><span class="o">.</span><span class="n">deep_merge</span><span class="p">(</span><span class="n">subject</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">subject</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{}))</span>
-            <span class="k">case</span> <span class="n">V</span><span class="p">():</span>
+            <span class="k">case</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">ModelVersion</span><span class="p">():</span>
                 <span class="c1"># Merge schema tags from model version and parent model (version takes precedence)</span>
                 <span class="n">tags</span> <span class="o">=</span> <span class="n">dicts</span><span class="o">.</span><span class="n">deep_merge</span><span class="p">(</span><span class="n">subject</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">subject</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{}))</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>

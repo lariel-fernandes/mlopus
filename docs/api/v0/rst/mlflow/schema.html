@@ -8,6 +8,8 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -133,7 +135,8 @@
 <dl class="py class enum">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.RunStatus">
 <em class="property"><span class="pre">enum</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">RunStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.schema.RunStatus" title="Permalink to this definition"></a></dt>
-<dd><p>Run status values.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Run status values.</p>
 <p>Valid values are as follows:</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.RunStatus.FAILED">
@@ -160,7 +163,8 @@
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.Experiment">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><a class="headerlink" href="#mlopus.mlflow.schema.Experiment" title="Permalink to this definition"></a></dt>
-<dd><p>Type of Experiment used by MLOpus in generic MLflow-compliant APIs.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEntity</span></code></p>
+<p>Type of Experiment used by MLOpus in generic MLflow-compliant APIs.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.Experiment.id">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Experiment.id" title="Permalink to this definition"></a></dt>
@@ -184,7 +188,8 @@
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.Run">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">Run</span></span><a class="headerlink" href="#mlopus.mlflow.schema.Run" title="Permalink to this definition"></a></dt>
-<dd><p>Type of Run used by MLOpus in generic MLflow-compliant APIs.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEntity</span></code></p>
+<p>Type of Run used by MLOpus in generic MLflow-compliant APIs.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.id">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.id" title="Permalink to this definition"></a></dt>
@@ -256,7 +261,8 @@
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.Model">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><a class="headerlink" href="#mlopus.mlflow.schema.Model" title="Permalink to this definition"></a></dt>
-<dd><p>Type of registered Model used by MLOpus in generic MLflow-compliant APIs.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEntity</span></code></p>
+<p>Type of registered Model used by MLOpus in generic MLflow-compliant APIs.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.Model.name">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Model.name" title="Permalink to this definition"></a></dt>
@@ -274,7 +280,8 @@
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.ModelVersion">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">ModelVersion</span></span><a class="headerlink" href="#mlopus.mlflow.schema.ModelVersion" title="Permalink to this definition"></a></dt>
-<dd><p>Type of ModelVersion used by MLOpus in generic MLflow-compliant APIs.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEntity</span></code></p>
+<p>Type of ModelVersion used by MLOpus in generic MLflow-compliant APIs.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.mlflow.schema.ModelVersion.version">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.ModelVersion.version" title="Permalink to this definition"></a></dt>

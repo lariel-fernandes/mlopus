@@ -7,6 +7,8 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -86,10 +88,11 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>  <span class="c1"># Type of artifact</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Type of artifact&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="Dumper"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Dumper">[docs]</a><span class="k">class</span> <span class="nc">Dumper</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">]):</span>
+<div class="viewcode-block" id="Dumper"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper">[docs]</a><span class="k">class</span> <span class="nc">Dumper</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for artifact dumpers.&quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="o">.</span><span class="n">Config</span><span class="p">):</span>
@@ -100,32 +103,69 @@
     <span class="c1"># =======================================================================================================</span>
     <span class="c1"># === Abstract methods ==================================================================================</span>
 
-<div class="viewcode-block" id="Dumper._dump"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Dumper._dump">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="Dumper._dump"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper._dump">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save artifact to `path` as file or dir.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save artifact to :paramref:`path` as file or dir.</span>
 
-<div class="viewcode-block" id="Dumper._verify"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Dumper._verify">[docs]</a>    <span class="nd">@abstractmethod</span>
+<span class="sd">        :param path: When this method is called, it is guaranteed that this</span>
+<span class="sd">                     path doesn&#39;t exist yet and that it&#39;s parent is a dir.</span>
+
+<span class="sd">        :param artifact: An instance of :attr:`.Artifact`.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Dumper._verify"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper._verify">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify the `path` where the artifact was dumped.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify the :paramref:`path`.</span>
+
+<span class="sd">        :param path: Path where an instance of :attr:`.Artifact` is</span>
+<span class="sd">                     supposed to have been dumped, downloaded or placed.</span>
+
+<span class="sd">        :raises AssertionError: Unless :paramref:`path` is a file</span>
+<span class="sd">                                or dir in the expected structure.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
     <span class="c1"># =======================================================================================================</span>
     <span class="c1"># === Public methods ====================================================================================</span>
 
-<div class="viewcode-block" id="Dumper.dump"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Dumper.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save artifact to `path` as file or dir.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Dumper.dump"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save artifact to :paramref:`path` as file or dir.</span>
+
+<span class="sd">        If possible, also saves a file with this dumper&#39;s conf.</span>
+
+<span class="sd">        :param path: Target path.</span>
+<span class="sd">        :param artifact:</span>
+<span class="sd">            - An instance of :attr:`.Artifact`.</span>
+<span class="sd">            - A `dict` that can be parsed into an :attr:`.Artifact` (in case :attr:`.Artifact` is a Pydantic model)</span>
+
+<span class="sd">        :param overwrite: Overwrite the :paramref:`path` if exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dump</span><span class="p">(</span><span class="n">artifact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pre_dump</span><span class="p">(</span><span class="n">artifact</span><span class="p">),</span> <span class="n">path</span><span class="o">=</span><span class="p">(</span><span class="n">path</span> <span class="o">:=</span> <span class="n">paths</span><span class="o">.</span><span class="n">ensure_only_parents</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maybe_save_conf</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Dumper.verify"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Dumper.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify the `path` where the artifact was dumped.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Dumper.verify"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify the :paramref:`path`.</span>
+
+<span class="sd">        :param path: Path where an instance of :attr:`.Artifact` is</span>
+<span class="sd">                     supposed to have been dumped, downloaded or placed.</span>
+
+<span class="sd">        :raises AssertionError: Unless :paramref:`path` is a file</span>
+<span class="sd">                                or dir in the expected structure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_verify</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Dumper.maybe_save_conf"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Dumper.maybe_save_conf">[docs]</a>    <span class="k">def</span> <span class="nf">maybe_save_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If path is a dir, save a file with dumper conf.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Dumper.maybe_save_conf"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper.maybe_save_conf">[docs]</a>    <span class="k">def</span> <span class="nf">maybe_save_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If :paramref:`path` is a dir, save a file with this dumper&#39;s conf.</span>
+
+<span class="sd">        :param path:</span>
+<span class="sd">        :param strict:</span>
+<span class="sd">        :raises FileNotFoundError: If :paramref:`path` doesn&#39;t exist.</span>
+<span class="sd">        :raises FileExistsError: If :paramref:`strict` is `True` and a dumper</span>
+<span class="sd">                                 conf file already exists in :paramref:`path`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Artifact dump is not a directory, dumper conf file will not be saved.&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
@@ -141,7 +181,7 @@
     <span class="c1"># === Private methods ===================================================================================</span>
 
     <span class="k">def</span> <span class="nf">_pre_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model</span> <span class="o">:=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">as_model_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_artifact_type</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model</span> <span class="o">:=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">as_model_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Artifact</span><span class="p">)):</span>
             <span class="n">artifact</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">artifact</span>
 
@@ -155,13 +195,16 @@
     <span class="c1"># === Type param inference ==============================================================================</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_artifact_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Artifact type used by this schema.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">Artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>  <span class="c1"># noqa</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Artifact type used by this dumper.</span>
+
+<span class="sd">        :return: Type of :attr:`~mlopus.artschema.framework.A`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_type</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_artifact_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer artifact type used by this schema.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer artifact type used by this dumper.&quot;&quot;&quot;</span>
         <span class="n">base</span> <span class="o">=</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">find_base</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Dumper</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">get_type_param</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -176,24 +219,47 @@
         <span class="k">pass</span>
 
 
-<span class="n">D</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Dumper</span><span class="p">)</span>  <span class="c1"># Type of dumper</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Dumper</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Type of :class:`Dumper`&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="Loader"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Loader">[docs]</a><span class="k">class</span> <span class="nc">Loader</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">]):</span>
+<div class="viewcode-block" id="Loader"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Loader">[docs]</a><span class="k">class</span> <span class="nc">Loader</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for artifact loaders.&quot;&quot;&quot;</span>
 
     <span class="c1"># =======================================================================================================</span>
     <span class="c1"># === Abstract methods ==================================================================================</span>
 
-<div class="viewcode-block" id="Loader._load"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Loader._load">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="Loader._load"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Loader._load">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dumper</span><span class="p">:</span> <span class="n">D</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifact from `path`.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifact from :paramref:`path`.</span>
+
+<span class="sd">        :param path: Path to artifact file or dir.</span>
+<span class="sd">        :param dumper:</span>
+<span class="sd">            - If :paramref:`path` is a dir containing a dumper conf file, this param will be an instance</span>
+<span class="sd">              of :attr:`.Dumper` equivalent to the one that was originally used to save the artifact.</span>
+<span class="sd">            - Otherwise, it will be a :attr:`.Dumper` initialized with empty params.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            - An instance of :attr:`.Artifact`.</span>
+<span class="sd">            - A `dict` that can be parsed into an :attr:`.Artifact` (in case :attr:`.Artifact` is a Pydantic model)</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
     <span class="c1"># =======================================================================================================</span>
     <span class="c1"># === Public methods ====================================================================================</span>
 
-<div class="viewcode-block" id="Loader.load"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Loader.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span> <span class="o">|</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifact from `path`.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Loader.load"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Loader.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span> <span class="o">|</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifact from :paramref:`path`.</span>
+
+<span class="sd">        As a side effect, this will use a :attr:`.Dumper` to :meth:`~Dumper.verify` the :paramref:`path`.</span>
+<span class="sd">        If :paramref:`path` is a dir containing a dumper conf file, the used :attr:`.Dumper` is equivalent to the one</span>
+<span class="sd">        that was originally used to save the artifact. Otherwise, it&#39;s a :attr:`.Dumper` initialized with empty params.</span>
+
+<span class="sd">        :param path: Path to artifact file or dir.</span>
+<span class="sd">        :param dry_run: Just verify the artifact path.</span>
+<span class="sd">        :return:</span>
+<span class="sd">            - If :paramref:`dry_run` is `True`, the same :paramref:`path`.</span>
+<span class="sd">            - Otherwise, an instance of :attr:`.Artifact`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="p">(</span><span class="n">dumper</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_dumper</span><span class="p">(</span><span class="n">path</span><span class="p">))</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
@@ -205,22 +271,22 @@
     <span class="c1"># === Private methods ===================================================================================</span>
 
     <span class="k">def</span> <span class="nf">_post_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model</span> <span class="o">:=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">as_model_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_artifact_type</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model</span> <span class="o">:=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">as_model_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Artifact</span><span class="p">)):</span>
             <span class="n">artifact</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">artifact</span>
 
     <span class="k">def</span> <span class="nf">_load_dumper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">D</span><span class="p">:</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">dumper_conf_file</span> <span class="o">:=</span> <span class="n">path</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dumper_type</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">dumper_conf_file</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">dumper_conf_file</span> <span class="o">:=</span> <span class="n">path</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">Dumper</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">dumper_conf_file</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">dumper_conf</span> <span class="o">=</span> <span class="n">json_utils</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">dumper_conf_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dumper_conf</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dumper_type</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">dumper_conf</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Dumper</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">dumper_conf</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s2">&quot;Could not parse dumper with type &#39;</span><span class="si">%s</span><span class="s2">&#39; (an anonymous pydantic class will be used instead): </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dumper_type</span><span class="p">,</span> <span class="n">exc</span><span class="p">),</span>
+                <span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Dumper</span><span class="p">,</span> <span class="n">exc</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">create_obj_from_data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;AnonymousDumper&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dumper_conf</span><span class="p">,</span> <span class="n">__base__</span><span class="o">=</span><span class="n">_DummyDumper</span><span class="p">)</span>
 
@@ -228,13 +294,19 @@
     <span class="c1"># === Type param inference ==============================================================================</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_artifact_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Artifact type used by this schema.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">Artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>  <span class="c1"># noqa</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Artifact type used by this loader.</span>
+
+<span class="sd">        :return: Type of :attr:`~mlopus.artschema.framework.A`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_type</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_dumper_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">D</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dumper class used by this schema.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">Dumper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">D</span><span class="p">]:</span>  <span class="c1"># noqa</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dumper type used by this loader.</span>
+
+<span class="sd">        :return: Type of :attr:`~mlopus.artschema.framework.D`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dumper_type</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
@@ -257,11 +329,14 @@
         <span class="k">return</span> <span class="n">path</span>
 
 
-<span class="n">L</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Loader</span><span class="p">)</span>  <span class="c1"># Type of loader</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Loader</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Type of :class:`Loader`&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="Schema"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Schema">[docs]</a><span class="k">class</span> <span class="nc">Schema</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]):</span>
+<div class="viewcode-block" id="Schema"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Schema">[docs]</a><span class="k">class</span> <span class="nc">Schema</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for artifact schemas.</span>
+
+<span class="sd">    Serves for putting together the types of :class:`Artifact`, :class:`Dumper` and :class:`Loader`.</span>
 
 <span class="sd">    Example:</span>
 
@@ -315,13 +390,29 @@
     <span class="c1"># =======================================================================================================</span>
     <span class="c1"># === Public methods ====================================================================================</span>
 
-<div class="viewcode-block" id="Schema.get_dumper"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Schema.get_dumper">[docs]</a>    <span class="k">def</span> <span class="nf">get_dumper</span><span class="p">(</span>
+<div class="viewcode-block" id="Schema.get_dumper"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Schema.get_dumper">[docs]</a>    <span class="k">def</span> <span class="nf">get_dumper</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dumper</span><span class="p">:</span> <span class="n">D</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">dumper_kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get dumper callback for artifact data.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a dumper callback.</span>
 
-<span class="sd">        - If artifact is a `Path`, it will be just verified and returned as it is.</span>
-<span class="sd">        - If artifact is a `dict` and the target type is a pydantic model, it will be parsed before being dumped.</span>
+<span class="sd">        :param artifact:</span>
+
+<span class="sd">            - An instance of :attr:`.Artifact`</span>
+<span class="sd">            - A `Path` to a file or dir containing a pre-dumped :attr:`.Artifact`</span>
+<span class="sd">            - A `dict` that can be parsed into an :attr:`.Artifact` (in case :attr:`.Artifact` is a Pydantic model)</span>
+
+<span class="sd">        :param dumper: Custom :attr:`.Dumper` configuration. Defaults to an empty `dict`.</span>
+
+<span class="sd">            - An instance of :attr:`.Dumper`</span>
+<span class="sd">            - A `dict` that can be parsed into a :attr:`.Dumper`</span>
+
+<span class="sd">        :param dumper_kwargs: | Keyword arguments for instantiating a :attr:`.Dumper`.</span>
+<span class="sd">                              | Incompatible with the :paramref:`dumper` param.</span>
+
+<span class="sd">        :return:</span>
+
+<span class="sd">            - If :paramref:`artifact` is a `Path`: The same `Path` after being verified by the configured :attr:`.Dumper`.</span>
+<span class="sd">            - Otherwise: A callback that accepts a `Path` and uses the configured :attr:`.Dumper` to dump the provided :attr:`.Artifact` on it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">dumper</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dumper_kwargs</span><span class="p">,</span> <span class="s2">&quot;`dumper` and `dumper_kwargs` are not compatible.&quot;</span>
 
@@ -335,13 +426,25 @@
 
         <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">dumper</span><span class="o">.</span><span class="n">dump</span><span class="p">,</span> <span class="n">artifact</span><span class="o">=</span><span class="n">artifact</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Schema.get_loader"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.Schema.get_loader">[docs]</a>    <span class="k">def</span> <span class="nf">get_loader</span><span class="p">(</span>
+<div class="viewcode-block" id="Schema.get_loader"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Schema.get_loader">[docs]</a>    <span class="k">def</span> <span class="nf">get_loader</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">:</span> <span class="n">L</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">loader_kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="n">A</span> <span class="o">|</span> <span class="n">Path</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get loader callback for artifact file(s).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a loader callback.</span>
 
-<span class="sd">        - If `dry_run=True`, the callback will just verify the given `Path` and return it as it is.</span>
-<span class="sd">        - If the loaded artifact is a `dict` and the target type is a pydantic model, the callback will parse it.</span>
+<span class="sd">        :param loader: Custom :attr:`.Loader` configuration. Defaults to an empty `dict`.</span>
+
+<span class="sd">            - An instance of :attr:`.Loader`</span>
+<span class="sd">            - A `dict` that can be parsed into a :attr:`.Loader`</span>
+
+<span class="sd">        :param loader_kwargs: | Keyword arguments for instantiating a :attr:`.Loader`.</span>
+<span class="sd">                              | Incompatible with the :paramref:`loader` param.</span>
+
+<span class="sd">        :param dry_run: | See :paramref:`Loader.load.dry_run`.</span>
+
+<span class="sd">        :return:</span>
+
+<span class="sd">            - If :paramref:`dry_run` is `True`: A callback that accepts a `Path`, verifies it and returns it.</span>
+<span class="sd">            - Otherwise: A callback that accepts a `Path` and uses the configured :attr:`.Loader` to load and return an :attr:`.Artifact`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">loader</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">loader_kwargs</span><span class="p">,</span> <span class="s2">&quot;`loader` and `loader_kwargs` are not compatible.&quot;</span>
 
@@ -355,17 +458,26 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>  <span class="c1"># noqa</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Artifact type used by this schema.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Artifact type used by this schema.</span>
+
+<span class="sd">        :return: Type of :attr:`~mlopus.artschema.framework.A`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_artifact_type</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Dumper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">D</span><span class="p">]:</span>  <span class="c1"># noqa</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dumper class used by this schema.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;:class:`Dumper` type used by this schema.</span>
+
+<span class="sd">        :return: Type of :attr:`~mlopus.artschema.framework.D`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dumper_type</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Loader</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">L</span><span class="p">]:</span>  <span class="c1"># noqa</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loader class used by this schema.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;:class:`Loader` type used by this schema.</span>
+
+<span class="sd">        :return: Type of :attr:`~mlopus.artschema.framework.L`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_loader_type</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>

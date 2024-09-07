@@ -7,6 +7,8 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx_paramlinks.css" />
 
   
   <!--[if lt IE 9]>
@@ -102,7 +104,11 @@
 
 <div class="viewcode-block" id="ExpApi.find_runs"><a class="viewcode-back" href="../../../../rst/mlflow/apis/exp.html#mlopus.mlflow.ExpApi.find_runs">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">find_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Query</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sorting</span><span class="p">:</span> <span class="n">mongo</span><span class="o">.</span><span class="n">Sorting</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">RunApi</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search runs belonging to this experiment with query in MongoDB query language.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search runs belonging to this experiment with query in MongoDB query language.</span>
+
+<span class="sd">        :param query: Query in MongoDB query language.</span>
+<span class="sd">        :param sorting: Sorting criteria (e.g.: `[(&quot;asc_field&quot;, 1), (&quot;desc_field&quot;, -1)]`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">find_runs</span><span class="p">(</span><span class="n">dicts</span><span class="o">.</span><span class="n">set_reserved_key</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;exp.id&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">sorting</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="n">RunApi</span><span class="p">],</span> <span class="n">results</span><span class="p">)</span></div>
 
@@ -111,7 +117,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cache_exp_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ExpApi.export_meta"><a class="viewcode-back" href="../../../../rst/mlflow/apis/exp.html#mlopus.mlflow.ExpApi.export_meta">[docs]</a>    <span class="k">def</span> <span class="nf">export_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExpApi&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export metadata cache for this experiment.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export experiment metadata cache to target.</span>
+
+<span class="sd">        :param target: Cache export path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">export_exp_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ExpApi.create_run"><a class="viewcode-back" href="../../../../rst/mlflow/apis/exp.html#mlopus.mlflow.ExpApi.create_run">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
@@ -122,7 +131,13 @@
         <span class="n">repo</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">urls</span><span class="o">.</span><span class="n">Url</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">parent</span><span class="p">:</span> <span class="n">RunIdentifier</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Declare a new run in this experiment to be used later.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Declare a new run in this experiment to be used later.</span>
+
+<span class="sd">        :param name: See :attr:`schema.Run.name`.</span>
+<span class="sd">        :param tags: See :attr:`schema.Run.tags`.</span>
+<span class="sd">        :param repo: See :paramref:`~mlopus.mlflow.BaseMlflowApi.create_run.repo`.</span>
+<span class="sd">        :param parent: Parent run ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">RunApi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">parent</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ExpApi.start_run"><a class="viewcode-back" href="../../../../rst/mlflow/apis/exp.html#mlopus.mlflow.ExpApi.start_run">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
@@ -133,12 +148,21 @@
         <span class="n">repo</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">urls</span><span class="o">.</span><span class="n">Url</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">parent</span><span class="p">:</span> <span class="n">RunIdentifier</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start a new run in this experiment.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start a new run in this experiment.</span>
+
+<span class="sd">        :param name: See :attr:`schema.Run.name`.</span>
+<span class="sd">        :param tags: See :attr:`schema.Run.tags`.</span>
+<span class="sd">        :param repo: See :paramref:`~mlopus.mlflow.BaseMlflowApi.start_run.repo`.</span>
+<span class="sd">        :param parent: Parent run ID or object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">RunApi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">parent</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ExpApi.set_tags"><a class="viewcode-back" href="../../../../rst/mlflow/apis/exp.html#mlopus.mlflow.ExpApi.set_tags">[docs]</a>    <span class="nd">@decorators</span><span class="o">.</span><span class="n">require_update</span>
     <span class="k">def</span> <span class="nf">set_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExpApi&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on this experiment.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set tags on this experiment.</span>
+
+<span class="sd">        :param tags: See :attr:`schema.Experiment.tags`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">set_tags_on_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div></div>
 </pre></div>
