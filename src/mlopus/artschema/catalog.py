@@ -15,19 +15,32 @@ class ArtifactsCatalog(pydantic.BaseModel):
     Useful for type-safe loading/downloading/exporting
     artifacts based on parsed application settings.
 
+    Example settings:
+
+    .. code-block:: yaml
+
+        foo:
+            schema: package.module:Schema  # Schema specified explicitly by fully qualified class name
+            subject:
+                run_id: 12345678
+                path_in_run: foo
+        bar:
+            schema: default  # Schema obtained by alias from model version tags or parent model tags
+            subject:
+                model_name: foo
+                model_version: 3
+
     Example usage:
 
     .. code-block:: python
 
+        # Load the YAML settings above
+        artifact_specs: dict = ...
+
+        # Declare an artifact catalog
         class ArtifactsCatalog(mlopus.artschema.ArtifactsCatalog):
             foo: FooArtifact
             bar: BarArtifact
-
-        # Configure artifact sources
-        artifact_specs = {
-            "foo": {"subject": {"model_name": "foo", "model_version": "3"}},  # specs for a model artifact
-            "bar": {"subject": {"run_id": "1234567", "path_in_run": "bar"}},  # specs for a run artifact
-        }
 
         # Cache all artifacts and metadata and verify their files using the specified schemas
         ArtifactsCatalog.download(mlflow_api, artifact_specs)
@@ -37,6 +50,10 @@ class ArtifactsCatalog(pydantic.BaseModel):
 
         artifacts_catalog.foo  # `FooArtifact`
         artifacts_catalog.bar  # `BarArtifact`
+
+    In the example above, `artifact_specs` is implicitly parsed into a mapping of `str` to :class:`LoadArtifactSpec`,
+    while the :attr:`~LoadArtifactSpec.subject` values of `foo` and `bar` are parsed into
+    :class:`~mlopus.artschema.RunArtifact` and :class:`~mlopus.artschema.ModelVersionArtifact`, respectively.
     """
 
     @classmethod
@@ -47,6 +64,9 @@ class ArtifactsCatalog(pydantic.BaseModel):
         artifact_specs: Dict[str, LoadArtifactSpec],
     ) -> "ArtifactsCatalog":
         """Load artifacts from specs using their respective schemas.
+
+        See also:
+            - :meth:`LoadArtifactSpec.load`
 
         :param mlflow_api:
         :param artifact_specs:
@@ -63,9 +83,13 @@ class ArtifactsCatalog(pydantic.BaseModel):
     ) -> Dict[str, Path]:
         """Cache artifacts and metadata and verify the files against the schemas.
 
+        See also:
+            - :meth:`LoadArtifactSpec.download`
+
         :param mlflow_api:
         :param artifact_specs:
-        :param verify: Use schemas for verification after download.
+        :param verify: | Use schemas for verification after download.
+                       | See :meth:`~mlopus.artschema.Dumper.verify`.
         """
         paths = {}
 
@@ -87,10 +111,14 @@ class ArtifactsCatalog(pydantic.BaseModel):
     ) -> Dict[str, Path]:
         """Export artifacts and metadata caches while preserving cache structure.
 
+        See also:
+            - :meth:`LoadArtifactSpec.export`
+
         :param mlflow_api:
         :param artifact_specs:
         :param target: Cache export target path.
-        :param verify: Use schemas for verification after export.
+        :param verify: | Use schemas for verification after export.
+                       | See :meth:`~mlopus.artschema.Dumper.verify`.
         """
         paths = {}
 

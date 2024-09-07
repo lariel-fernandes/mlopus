@@ -28,14 +28,19 @@ V = schema.ModelVersion
 T = TypeVar("T", bound=schema.BaseEntity)
 
 # Identifier types
-ExpIdentifier = contract.ExpIdentifier
-RunIdentifier = contract.RunIdentifier
-ModelIdentifier = contract.ModelIdentifier
-ModelVersionIdentifier = contract.ModelVersionIdentifier
+ExpIdentifier = contract.ExpIdentifier | ExpApi
+RunIdentifier = contract.RunIdentifier | RunApi
+ModelIdentifier = contract.ModelIdentifier | ModelApi
+ModelVersionIdentifier = contract.ModelVersionIdentifier | ModelVersionApi
 
 
 class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
-    """Base class for API clients that use "MLflow-like" backends for experiment tracking and model registry."""
+    """Base class for API clients that use "MLflow-like" backends for experiment tracking and model registry.
+
+    Important:
+        Implementations of this interface are meant to be thread-safe and independent of env vars/globals,
+        so multiple API instances can coexist in the same program if necessary.
+    """
 
     cache_dir: Path = pydantic.Field(
         default=None,
@@ -717,44 +722,80 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def clean_cached_run_artifact(self, run: RunIdentifier, path_in_run: str = ""):
-        """Clean cached artifact for specified run."""
+        """Clean cached artifact for specified run.
+
+        :param run: Run ID or object.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         self._clean_run_artifact(self._coerce_run_id(run), path_in_run)
 
     @pydantic.validate_arguments
     def clean_cached_model_artifact(self, model_version: ModelVersionIdentifier):
-        """Clean cached artifact for specified model version."""
+        """Clean cached artifact for specified model version.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         mv = self._coerce_mv(model_version)
         self.clean_cached_run_artifact(mv.run, mv.path_in_run)
 
     @pydantic.validate_arguments
     def list_run_artifacts(self, run: RunIdentifier, path_in_run: str = "") -> transfer.LsResult:
-        """List run artifacts in repo."""
+        """List run artifacts in repo.
+
+        :param run: Run ID or object.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return self._list_run_artifacts(run, path_in_run)
 
     @pydantic.validate_arguments
-    def list_model_artifact(self, model_version: ModelVersionIdentifier) -> transfer.LsResult:
-        """List model version artifacts in repo."""
-        return self.list_run_artifacts((mv := self._coerce_mv(model_version)).run, mv.path_in_run)
+    def list_model_artifact(self, model_version: ModelVersionIdentifier, path_suffix: str = "") -> transfer.LsResult:
+        """List model version artifacts in repo.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        :param path_suffix: Plain relative path inside model artifact dir (e.g.: `a/b/c`).
+        """
+        return self.list_run_artifacts(
+            run=(mv := self._coerce_mv(model_version)).run,
+            path_in_run=mv.path_in_run + "/" + path_suffix.strip("/"),
+        )
 
     @pydantic.validate_arguments
     def cache_run_artifact(self, run: RunIdentifier, path_in_run: str = "") -> Path:
-        """Pull run artifact from MLflow server to local cache."""
+        """Pull run artifact from MLflow server to local cache.
+
+        :param run: Run ID or object.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return self._pull_run_artifact(run, path_in_run)
 
     @pydantic.validate_arguments
     def cache_model_artifact(self, model_version: ModelVersionIdentifier) -> Path:
-        """Pull model version artifact from MLflow server to local cache."""
+        """Pull model version artifact from MLflow server to local cache.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         mv = self._coerce_mv(model_version)
         return self.cache_run_artifact(mv.run, mv.path_in_run)
 
     @pydantic.validate_arguments
     def get_run_artifact(self, run: RunIdentifier, path_in_run: str = "") -> Path:
-        """Get local path to run artifact."""
+        """Get local path to run artifact.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param run: Run ID or object.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return self._get_run_artifact(self._coerce_run_id(run), path_in_run)
 
     @pydantic.validate_arguments
     def get_model_artifact(self, model_version: ModelVersionIdentifier) -> Path:
-        """Get local path to model artifact."""
+        """Get local path to model artifact.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         mv = self._coerce_mv(model_version)
         return self.get_run_artifact(mv.run, mv.path_in_run)
 
@@ -767,7 +808,16 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         overwrite: bool = False,
         link: bool = True,
     ):
-        """Place run artifact on target path."""
+        """Place run artifact on target path.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param run: Run ID or object.
+        :param target: Target path.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        :param overwrite: Overwrite target path if exists.
+        :param link: Use symbolic link instead of copy.
+        """
         self._place_run_artifact(self._coerce_run_id(run), path_in_run, target, link, overwrite)
 
     @pydantic.validate_arguments
@@ -778,7 +828,15 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         overwrite: bool = False,
         link: bool = True,
     ):
-        """Place model version artifact on target path."""
+        """Place model version artifact on target path.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        :param target: Target path.
+        :param overwrite: Overwrite target path if exists.
+        :param link: Use symbolic link instead of copy.
+        """
         mv = self._coerce_mv(model_version)
         self.place_run_artifact(mv.run, target, mv.path_in_run, overwrite, link)
 
@@ -789,7 +847,14 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         target: Path,
         path_in_run: str = "",
     ) -> Path:
-        """Export run artifact cache to target path."""
+        """Export run artifact cache to target path while keeping the original cache structure.
+
+        The target path can then be used as cache dir by the `generic` MLflow API in offline mode.
+
+        :param run: Run ID or object.
+        :param target: Cache export path.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         if paths.is_sub_dir(target, self.cache_dir) or paths.is_sub_dir(self.cache_dir, target):
             raise paths.IllegalPath(f"Cannot export cache to itself, its subdirs or parents: {target}")
         cache = self._get_run_artifact(run, path_in_run)
@@ -804,18 +869,37 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         model_version: ModelVersionIdentifier,
         target: Path,
     ) -> Path:
-        """Export model version artifact cache to target path."""
+        """Export model version artifact cache to target path while keeping the original cache structure.
+
+        The target path can then be used as cache dir by the `generic` MLflow API in offline mode.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        :param target: Cache export path.
+        """
         mv = self._coerce_mv(model_version)
         return self.export_run_artifact(mv.run, target, mv.path_in_run)
 
     @pydantic.validate_arguments
     def load_run_artifact(self, run: RunIdentifier, loader: Callable[[Path], A], path_in_run: str = "") -> A:
-        """Load run artifact."""
+        """Load run artifact.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param run: Run ID or object.
+        :param loader: Loader callback.
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+        """
         return loader(self._get_run_artifact(self._coerce_run_id(run), path_in_run))
 
     @pydantic.validate_arguments
     def load_model_artifact(self, model_version: ModelVersionIdentifier, loader: Callable[[Path], A]) -> A:
-        """Load model artifact."""
+        """Load model version artifact.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        :param loader: Loader callback.
+        """
         mv = self._coerce_mv(model_version)
         logger.info("Loading model: %s v%s", mv.model.name, mv.version)
         return self.load_run_artifact(mv.run, loader, mv.path_in_run)
@@ -831,7 +915,33 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         allow_duplication: bool | None = None,
         use_cache: bool | None = None,
     ):
-        """Publish artifact file or dir to experiment run."""
+        """Publish artifact file or dir to experiment run.
+
+        The flags :paramref:`keep_the_source`, :paramref:`allow_duplication` and :paramref:`use_cache` are
+        experimental and may conflict with one another. It is recommended to leave them unspecified, so this
+        method will do a best-effort to use cache if it makes sense to, keep the source files if it makes
+        sense to (possibly as a symbolic link) and avoid duplicated disk usage when possible.
+
+        :param run: | Run ID or object.
+
+        :param source: | Path to artifact file or dir, or a dumper callback.
+                       | If it's a callback and the upload is interrupted, the temporary artifact is kept.
+
+        :param path_in_run: Plain relative path inside run artifacts (e.g.: `a/b/c`)
+
+            - If `source` is a `Path`: Defaults to file or dir name.
+            - If `source` is a callback: No default available.
+
+        :param keep_the_source:
+            - If `source` is a `Path`: Keep that file or dir (defaults to `True`).
+            - If `source` is a callback: Keep the temporary artifact, even after a successful upload (defaults to `False`).
+
+        :param allow_duplication: | If `False`, a `source` file or dir may be replaced with a symbolic link to the local cache in order to avoid duplicated disk usage.
+                                  | Defaults to `True` if :paramref:`keep_the_source` is `True` and the run artifacts repo is local.
+
+        :param use_cache: | If `True`, keep artifact in local cache after publishing.
+                          | Defaults to `True` if the run artifacts repo is remote.
+        """
         tmp = None
 
         if using_dumper := callable(source):
@@ -925,7 +1035,31 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         version: str | None = None,
         tags: Mapping | None = None,
     ) -> ModelVersionApi:
-        """Publish artifact file or dir as model version inside the specified experiment run."""
+        """Publish artifact file or dir as model version inside the specified experiment run.
+
+        :param model: | Model name or object.
+
+        :param run: | Run ID or object.
+
+        :param source: | See :paramref:`log_run_artifact.source`
+
+        :param path_in_run: | Plain relative path inside run artifacts (e.g.: `a/b/c`).
+                            | Defaults to model name.
+
+        :param keep_the_source: | See :paramref:`log_run_artifact.keep_the_source`
+
+        :param allow_duplication: | See :paramref:`log_run_artifact.allow_duplication`
+
+        :param use_cache: | See :paramref:`log_run_artifact.use_cache`
+
+        :param version: | Arbitrary model version
+                        | (not supported by all backends).
+
+        :param tags: | Model version tags.
+                     | See :class:`schema.ModelVersion.tags`
+
+        :return: New model version metadata with API handle.
+        """
         logger.info("Logging version of model '%s'", model_name := self._coerce_model_name(model))
         path_in_run = path_in_run or patterns.encode_model_name(model_name)
         self.log_run_artifact(run, source, path_in_run, keep_the_source, allow_duplication, use_cache)
@@ -933,115 +1067,191 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def get_exp_url(self, exp: ExpIdentifier) -> str:
-        """Get Experiment URL."""
+        """Get Experiment URL.
+
+        :param exp: Exp ID or object.
+        """
         return str(self._impl_get_exp_url(self._coerce_exp_id(exp)))
 
     @pydantic.validate_arguments
     def get_run_url(self, run: RunIdentifier, exp: ExpIdentifier | None = None) -> str:
-        """Get Run URL."""
+        """Get Run URL.
+
+        :param run: Run ID or object.
+        :param exp: Exp ID or object.
+
+        Caveats:
+            - :paramref:`exp` must be specified on :attr:`~BaseMlflowApi.offline_mode`
+              if :paramref:`run` is an ID and the run metadata is not in cache.
+        """
         exp = self._coerce_run(run).exp if exp is None else exp
         return str(self._impl_get_run_url(self._coerce_run_id(run), self._coerce_exp_id(exp)))
 
     @pydantic.validate_arguments
     def get_model_url(self, model: ModelIdentifier) -> str:
-        """Get URL to registered model."""
+        """Get URL to registered model.
+
+        :param model: Model name or object.
+        """
         return str(self._impl_get_model_url(self._coerce_model_name(model)))
 
     @pydantic.validate_arguments
     def get_model_version_url(self, model_version: ModelVersionIdentifier) -> str:
-        """Get model version URL."""
+        """Get model version URL.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         return str(self._impl_get_mv_url(*self._coerce_mv_tuple(model_version)))
 
     @pydantic.validate_arguments
     def get_exp(self, exp: ExpIdentifier, **cache_opts: bool) -> ExpApi:
-        """Get Experiment API by ID."""
+        """Get Experiment API by ID.
+
+        :param exp: Exp ID or object.
+        """
         return ExpApi(**self._get_exp(self._coerce_exp_id(exp), **cache_opts)).using(self)
 
     @pydantic.validate_arguments
     def get_run(self, run: RunIdentifier, **cache_opts: bool) -> RunApi:
-        """Get Run API by ID."""
+        """Get Run API by ID.
+
+        :param run: Run ID or object.
+        """
         return RunApi(**self._get_run(self._coerce_run_id(run), **cache_opts)).using(self)
 
     @pydantic.validate_arguments
     def get_model(self, model: ModelIdentifier, **cache_opts: bool) -> ModelApi:
-        """Get Model API by name."""
+        """Get Model API by name.
+
+        :param model: Model name or object.
+        """
         return ModelApi(**self._get_model(self._coerce_model_name(model), **cache_opts)).using(self)
 
     @pydantic.validate_arguments
     def get_model_version(self, model_version: ModelVersionIdentifier, **cache_opts: bool) -> ModelVersionApi:
-        """Get ModelVersion API by name and version."""
+        """Get ModelVersion API by name and version.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         return ModelVersionApi(**self._get_mv(self._coerce_mv_tuple(model_version), **cache_opts)).using(self)
 
     @pydantic.validate_arguments
     def find_exps(self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None) -> Iterator[ExpApi]:
-        """Search experiments with query in MongoDB query language."""
+        """Search experiments with query in MongoDB query language.
+
+        :param query: Query in MongoDB query language.
+        :param sorting: Sorting criteria (e.g.: `[("asc_field", 1), ("desc_field", -1)]`).
+        """
         return (ExpApi(**x).using(self) for x in self._find_experiments(query or {}, sorting or []))
 
     @pydantic.validate_arguments
     def find_runs(self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None) -> Iterator[RunApi]:
-        """Search runs with query in MongoDB query language."""
+        """Search runs with query in MongoDB query language.
+
+        :param query: Query in MongoDB query language.
+        :param sorting: Sorting criteria (e.g.: `[("asc_field", 1), ("desc_field", -1)]`).
+        """
         return (RunApi(**x).using(self) for x in self._find_runs(query or {}, sorting or []))
 
     @pydantic.validate_arguments
     def find_models(self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None) -> Iterator[ModelApi]:
-        """Search registered models with query in MongoDB query language."""
+        """Search registered models with query in MongoDB query language.
+
+        :param query: Query in MongoDB query language.
+        :param sorting: Sorting criteria (e.g.: `[("asc_field", 1), ("desc_field", -1)]`).
+        """
         return (ModelApi(**x).using(self) for x in self._find_models(query or {}, sorting or []))
 
     @pydantic.validate_arguments
     def find_model_versions(
         self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None
     ) -> Iterator[ModelVersionApi]:
-        """Search model versions with query in MongoDB query language."""
+        """Search model versions with query in MongoDB query language.
+
+        :param query: Query in MongoDB query language.
+        :param sorting: Sorting criteria (e.g.: `[("asc_field", 1), ("desc_field", -1)]`).
+        """
         return (ModelVersionApi(**x).using(self) for x in self._find_mv(query or {}, sorting or []))
 
     @pydantic.validate_arguments
     def find_child_runs(self, parent: RunIdentifier) -> Iterator[RunApi]:
-        """Find child runs."""
+        """Find child runs.
+
+        :param parent: Run ID or object.
+        """
         return (RunApi(**x).using(self) for x in self._impl_find_child_runs(self._coerce_run(parent)))
 
     @pydantic.validate_arguments
     def cache_exp_meta(self, exp: ExpIdentifier) -> ExpApi:
-        """Get latest Experiment metadata and save to local cache."""
+        """Get latest Experiment metadata and save to local cache.
+
+        :param exp: Experiment ID or object.
+        """
         return self.get_exp(exp, force_cache_refresh=True)
 
     @pydantic.validate_arguments
     def cache_run_meta(self, run: RunIdentifier) -> RunApi:
-        """Get latest Run metadata and save to local cache."""
+        """Get latest Run metadata and save to local cache.
+
+        :param run: Run ID or object.
+        """
         return self.get_run(run, force_cache_refresh=True)
 
     @pydantic.validate_arguments
     def cache_model_meta(self, model: ModelIdentifier) -> ModelApi:
-        """Get latest Model metadata and save to local cache."""
+        """Get latest Model metadata and save to local cache.
+
+        :param model: Model name or object.
+        """
         return self.get_model(model, force_cache_refresh=True)
 
     @pydantic.validate_arguments
     def cache_model_version_meta(self, model_version: ModelVersionIdentifier) -> ModelVersionApi:
-        """Get latest model version metadata and save to local cache."""
+        """Get latest model version metadata and save to local cache.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        """
         return self.get_model_version(model_version, force_cache_refresh=True)
 
     @pydantic.validate_arguments
     def export_exp_meta(self, exp: ExpIdentifier, target: Path) -> ExpApi:
-        """Export experiment metadata cache to target."""
+        """Export experiment metadata cache to target.
+
+        :param exp: Experiment ID or object.
+        :param target: Cache export path.
+        """
         self._export_meta(exp := self.get_exp(id_ := self._coerce_exp_id(exp)), self._get_exp_cache(id_), target)
         return exp
 
     @pydantic.validate_arguments
     def export_run_meta(self, run: RunIdentifier, target: Path) -> RunApi:
-        """Export run metadata cache to target."""
+        """Export run metadata cache to target.
+
+        :param run: Run ID or object.
+        :param target: Cache export path.
+        """
         self._export_meta(run := self.get_run(id_ := self._coerce_run_id(run)), self._get_run_cache(id_), target)
         self.export_exp_meta(run.exp, target)
         return run
 
     @pydantic.validate_arguments
     def export_model_meta(self, model: ModelIdentifier, target: Path) -> ModelApi:
-        """Export model metadata cache to target."""
+        """Export model metadata cache to target.
+
+        :param model: Model name or object.
+        :param target: Cache export path.
+        """
         name = self._coerce_model_name(model)
         self._export_meta(model := self.get_model(name), self._get_model_cache(name), target)
         return model
 
     @pydantic.validate_arguments
     def export_model_version_meta(self, mv: ModelVersionIdentifier, target: Path) -> ModelVersionApi:
-        """Export model version metadata cache to target."""
+        """Export model version metadata cache to target.
+
+        :param mv: Model version object or `(name, version)` tuple.
+        :param target: Cache export path.
+        """
         tup = self._coerce_mv_tuple(mv)
         self._export_meta(mv := self.get_model_version(tup), self._get_mv_cache(*tup), target)
         self.export_model_meta(mv.model, target)
@@ -1049,12 +1259,19 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def create_exp(self, name: str, tags: Mapping | None = None) -> ExpApi:
-        """Create Experiment and return its API."""
+        """Create Experiment and return its API.
+
+        :param name: See :attr:`schema.Experiment.name`.
+        :param tags: See :attr:`schema.Experiment.tags`.
+        """
         return ExpApi(**self._create_exp(name, tags or {})).using(self)
 
     @pydantic.validate_arguments
     def get_or_create_exp(self, name: str) -> ExpApi:
-        """Get or create Experiment and return its API."""
+        """Get or create Experiment and return its API.
+
+        :param name: See :attr:`schema.Experiment.name`.
+        """
         for exp in self._find_experiments({"name": name}, []):
             break
         else:
@@ -1064,12 +1281,19 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def create_model(self, name: str, tags: Mapping | None = None) -> ModelApi:
-        """Create registered model and return its API."""
+        """Create registered model and return its API.
+
+        :param name: See :attr:`schema.Model.name`.
+        :param tags: See :attr:`schema.Model.tags`.
+        """
         return ModelApi(**self._create_model(name, tags or {})).using(self)
 
     @pydantic.validate_arguments
     def get_or_create_model(self, name: str) -> ModelApi:
-        """Get or create registered Model and return its API."""
+        """Get or create registered Model and return its API.
+
+        :param name: See :attr:`schema.Model.name`.
+        """
         for model in self._find_models({"name": name}, []):
             break
         else:
@@ -1086,7 +1310,14 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         repo: str | urls.Url | None = None,
         parent: RunIdentifier | None = None,
     ) -> RunApi:
-        """Declare a new experiment run to be used later."""
+        """Declare a new experiment run to be used later.
+
+        :param exp: Experiment ID or object.
+        :param name: See :attr:`schema.Run.name`.
+        :param tags: See :attr:`schema.Run.tags`.
+        :param repo: (Experimental) Cloud storage URL to be used as alternative run artifacts repository.
+        :param parent: Parent run ID or object.
+        """
         return RunApi(**self._create_run(exp, name, repo, tags or {}, schema.RunStatus.SCHEDULED, parent)).using(self)
 
     @pydantic.validate_arguments
@@ -1098,18 +1329,32 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         repo: str | urls.Url | None = None,
         parent: RunIdentifier | None = None,
     ) -> RunApi:
-        """Start a new experiment run."""
+        """Start a new experiment run.
+
+        :param exp: Experiment ID or object.
+        :param name: See :attr:`schema.Run.name`.
+        :param tags: See :attr:`schema.Run.tags`.
+        :param repo: (Experimental) Cloud storage URL to be used as alternative run artifacts repository.
+        :param parent: Parent run ID or object.
+        """
         return RunApi(**self._create_run(exp, name, repo, tags or {}, schema.RunStatus.RUNNING, parent)).using(self)
 
     @pydantic.validate_arguments
     def resume_run(self, run: RunIdentifier) -> RunApi:
-        """Resume a previous experiment run."""
+        """Resume a previous experiment run.
+
+        :param run: Run ID or object.
+        """
         self._set_run_status(run_id := self._coerce_run_id(run), schema.RunStatus.RUNNING)
         return self.get_run(run_id)
 
     @pydantic.validate_arguments
     def end_run(self, run: RunIdentifier, succeeded: bool = True) -> RunApi:
-        """End experiment run."""
+        """End experiment run.
+
+        :param run: Run ID or object.
+        :param succeeded: Whether the run was successful.
+        """
         status = schema.RunStatus.FINISHED if succeeded else schema.RunStatus.FAILED
         self._set_run_status(run_id := self._coerce_run_id(run), status)
         self._set_run_end_time(run_id, datetime.now())
@@ -1117,30 +1362,54 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
     @pydantic.validate_arguments
     def set_tags_on_exp(self, exp: ExpIdentifier, tags: Mapping):
-        """Set tags on experiment."""
+        """Set tags on experiment.
+
+        :param exp: Experiment ID or object.
+        :param tags: See :attr:`schema.Experiment.tags`.
+        """
         self._update_exp_tags(exp, tags)
 
     @pydantic.validate_arguments
     def set_tags_on_run(self, run: RunIdentifier, tags: Mapping):
-        """Set tags on experiment run."""
+        """Set tags on experiment run.
+
+        :param run: Run ID or object.
+        :param tags: See :attr:`schema.Run.tags`.
+        """
         self._update_run_tags(run, tags)
 
     @pydantic.validate_arguments
     def set_tags_on_model(self, model: ModelIdentifier, tags: Mapping):
-        """Set tags on registered model."""
+        """Set tags on registered model.
+
+        :param model: Model name or object.
+        :param tags: See :attr:`schema.Model.tags`.
+        """
         self._update_model_tags(model, tags)
 
     @pydantic.validate_arguments
     def set_tags_on_model_version(self, model_version: ModelVersionIdentifier, tags: Mapping):
-        """Set tags on model version."""
+        """Set tags on model version.
+
+        :param model_version: Model version object or `(name, version)` tuple.
+        :param tags: See :attr:`schema.Model.tags`.
+        """
         self._update_mv_tags(model_version, tags)
 
     @pydantic.validate_arguments
     def log_params(self, run: RunIdentifier, params: Mapping):
-        """Log params to experiment run."""
+        """Log params to experiment run.
+
+        :param run: Run ID or object.
+        :param params: See :attr:`schema.Run.params`.
+        """
         self._log_run_params(run, params)
 
     @pydantic.validate_arguments
     def log_metrics(self, run: RunIdentifier, metrics: Mapping):
-        """Log metrics to experiment run."""
+        """Log metrics to experiment run.
+
+        :param run: Run ID or object.
+        :param metrics: See :attr:`schema.Run.metrics`.
+        """
         self._log_run_metrics(run, metrics)

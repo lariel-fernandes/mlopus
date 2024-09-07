@@ -1,18 +1,11 @@
-"""This module offers tools for configuring and using standardized, plugin-based MLflow APIs.
+"""This module is based on the interface :class:`~mlopus.mlflow.BaseMlflowApi`,
+which may be implemented in order to work with different MLflow backends/providers
+in the scope of experiment tracking and model registry.
 
-Plugins must implement the interface `mlopus.mlflow.BaseMlflowApi`
-and be included in the entry-points group `mlopus.mlflow_api_providers`.
+Built-in implementations can be found under the module :mod:`mlopus.mlflow.providers`
+and are also available under the plugin group `mlopus.mlflow_api_providers`.
 
-While each plugin may offer access to a different MLflow-like backend/provider,
-all plugins are meant to be thread-safe and independent of env vars/global vars,
-so multiple API instances can coexist in the same program if necessary.
-
-The default plugin, aliased in the entry-points as `mlflow`,
-handles communication to open-source MLflow servers (assuming
-no artifacts proxy and server-managed SQL database).
-
-Another built-in alternative is the minimal-dependency `generic` plugin,
-which works exclusively with the local cache and does not implement any client-server communication.
+Third-party implementations may also be added to that group in order to expand funcionality.
 """
 
 from . import providers

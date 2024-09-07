@@ -29,25 +29,38 @@ class ModelApi(schema.Model, entity.EntityApi):
         return self._use_values_from(self.api.cache_model_meta(self))
 
     def export_meta(self, target: Path) -> "ModelApi":
-        """Export metadata cache for this model."""
+        """Export model metadata cache to target.
+
+        :param target: Cache export path.
+        """
         return self._use_values_from(self.api.export_model_meta(self, target))
 
     @decorators.require_update
     def set_tags(self, tags: Mapping) -> "ModelApi":
-        """Set tags on this model."""
+        """Set tags on this model.
+
+        :param tags: See :attr:`schema.Model.tags`.
+        """
         self.api.set_tags_on_model(self, tags)
         return self
 
     @pydantic.validate_arguments
     def get_version(self, version: str) -> ModelVersionApi:
-        """Get metadata of specified version of this model."""
+        """Get ModelVersion API by version identifier.
+
+        :param version: Version identifier.
+        """
         return typing.cast(ModelVersionApi, self.api.get_model_version((self.name, version)))
 
     @pydantic.validate_arguments
     def find_versions(
         self, query: mongo.Query | None = None, sorting: mongo.Sorting | None = None
     ) -> Iterator[ModelVersionApi]:
-        """Search versions of this model with query in MongoDB query language."""
+        """Search versions of this model with query in MongoDB query language.
+
+        :param query: Query in MongoDB query language.
+        :param sorting: Sorting criteria (e.g.: `[("asc_field", 1), ("desc_field", -1)]`).
+        """
         results = self.api.find_model_versions(dicts.set_reserved_key(query, key="model.name", val=self.name), sorting)
         return typing.cast(Iterator[ModelVersionApi], results)
 
@@ -63,7 +76,27 @@ class ModelApi(schema.Model, entity.EntityApi):
         version: str | None = None,
         tags: Mapping | None = None,
     ) -> ModelVersionApi:
-        """Publish artifact file or dir as version of this model inside the specified experiment run."""
+        """Publish artifact file or dir as model version inside the specified experiment run.
+
+        :param run: | Run ID or object.
+
+        :param source: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.source`
+
+        :param path_in_run: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_model_version.path_in_run`
+
+        :param keep_the_source: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.keep_the_source`
+
+        :param allow_duplication: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.allow_duplication`
+
+        :param use_cache: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_run_artifact.use_cache`
+
+        :param version: | See :paramref:`~mlopus.mlflow.BaseMlflowApi.log_model_version.version`
+
+        :param tags: | Model version tags.
+                     | See :class:`schema.ModelVersion.tags`
+
+        :return: New model version metadata with API handle.
+        """
         from .run import RunApi
 
         mv = self.api.log_model_version(

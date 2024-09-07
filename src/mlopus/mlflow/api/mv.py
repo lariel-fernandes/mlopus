@@ -34,13 +34,22 @@ class ModelVersionApi(schema.ModelVersion, entity.EntityApi):
         """Get model version URL."""
         return self.api.get_model_version_url(self)
 
+    @pydantic.validate_arguments
+    def clean_cached_artifact(self) -> "ModelVersionApi":
+        """Clean cached artifact for this model version."""
+        self.api.clean_cached_model_artifact(self)
+        return self
+
     def cache(self):
         """Cache metadata and artifact for this model version."""
         self.cache_meta()
         self.cache_artifact()
 
     def export(self, target: Path):
-        """Export metadata and artifact cache of this model version to target path."""
+        """Export metadata and artifact cache of this model version to target path.
+
+        :param target: Cache export path.
+        """
         self.export_meta(target)
         self.export_artifact(target)
 
@@ -49,12 +58,18 @@ class ModelVersionApi(schema.ModelVersion, entity.EntityApi):
         return self._use_values_from(self.api.cache_model_version_meta(self))
 
     def export_meta(self, target: Path) -> "ModelVersionApi":
-        """Export metadata cache for this model version."""
+        """Export model version metadata cache to target.
+
+        :param target: Cache export path.
+        """
         return self._use_values_from(self.api.export_model_version_meta(self, target))
 
     @decorators.require_update
     def set_tags(self, tags: Mapping) -> "ModelVersionApi":
-        """Set tags on this model version."""
+        """Set tags on this model version.
+
+        :param tags: See :attr:`schema.Model.tags`.
+        """
         self.api.set_tags_on_model_version(self, tags)
         return self
 
@@ -64,24 +79,51 @@ class ModelVersionApi(schema.ModelVersion, entity.EntityApi):
 
     @pydantic.validate_arguments
     def export_artifact(self, target: Path) -> Path:
-        """Export model version artifact cache to target path."""
+        """Export model version artifact cache to target.
+
+        See also:
+            - :meth:`mlopus.mlflow.BaseMlflowApi.export_model_artifact`
+
+        :param target: Cache export path.
+        """
         return self.api.export_model_artifact(self, target)
 
     @pydantic.validate_arguments
     def list_artifacts(self, path_suffix: str = "") -> transfer.LsResult:
-        """List artifacts in this model version."""
-        return self.api.list_run_artifacts(self.run, self.path_in_run + "/" + path_suffix.strip("/"))
+        """List artifacts in this model version.
+
+        :param path_suffix: Plain relative path inside model artifact dir (e.g.: `a/b/c`).
+        """
+        return self.api.list_model_artifact(self.run, path_suffix)
 
     def get_artifact(self) -> Path:
-        """Get local path to artifact of this model version."""
+        """Get local path to model artifact.
+
+        See also:
+            - :meth:`mlopus.mlflow.BaseMlflowApi.get_model_artifact`
+        """
         return self.api.get_model_artifact(self)
 
     @pydantic.validate_arguments
     def place_artifact(self, target: Path, overwrite: bool = False, link: bool = True):
-        """Place artifact of this model version on target path."""
+        """Place model version artifact on target path.
+
+        See also:
+            - :meth:`mlopus.mlflow.BaseMlflowApi.place_model_artifact`
+
+        :param target: Target path.
+        :param overwrite: Overwrite target path if exists.
+        :param link: Use symbolic link instead of copy.
+        """
         self.api.place_model_artifact(self, target, overwrite, link)
 
     @pydantic.validate_arguments
     def load_artifact(self, loader: Callable[[Path], A]) -> A:
-        """Load artifact of this model version."""
+        """Load model version artifact.
+
+        See also:
+            - :meth:`mlopus.mlflow.BaseMlflowApi.load_model_artifact`
+
+        :param loader: Loader callback.
+        """
         return self.api.load_model_artifact(self, loader)

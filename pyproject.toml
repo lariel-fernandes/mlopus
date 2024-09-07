@@ -59,9 +59,11 @@ dev-dependencies = [
     "sphinx                    <7",
     "autodoc-pydantic          <2",
     "sphinx-rtd-theme          ~=2.0",
+    "sphinx-paramlinks         ~=0.6",
     "enum-tools[sphinx]        ~=0.12",
     "sphinx-code-include       ~=1.4",
     "sphinx-autodoc-typehints  ~=1.23",
+    "sphinx-toolbox>=3.8.0",
 ]
 
 # === Commitizen ==================================================================================
@@ -140,4 +142,4 @@ select = [
     "TID",
     "SIM",
 ]
-ignore = []
+ignore = ["E501"]

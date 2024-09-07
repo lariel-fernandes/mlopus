@@ -44,7 +44,7 @@ class MlflowApiContract(pydantic.BaseModel, ABC):
         """List run artifacts in repo."""
 
     @abstractmethod
-    def list_model_artifact(self, model_version: ModelVersionIdentifier) -> transfer.LsResult:
+    def list_model_artifact(self, model_version: ModelVersionIdentifier, path_suffix: str = "") -> transfer.LsResult:
         """List model version artifacts in repo."""
 
     @abstractmethod

@@ -5,14 +5,10 @@ Artifact Schemas
 .. automodule:: mlopus.artschema
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    framework
-
-.. toctree::
-   :maxdepth: 1
-
    tags
    helpers
    specs
