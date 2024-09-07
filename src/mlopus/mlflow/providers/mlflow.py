@@ -14,7 +14,7 @@ from mlflow.tracking import artifact_utils as mlflow_artifact_utils
 
 from mlopus.mlflow.api.base import BaseMlflowApi
 from mlopus.mlflow.api.common import schema, patterns
-from mlopus.utils import pydantic, mongo, dicts, json_utils, iter_utils, urls, string_utils, env_utils
+from mlopus.utils import pydantic, mongo, dicts, json_utils, iter_utils, urls, string_utils, env_utils, encoding
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,11 @@ class MaxLength(pydantic.BaseModel):
 class MlflowDataTranslation(pydantic.BaseModel):
     """Translates native MLflow data to MLOpus format and back."""
 
+    tag_encoding: str = "UTF-8"
+    param_encoding: str = "UTF-8"
     ignore_json_errors: bool = True
+    compress_long_tags: bool = False
+    compress_long_params: bool = False
     max_length: MaxLength = MaxLength()
     keep_untouched: KeepUntouched = KeepUntouched()
 
@@ -184,35 +188,77 @@ class MlflowDataTranslation(pydantic.BaseModel):
         """Inverse func of _preprocess_dict."""
         return dicts.unflatten(self._deprocess_dict(data, val_mapper))
 
+    def _compress_tag(self, key_parts: Tuple[str, ...], val: str) -> str:  # noqa
+        """Compress tag value."""
+        return "gzb64:" + encoding.to_gz_b64(val, self.tag_encoding)
+
     def process_tag(self, key_parts: Tuple[str, ...], val: Any) -> str | None:
         """JSON encode user-tag."""
-        if not self.keep_untouched(key_parts, scope="tags"):
-            val = string_utils.escape_sql_single_quote(json_utils.dumps(val))
+        if self.keep_untouched(key_parts, scope="tags"):
+            return val
+
+        val = string_utils.escape_sql_single_quote(json_utils.dumps(val))
+
         if len(val) > self.max_length.tag:
-            val = None
-            logger.warning("Ignoring tag above max length of %s: %s", self.max_length.tag, key_parts)
+            if self.compress_long_params and len(val := self._compress_tag(key_parts, val)) <= self.max_length.tag:
+                logger.debug("Using compression for tag above max length of %s: %s", self.max_length.tag, key_parts)
+            else:
+                val = None
+                logger.warning("Ignoring tag above max length of %s: %s", self.max_length.tag, key_parts)
+
+        return val
+
+    def _decompress_tag(self, key_parts: Tuple[str, ...], val: str) -> str:  # noqa
+        """Decompress tag value."""
+        if val.startswith("gzb64:"):
+            val = encoding.from_gz_b64(val.removeprefix("gzb64:"), self.tag_encoding)
         return val
 
     def _deprocess_tag(self, key_parts: Tuple[str, ...], val: str) -> Any:
         """JSON decode user-tag value from MLflow."""
-        if not self.keep_untouched(key_parts, scope="tags"):
-            val = json_utils.loads(string_utils.unscape_sql_single_quote(val), ignore_errors=self.ignore_json_errors)
-        return val
+        if self.keep_untouched(key_parts, scope="tags"):
+            return val
+
+        if self.compress_long_tags:
+            val = self._decompress_tag(key_parts, val)
+
+        return json_utils.loads(string_utils.unscape_sql_single_quote(val), ignore_errors=self.ignore_json_errors)
+
+    def _compress_param(self, key_parts: Tuple[str, ...], val: str) -> str:  # noqa
+        """Compress param value."""
+        return "gzb64:" + encoding.to_gz_b64(val, self.param_encoding)
 
     def process_param(self, key_parts: Tuple[str, ...], val: Any) -> str:  # noqa
         """JSON encode param."""
-        if not self.keep_untouched(key_parts, scope="params"):
-            val = string_utils.escape_sql_single_quote(json_utils.dumps(val))
+        if self.keep_untouched(key_parts, scope="params"):
+            return val
+
+        val = string_utils.escape_sql_single_quote(json_utils.dumps(val))
+
         if len(val) > self.max_length.param:
-            val = None
-            logger.warning("Ignoring param above max length of %s: %s", self.max_length.param, key_parts)
+            if self.compress_long_params and len(val := self._compress_param(key_parts, val)) <= self.max_length.param:
+                logger.debug("Using compression for param above max length of %s: %s", self.max_length.param, key_parts)
+            else:
+                val = None
+                logger.warning("Ignoring param above max length of %s: %s", self.max_length.param, key_parts)
+
+        return val
+
+    def _decompress_param(self, key_parts: Tuple[str, ...], val: str) -> str:  # noqa
+        """Decompress param value."""
+        if val.startswith("gzb64:"):
+            val = encoding.from_gz_b64(val.removeprefix("gzb64:"), self.param_encoding)
         return val
 
     def _deprocess_param(self, key_parts: Tuple[str, ...], val: str) -> Any:  # noqa
         """JSON decode param value from MLflow."""
-        if not self.keep_untouched(key_parts, scope="params"):
-            val = json_utils.loads(string_utils.unscape_sql_single_quote(val), ignore_errors=self.ignore_json_errors)
-        return val
+        if self.keep_untouched(key_parts, scope="params"):
+            return val
+
+        if self.compress_long_tags:
+            val = self._decompress_tag(key_parts, val)
+
+        return json_utils.loads(string_utils.unscape_sql_single_quote(val), ignore_errors=self.ignore_json_errors)
 
     def process_metric(self, key_parts: Tuple[str, ...], val: Any) -> float:  # noqa
         """Coerce metric value to float."""

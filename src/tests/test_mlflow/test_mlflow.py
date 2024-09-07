@@ -163,3 +163,28 @@ class TestMlflow(ApiTester[API]):
             with pytest.raises(MlflowException) as exc:  # Invalid param value
                 _api.get_exp("0")  # Use API to trigger exception
             assert exc.value.message.endswith(str(-10 * (i + 1)))  # -10 for api_1, -20 for api_2
+
+    def test_long_params_and_tags(self, request, api: API):
+        tags = {"foo": "x" * 100}
+        params = {"foo": "x" * 200}
+        api.data_translation.max_length.tag = 100
+        api.data_translation.max_length.param = 200
+
+        with (
+            self._ctx_exp(request, api, "test", {}) as exp_id,
+            self._ctx_run(request, api, exp_id, "test", tags) as run_id,
+        ):
+            run = api.get_run(run_id).log_params(params)
+            assert "foo" not in run.tags
+            assert "foo" not in run.params
+
+        api.data_translation.compress_long_tags = True
+        api.data_translation.compress_long_params = True
+
+        with (
+            self._ctx_exp(request, api, "test2", {}) as exp_id,
+            self._ctx_run(request, api, exp_id, "test", tags) as run_id,
+        ):
+            run = api.get_run(run_id).log_params(params)
+            assert run.tags["foo"] == tags["foo"]
+            assert run.params["foo"] == params["foo"]
