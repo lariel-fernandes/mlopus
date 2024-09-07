@@ -748,12 +748,16 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         return self._list_run_artifacts(run, path_in_run)
 
     @pydantic.validate_arguments
-    def list_model_artifact(self, model_version: ModelVersionIdentifier) -> transfer.LsResult:
+    def list_model_artifact(self, model_version: ModelVersionIdentifier, path_suffix: str = "") -> transfer.LsResult:
         """List model version artifacts in repo.
 
         :param model_version: Model version object or `(name, version)` tuple.
+        :param path_suffix: Plain relative path inside model artifact dir (e.g.: `a/b/c`).
         """
-        return self.list_run_artifacts((mv := self._coerce_mv(model_version)).run, mv.path_in_run)
+        return self.list_run_artifacts(
+            run=(mv := self._coerce_mv(model_version)).run,
+            path_in_run=mv.path_in_run + "/" + path_suffix.strip("/"),
+        )
 
     @pydantic.validate_arguments
     def cache_run_artifact(self, run: RunIdentifier, path_in_run: str = "") -> Path:
@@ -890,6 +894,8 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
     @pydantic.validate_arguments
     def load_model_artifact(self, model_version: ModelVersionIdentifier, loader: Callable[[Path], A]) -> A:
         """Load model version artifact.
+
+        Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
 
         :param model_version: Model version object or `(name, version)` tuple.
         :param loader: Loader callback.
