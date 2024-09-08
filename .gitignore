@@ -3,6 +3,8 @@
 **/.idea
 mlruns
 
+examples/2_a_kedro_project/data/**
+
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
