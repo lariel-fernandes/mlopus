@@ -12,6 +12,7 @@ on:
     - .github/workflows/test.yml
     - examples/1_introduction/**.py
     - examples/1_introduction/**.ipynb
+    - examples/2_a_kedro_project/src/mlopus_kedro_example/*
   pull_request:
     branches: [main*, develop]
     paths:
@@ -23,6 +24,7 @@ on:
     - .github/workflows/test.yml
     - examples/1_introduction/**.py
     - examples/1_introduction/**.ipynb
+    - examples/2_a_kedro_project/src/mlopus_kedro_example/*
 
 env:
   UV_CACHE_DIR: /tmp/.uv-cache
