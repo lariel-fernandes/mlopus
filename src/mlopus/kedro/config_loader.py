@@ -10,7 +10,7 @@ class MlopusConfigLoader(OmegaConfigLoader):
     """Patch of OmegaConfigLoader.
 
     Enabling the patch
-    ******************
+    ==================
 
         .. code-block:: python
 
@@ -20,7 +20,7 @@ class MlopusConfigLoader(OmegaConfigLoader):
             CONFIG_LOADER_CLASS = MlopusConfigLoader
 
     `dict`-like `get` behavior
-    **************************
+    ==========================
     Assuming there are no files matching ``conf/<env>/credentials*``, the
     following example would raise an exception with the original OmegaConfigLoader:
 
@@ -30,7 +30,7 @@ class MlopusConfigLoader(OmegaConfigLoader):
             config.get("credentials", {})  # returns: {}
 
     Any scope overrides (CLI)
-    *************************
+    =========================
 
         .. code-block:: bash
 
@@ -40,7 +40,7 @@ class MlopusConfigLoader(OmegaConfigLoader):
             kedro run ... --params credentials.key=value
 
     Any scope overrides (Python)
-    ****************************
+    ============================
 
         .. code-block:: python
 

@@ -27,7 +27,7 @@ class MlopusKedroSession(KedroSession):
     """Patch of KedroSession.
 
     Enabling the patch
-    ******************
+    ==================
 
         .. code-block:: python
 
@@ -38,7 +38,7 @@ class MlopusKedroSession(KedroSession):
             KedroSession.create = MlopusKedroSession.create
 
     Resolving env vars and session store details in config files
-    ************************************************************
+    ============================================================
 
         .. code-block:: yaml
 
@@ -47,7 +47,7 @@ class MlopusKedroSession(KedroSession):
             package_version: "${session:pkg.version}"  # resolve session store details
 
     Lazy-evaluated pipelines with direct config access
-    **************************************************
+    ==================================================
 
     In the following example, the function `prepare_images` will be called to build the
     pipeline from the config **only** when the respective pipeline is chosen for execution.
@@ -75,7 +75,7 @@ class MlopusKedroSession(KedroSession):
                 ])
 
     Lazy-evaluated hooks with direct config access
-    **********************************************
+    ==============================================
 
         .. code-block:: python
 

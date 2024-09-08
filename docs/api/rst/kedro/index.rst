@@ -10,6 +10,10 @@ Kedro Extensions
 
    session
    config_loader
+
+.. toctree::
+   :maxdepth: 2
+
    hooks
-   datasets
+   datasets/index
    cli_tools
