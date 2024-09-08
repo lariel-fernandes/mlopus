@@ -7,15 +7,53 @@ from mlopus.utils import dicts
 
 
 class MlopusConfigLoader(OmegaConfigLoader):
-    """Patch OmegaConfigLoader.
+    """Patch of OmegaConfigLoader.
 
-    Features:
-      - Doesn't raise an exception on `get` if no config files for the requested scope are found
-        (behaves like a usual `dict.get`, returning the specified default or `None`)
+    Enabling the patch
+    ******************
 
-      - Allows overriding any config scope via runtime params
-        Usage in the CLI: --params globals.section.key=value,catalog.section.key=value,parameters.key=value
-        Usage in Python: KedroSession.create(..., extra_params={"globals": {section": {"key": value}}})
+        .. code-block:: python
+
+            # <your_package>/settings.py
+            from mlopus.kedro import MlopusConfigLoader
+
+            CONFIG_LOADER_CLASS = MlopusConfigLoader
+
+    `dict`-like `get` behavior
+    **************************
+    Assuming there are no files matching ``conf/<env>/credentials*``, the
+    following example would raise an exception with the original OmegaConfigLoader:
+
+        .. code-block:: python
+
+            config.get("credentials")  # returns: None
+            config.get("credentials", {})  # returns: {}
+
+    Any scope overrides (CLI)
+    *************************
+
+        .. code-block:: bash
+
+            kedro run ... --params globals.key=value
+            kedro run ... --params catalog.key=value
+            kedro run ... --params parameters.key=value
+            kedro run ... --params credentials.key=value
+
+    Any scope overrides (Python)
+    ****************************
+
+        .. code-block:: python
+
+            with KedroSession.create(
+                ...,
+                extra_params={
+                    "globals": {"key": "value"},
+                    "catalog": {"key": "value"},
+                    "parameters": {"key": "value"},
+                    "credentials": {"key": "value"},
+                },
+            ) as session:
+                ...
     """
 
     def __init__(

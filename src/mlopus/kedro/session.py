@@ -26,22 +26,67 @@ logger = logging.getLogger(__name__)
 class MlopusKedroSession(KedroSession):
     """Patch of KedroSession.
 
-    Features:
-      - Exposes the session store data for interpolation via config keys.
-        (e.g.: in `parameters.yml`, my_key: ${session:session_id})
+    Enabling the patch
+    ******************
 
-      - Exposes environment variables for interpolation via config keys in any scope.
-        (e.g.: in `parameters.yml`, my_key: ${env:my_env_var})
+        .. code-block:: python
 
-      - Allows pipelines to be built dynamically by functions that receive the Kedro config and return `Pipeline`
-        Example:
-            # in `pipeline_registry.py`, where `create_pipeline` expects `config` and returns `Pipeline`
-            "my_pipeline": pipeline_factory(create_pipeline)
+            # <your_package>/settings.py
+            from mlopus.kedro import MlopusKedroSession
+            from kedro.framework.session import KedroSession
 
-      - Allows hooks to be built dynamically by functions that receive the Kedro config and return a hook
-        Example:
-            # in `settings.py`, where `create_hook` expects `config` and returns a hook object
-            HOOKS = [hook_factory(create_hook), ...]
+            KedroSession.create = MlopusKedroSession.create
+
+    Resolving env vars and session store details in config files
+    ************************************************************
+
+        .. code-block:: yaml
+
+            # conf/<env>/parameters.yml
+            my_env_var: "${env:MY_ENV_VAR,default}"  # resolve env var
+            package_version: "${session:pkg.version}"  # resolve session store details
+
+    Lazy-evaluated pipelines with direct config access
+    **************************************************
+
+    In the following example, the function `prepare_images` will be called to build the
+    pipeline from the config **only** when the respective pipeline is chosen for execution.
+
+    If the node function `SetImageContrast` is a Pydantic BaseModel or has any other form of
+    schema validation, the mapped configuration will be validated **before** the pipeline runs.
+
+        .. code-block:: python
+
+            # <your_package>/pipeline_registry.py
+            from mlopus.kedro import pipeline_factory
+
+            def register_pipelines():
+                return {"e2e": prepare_images}
+
+            @pipeline_factory
+            def prepare_images(config):
+                return Pipeline([
+                    node(
+                        name="set_contrast",
+                        inputs="original_images",
+                        outputs="modified_images",
+                        func=SetImageContrast(config["parameters"]["contrast"]),
+                    ),
+                ])
+
+    Lazy-evaluated hooks with direct config access
+    **********************************************
+
+        .. code-block:: python
+
+            # <your_package>/settings.py
+            from mlopus.kedro import hook_factory
+
+            @hook_factory
+            def upload_logs(config):
+                return UploadLogs(bucket=config["globals"]["logs_bucket"])
+
+            HOOKS = [upload_logs]
     """
 
     def __init__(
