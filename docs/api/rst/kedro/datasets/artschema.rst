@@ -2,7 +2,7 @@
 ArtifactSchemaDataset
 =====================
 
-.. automodule:: mlopus.kedro.datasets
+.. automodule:: mlopus.kedro.datasets.artschema
 
 .. autopydantic_model:: mlopus.kedro.ArtifactSchemaDataset
    :exclude-members: load, save, schema_info, exists, from_config, release

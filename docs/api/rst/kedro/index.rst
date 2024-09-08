@@ -14,6 +14,6 @@ Kedro Extensions
 .. toctree::
    :maxdepth: 2
 
-   hooks
    datasets/index
+   hooks/index
    cli_tools

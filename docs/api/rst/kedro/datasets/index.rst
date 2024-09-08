@@ -2,7 +2,7 @@
 Datasets
 ========
 
-.. automodule:: mlopus.kedro
+.. automodule:: mlopus.kedro.datasets
 
 .. toctree::
    :maxdepth: 1

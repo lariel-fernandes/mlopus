@@ -1,20 +1,21 @@
 import logging
 from typing import List, TypeVar
 
-import mlopus
 from kedro.framework.hooks import hook_impl
 from kedro.io import DataCatalog
 from kedro.pipeline import Pipeline
 
+import mlopus
 from .input import PipelineInput
 from .output import PipelineOutput
+from ..hook_factory import HookWithFactory  # noqa: TID252
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
 
-class MlflowArtifacts(mlopus.mlflow.MlflowRunMixin, mlopus.kedro.HookWithFactory):
+class MlflowArtifacts(mlopus.mlflow.MlflowRunMixin, HookWithFactory):
     """Hook to set up inputs and collect outputs using MLflow artifacts.
 
     For a fully commented example covering all settings that can be customized in this hook, have a look at:

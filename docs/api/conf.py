@@ -47,6 +47,8 @@ html_static_path = ["_static"]
 # -- Options for autodoc --------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
 
+autodoc_typehints_format = "short"
+python_use_unqualified_type_names = True
 autodoc_typehints = "signature"
 autodoc_member_order = "groupwise"
 autodoc_default_options = {

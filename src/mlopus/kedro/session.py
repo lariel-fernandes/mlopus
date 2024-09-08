@@ -16,7 +16,7 @@ from kedro.runner import AbstractRunner
 
 from mlopus.utils import pydantic, packaging
 from .config_resolvers import DictResolver
-from .hook_factory import HookFactory
+from .hooks import HookFactory
 from .pipeline_factory import PipelineFactory
 from .utils import log_errors
 

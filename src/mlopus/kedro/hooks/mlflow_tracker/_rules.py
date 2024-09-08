@@ -12,10 +12,15 @@ V = TypeVar("V")  # Any type of val
 Effect = Literal["exclude-all", "include-only"]
 
 
-class _BaseRule(pydantic.BaseModel, ABC, Generic[T]):
-    effect: Effect
-    keys: List[str] = []
-    expr: List[re.Pattern] = []
+class BaseRule(pydantic.BaseModel, ABC, Generic[T]):
+    effect: Effect = pydantic.Field(
+        description="Rule effect: ``exclude-all`` matching keys or ``include-only`` matching keys.",
+    )
+    keys: List[str] = pydantic.Field(default_factory=list, description="Match rule if key is in list.")
+    expr: List[re.Pattern] = pydantic.Field(
+        default_factory=list,
+        description="Match rule if key matches any of these patterns.",
+    )
 
     def allow(self, subject: T) -> bool:
         match = self.match(subject)
@@ -38,7 +43,7 @@ class _BaseRule(pydantic.BaseModel, ABC, Generic[T]):
 
 
 class _BaseRuleSet(pydantic.BaseModel, Generic[T, K, V]):
-    rules: List[_BaseRule[T]] = []
+    rules: List[BaseRule[T]] = []
 
     def allow(self, subject: T) -> bool:
         return all(rule.allow(subject) for rule in self.rules)
@@ -55,13 +60,16 @@ class _BaseRuleSet(pydantic.BaseModel, Generic[T, K, V]):
         pass
 
 
-class _Rule(_BaseRule[Tuple[str, dict]]):
+class Rule(BaseRule[Tuple[str, dict]]):
     def process_subject(self, subject: Tuple[str, dict]) -> str:
         return subject[0]
 
 
 class _RuleSet(_BaseRuleSet[Tuple[str, dict], str, dict]):
-    rules: List[_Rule] = []
+    rules: List[Rule] = pydantic.Field(
+        default_factory=list,
+        description="List of :class:`~mlopus.kedro.hooks.mlflow_tracker._rules.Rule` s for including/excluding keys.",
+    )
 
     def process_key(self, subject: Tuple[str, dict]) -> str:
         return subject[0]
@@ -70,9 +78,16 @@ class _RuleSet(_BaseRuleSet[Tuple[str, dict], str, dict]):
         return subject[1]
 
 
-class _NodeRule(_BaseRule[_Node]):
-    keys: List[str] = pydantic.Field(default_factory=list, alias="names")
-    tags: List[str] = []
+class NodeRule(BaseRule[_Node]):
+    keys: List[str] = pydantic.Field(
+        default_factory=list,
+        alias="names",
+        description="Match rule if node name is in list.",
+    )
+    tags: List[str] = pydantic.Field(
+        default_factory=list,
+        description="Match rule if node has any of these tags.",
+    )
 
     def process_subject(self, subject: _Node) -> str:
         return subject.name
@@ -85,7 +100,10 @@ class _NodeRule(_BaseRule[_Node]):
 
 
 class _NodeRuleSet(_BaseRuleSet[_Node, str, dict]):
-    rules: List[_NodeRule] = []
+    rules: List[NodeRule] = pydantic.Field(
+        default_factory=list,
+        description="List of :class:`~mlopus.kedro.hooks.mlflow_tracker._rules.NodeRule` s for including/excluding nodes.",
+    )
 
     def allow(self, subject: _Node) -> bool:
         return subject.func is not None and super().allow(subject)
@@ -98,7 +116,10 @@ class _NodeRuleSet(_BaseRuleSet[_Node, str, dict]):
 
 
 class _ScopedRuleSet(_RuleSet):
-    scopes: List[str] = []
+    scopes: List[str] = pydantic.Field(
+        default_factory=list,
+        description="List of Kedro config scopes to include.",
+    )
 
     def apply(self, scoped_subjects: Mapping[str, Dict[str, dict]]) -> Dict[str, Dict[K, V]]:
         return {
@@ -109,8 +130,8 @@ class _ScopedRuleSet(_RuleSet):
 
 
 class _PrefixSuffix(pydantic.BaseModel):
-    prefix: List[str] = []
-    suffix: List[str] = []
+    prefix: List[str] = pydantic.Field(default_factory=list, description="Prefix for every key.")
+    suffix: List[str] = pydantic.Field(default_factory=list, description="Suffix for every key.")
 
     def apply_prefix(self, data: dict) -> dict:
         return dicts.new_nested(self.prefix, data) if self.prefix else data
@@ -133,7 +154,7 @@ class _ScopedPrefixSuffixRuleSet(_PrefixSuffix, _ScopedRuleSet):
 
 
 class _PipelinesRuleSet(_PrefixSuffix, _NodeRuleSet):
-    prepend_pipeline: bool = True
+    prepend_pipeline: bool = pydantic.Field(default=True, description="Prepend pipeline name to keys.")
 
     def _apply(self, pipelines: Dict[str, _Pipeline]) -> Iterable[Tuple[str, dict]]:
         for pipeline_name, pipeline in pipelines.items():

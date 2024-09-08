@@ -45,7 +45,14 @@ class HookWithFactory(pydantic.BaseModel, pydantic.SignatureMixin, pydantic.Hash
 
     @classmethod
     def factory(cls, config_path: str | None = None, **extra_params: Any) -> HookFactory:
-        """Get a factory that creates the hook using the params obtained from the config at the specified path."""
+        """Get hook factory.
+
+        :param config_path: | Path to hook settings in Kedro config.
+                            | Defaults to ``parameters.<hook_class_in_snake_case>``
+
+        :param extra_params: Keyword arguments to override the settings from
+                             :paramref:`config_path` (merged recursively).
+        """
         path = (config_path or cls._default_config_path()).split(".")
         return hook_factory(
             lambda config: cls.parse_obj(dicts.deep_merge(dicts.get_nested(config, path), extra_params))
