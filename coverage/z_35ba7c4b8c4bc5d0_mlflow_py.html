@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for src/mlopus/mlflow/providers/mlflow.py: 95%</title>
+    <title>Coverage for src/mlopus/mlflow/providers/mlflow.py: 96%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
     <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>src/mlopus/mlflow/providers/mlflow.py</b>:
-            <span class="pc_cov">95%</span>
+            <span class="pc_cov">96%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">328 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">312<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">16<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">314<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">14<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_ed6f1c616745cc4b_traits_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-08 14:16 +0000
+            created at 2024-09-12 20:59 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -519,7 +519,7 @@
     <p class="run"><span class="n"><a id="t437" href="#t437">437</a></span><span class="t">    <span class="op">@</span><span class="nam">property</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t438" href="#t438">438</a></span><span class="t">    <span class="key">def</span> <span class="nam">_default_cache_id</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span> <span class="op">-></span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t439" href="#t439">439</a></span><span class="t">        <span class="str">"""Sub-dir under default cache dir. Only used if `cache_dir` is not specified."""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t440" href="#t440">440</a></span><span class="t">        <span class="key">return</span> <span class="nam">hashlib</span><span class="op">.</span><span class="nam">md5</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">tracking_uri</span><span class="op">.</span><span class="nam">encode</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">.</span><span class="nam">hexdigest</span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="op">:</span><span class="num">16</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t440" href="#t440">440</a></span><span class="t">        <span class="key">return</span> <span class="nam">hashlib</span><span class="op">.</span><span class="nam">md5</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">tracking_uri</span><span class="op">.</span><span class="nam">encode</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">.</span><span class="nam">hexdigest</span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="op">:</span><span class="num">16</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t441" href="#t441">441</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t442" href="#t442">442</a></span><span class="t">    <span class="com"># =======================================================================================================</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t443" href="#t443">443</a></span><span class="t">    <span class="com"># === Client ============================================================================================</span>&nbsp;</span><span class="r"></span></p>
@@ -588,7 +588,7 @@
     <p class="pln"><span class="n"><a id="t506" href="#t506">506</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t507" href="#t507">507</a></span><span class="t">    <span class="key">def</span> <span class="nam">_impl_default_cache_dir</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Path</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t508" href="#t508">508</a></span><span class="t">        <span class="str">"""Get default cache dir based on the current MLflow API settings."""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t509" href="#t509">509</a></span><span class="t">        <span class="key">return</span> <span class="nam">Path</span><span class="op">.</span><span class="nam">home</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">joinpath</span><span class="op">(</span><span class="str">".cache/mlopus/mlflow-providers/mlflow"</span><span class="op">,</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_default_cache_id</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t509" href="#t509">509</a></span><span class="t">        <span class="key">return</span> <span class="nam">Path</span><span class="op">.</span><span class="nam">home</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">joinpath</span><span class="op">(</span><span class="str">".cache/mlopus/mlflow-providers/mlflow"</span><span class="op">,</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_default_cache_id</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t510" href="#t510">510</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t511" href="#t511">511</a></span><span class="t">    <span class="key">def</span> <span class="nam">_impl_get_exp_url</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">exp_id</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">urls</span><span class="op">.</span><span class="nam">Url</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t512" href="#t512">512</a></span><span class="t">        <span class="str">"""Get Experiment URL."""</span>&nbsp;</span><span class="r"></span></p>
@@ -825,7 +825,7 @@
             <a class="nav" href="z_ed6f1c616745cc4b_traits_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-08 14:16 +0000
+            created at 2024-09-12 20:59 +0000
         </p>
     </div>
 </footer>
