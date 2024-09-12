@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.artschema.framework &mdash; MLOpus 0.3.0 documentation</title>
+  <title>mlopus.artschema.framework &mdash; MLOpus 0.3.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -128,7 +128,7 @@
     <span class="c1"># =======================================================================================================</span>
     <span class="c1"># === Public methods ====================================================================================</span>
 
-<div class="viewcode-block" id="Dumper.dump"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Dumper.dump"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save artifact to :paramref:`path` as file or dir.</span>
 
 <span class="sd">        If possible, also saves a file with this dumper&#39;s conf.</span>
@@ -144,7 +144,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maybe_save_conf</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Dumper.verify"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Dumper.verify"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify the :paramref:`path`.</span>
 
 <span class="sd">        :param path: Path where an instance of :attr:`.Artifact` is</span>
@@ -153,7 +153,7 @@
 <span class="sd">        :raises AssertionError: Unless :paramref:`path` is a file</span>
 <span class="sd">                                or dir in the expected structure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">path</span> <span class="o">:=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">))</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_verify</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
@@ -248,7 +248,7 @@
     <span class="c1"># =======================================================================================================</span>
     <span class="c1"># === Public methods ====================================================================================</span>
 
-<div class="viewcode-block" id="Loader.load"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Loader.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span> <span class="o">|</span> <span class="n">Path</span><span class="p">:</span>
+<div class="viewcode-block" id="Loader.load"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Loader.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span> <span class="o">|</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifact from :paramref:`path`.</span>
 
 <span class="sd">        As a side effect, this will use a :attr:`.Dumper` to :meth:`~Dumper.verify` the :paramref:`path`.</span>
@@ -261,7 +261,7 @@
 <span class="sd">            - If :paramref:`dry_run` is `True`, the same :paramref:`path`.</span>
 <span class="sd">            - Otherwise, an instance of :attr:`.Artifact`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="p">(</span><span class="n">dumper</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_dumper</span><span class="p">(</span><span class="n">path</span><span class="p">))</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">dumper</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_dumper</span><span class="p">(</span><span class="n">path</span> <span class="o">:=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">path</span>

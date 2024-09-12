@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.artschema.helpers &mdash; MLOpus 0.3.0 documentation</title>
+  <title>mlopus.artschema.helpers &mdash; MLOpus 0.3.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -320,9 +320,16 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">:</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">import_utils</span><span class="o">.</span><span class="n">find_type</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Schema</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">subject</span><span class="p">,</span> <span class="s2">&quot;Cannot resolve schema by alias without a subject (exp, run, model or version).&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using schema &#39;</span><span class="si">%s</span><span class="s2">&#39; for subject </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alias</span> <span class="o">:=</span> <span class="n">schema</span> <span class="ow">or</span> <span class="n">DEFAULT_ALIAS</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="n">get_schema</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">alias</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">Schema</span><span class="p">,</span> <span class="n">skip_reqs_check</span><span class="o">=</span><span class="n">skip_reqs_check</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">subject</span><span class="p">,</span> <span class="s2">&quot;Cannot resolve schema by alias without a subject (exp, run, model or version).&quot;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using schema &#39;</span><span class="si">%s</span><span class="s2">&#39; for subject </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alias</span> <span class="o">:=</span> <span class="n">schema</span> <span class="ow">or</span> <span class="n">DEFAULT_ALIAS</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="n">get_schema</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">alias</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">Schema</span><span class="p">,</span> <span class="n">skip_reqs_check</span><span class="o">=</span><span class="n">skip_reqs_check</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;If you intended to specify the schema by fully qualified name, &quot;</span>
+                <span class="s2">&quot;make sure to use the format `package.module:Class`&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
     <span class="k">if</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Schema</span><span class="p">):</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">schema</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Schema</span><span class="p">):</span>
