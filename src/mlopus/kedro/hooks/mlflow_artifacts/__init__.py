@@ -6,6 +6,7 @@ from kedro.io import DataCatalog
 from kedro.pipeline import Pipeline
 
 import mlopus
+from mlopus.utils import pydantic
 from .input import PipelineInput
 from .output import PipelineOutput
 from ..hook_factory import HookWithFactory  # noqa: TID252
@@ -18,13 +19,22 @@ T = TypeVar("T")
 class MlflowArtifacts(mlopus.mlflow.MlflowRunMixin, HookWithFactory):
     """Hook to set up inputs and collect outputs using MLflow artifacts.
 
-    For a fully commented example covering all settings that can be customized in this hook, have a look at:
-    https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/full/parameters/hooks/mlflow_artifacts.yml
+    Find `here <https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/full/parameters/hooks/mlflow_artifacts.yml>`_
+    a fully commented example covering all settings that can be customized in this hook.
     """
 
-    collect_on_error: bool = False
-    inputs: List[PipelineInput] = []
-    outputs: List[PipelineOutput] = []
+    collect_on_error: bool = pydantic.Field(
+        default=False,
+        description="Collect available outputs if pipeline fails.",
+    )
+    inputs: List[PipelineInput] = pydantic.Field(
+        default_factory=list,
+        description="Configure inputs.",
+    )
+    outputs: List[PipelineOutput] = pydantic.Field(
+        default_factory=list,
+        description="Configure outputs.",
+    )
 
     # =======================================================================================================
     # === Artifact handlers =================================================================================

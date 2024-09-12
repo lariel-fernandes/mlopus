@@ -37,6 +37,7 @@ MlflowTracker
    :inherited-members:
 
 .. autopydantic_model:: mlopus.kedro.hooks.mlflow_tracker.Params
+   :exclude-members: apply
    :member-order: bysource
 
 .. autopydantic_model:: mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow

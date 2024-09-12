@@ -35,7 +35,8 @@ class MlflowApiMixin(pydantic.BaseModel):
         exclude=True,
         default=None,
         description=(
-            "Instance of :class:`BaseMlflowApi` or a `dict` of keyword arguments for :func:`mlopus.mlflow.get_api`."
+            "Instance of :class:`~mlopus.mlflow.BaseMlflowApi` "
+            "or a `dict` of keyword arguments for :func:`mlopus.mlflow.get_api`."
         ),
     )
 

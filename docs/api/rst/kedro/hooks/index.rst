@@ -9,3 +9,4 @@ Hooks
    :caption: Contents:
 
    tracker
+   artifacts
