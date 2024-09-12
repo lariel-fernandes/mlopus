@@ -30,7 +30,7 @@ A collection of MLOps tools for AI/ML/DS research and development.
 Check the [tutorials](https://github.com/lariel-fernandes/mlopus/tree/main/examples)
 for a friendly walkthrough of (almost) everything you can do with MLOpus.
 
-Have a look at the [architecture guide](docs/architecture.md)
+Have a look at the [architecture guide](https://github.com/lariel-fernandes/mlopus/blob/main/docs/architecture.md)
 for an overview of how these and other features work.
 
 A minimal API reference is also available [here](https://lariel-fernandes.github.io/mlopus/docs/api/latest).
