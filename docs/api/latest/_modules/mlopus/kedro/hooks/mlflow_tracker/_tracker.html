@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlopus.kedro.hooks.mlflow_tracker._tracker &mdash; MLOpus 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx_paramlinks.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../rst/mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../rst/artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../rst/kedro/index.html">Kedro Extensions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../rst/lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mlopus.kedro.hooks.mlflow_tracker._tracker</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mlopus.kedro.hooks.mlflow_tracker._tracker</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">dicts</span>
+<span class="kn">from</span> <span class="nn">._rules</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_NodeRuleSet</span><span class="p">,</span>
+    <span class="n">_ScopedRuleSet</span><span class="p">,</span>
+    <span class="n">_ScopedPrefixSuffixRuleSet</span><span class="p">,</span>
+    <span class="n">_PrefixSuffix</span><span class="p">,</span>
+    <span class="n">_PipelinesRuleSet</span><span class="p">,</span>
+    <span class="n">_RuleSet</span><span class="p">,</span>
+    <span class="n">_PrefixSuffixRuleSet</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Report"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Report">[docs]</a><span class="k">class</span> <span class="nc">Report</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the session report.&quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Add session report file to MLflow run artifacts.&quot;</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;kedro-session.yml&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Session report file path inside run artifacts.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MetricsMlflow"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow">[docs]</a><span class="k">class</span> <span class="nc">MetricsMlflow</span><span class="p">(</span><span class="n">_PrefixSuffix</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to log metrics in the MLflow run.&quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Log metrics in the MLflow run.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Metrics"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Metrics">[docs]</a><span class="k">class</span> <span class="nc">Metrics</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the collection of MLflow metrics.&quot;&quot;&quot;</span>
+
+    <span class="n">report</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include metrics in session report file.&quot;</span><span class="p">)</span>
+    <span class="n">datasets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;If a node outputs to any of these datasets, collect the output data as metrics (must be a `dict`). &quot;</span>
+            <span class="s2">&quot;See :attr:`mlopus.mlflow.schema.Run.metrics`&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">mlflow</span><span class="p">:</span> <span class="n">MetricsMlflow</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">MetricsMlflow</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Configure how to log metrics in the MLflow run.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigMlflow"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow">[docs]</a><span class="k">class</span> <span class="nc">ConfigMlflow</span><span class="p">(</span><span class="n">_ScopedPrefixSuffixRuleSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to store in MLflow run params.&quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Store in MLflow run params.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">_ScopedRuleSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to track the Kedro config.&quot;&quot;&quot;</span>
+
+    <span class="n">report</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include in session report file.&quot;</span><span class="p">)</span>
+    <span class="n">mlflow</span><span class="p">:</span> <span class="n">ConfigMlflow</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">ConfigMlflow</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Configure how to store in MLflow run params. &quot;</span>
+            <span class="s2">&quot;The :attr:`~ConfigMlflow.rules` and :attr:`~ConfigMlflow.scopes` defined in the :attr:`mlflow` &quot;</span>
+            <span class="s2">&quot;section will further narrow down the :attr:`rules` and :attr:`scopes` already defined here.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Overrides"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Overrides">[docs]</a><span class="k">class</span> <span class="nc">Overrides</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to track Kedro config overrides.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="NodesMlflow"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodesMlflow">[docs]</a><span class="k">class</span> <span class="nc">NodesMlflow</span><span class="p">(</span><span class="n">_PipelinesRuleSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to store in MLflow run params.&quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Store in MLflow run params.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Nodes"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Nodes">[docs]</a><span class="k">class</span> <span class="nc">Nodes</span><span class="p">(</span><span class="n">_NodeRuleSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to track Kedro node settings.&quot;&quot;&quot;</span>
+
+    <span class="n">report</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include in session report file.&quot;</span><span class="p">)</span>
+    <span class="n">mlflow</span><span class="p">:</span> <span class="n">NodesMlflow</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">NodesMlflow</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Configure how to store in MLflow run params. &quot;</span>
+            <span class="s2">&quot;The :attr:`~NodesMlflow.rules` defined in the :attr:`mlflow` section will further narrow down the &quot;</span>
+            <span class="s2">&quot;:attr:`rules` already defined here.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetsMlflow"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow">[docs]</a><span class="k">class</span> <span class="nc">DatasetsMlflow</span><span class="p">(</span><span class="n">_PrefixSuffixRuleSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to store dataset settings in MLFlow run params.&quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Store dataset settings in MLflow run params.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Datasets"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Datasets">[docs]</a><span class="k">class</span> <span class="nc">Datasets</span><span class="p">(</span><span class="n">_RuleSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to track Kedro dataset settings.</span>
+
+<span class="sd">    Important:</span>
+<span class="sd">        - The tracking of a dataset is only triggered when a node attempts to save/load to/from it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">report</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include in session report file.&quot;</span><span class="p">)</span>
+    <span class="n">include_non_pydantic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Use the ``__dict__`` attribute to describe settings of non-pydantic datasets.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">mlflow</span><span class="p">:</span> <span class="n">DatasetsMlflow</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DatasetsMlflow</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Configure how to store dataset settings in MLFlow run params.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TagsMlflow"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.TagsMlflow">[docs]</a><span class="k">class</span> <span class="nc">TagsMlflow</span><span class="p">(</span><span class="n">_PrefixSuffix</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how extra tags are set in the MLflow run.&quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Enable setting extra tags in MLflow run.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">dicts</span><span class="o">.</span><span class="n">filter_empty_leaves</span><span class="p">(</span><span class="n">data</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Tags"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Tags">[docs]</a><span class="k">class</span> <span class="nc">Tags</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure extra tags.&quot;&quot;&quot;</span>
+
+    <span class="n">report</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include extra tags in session report file.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Extra tags dict. See :attr:`mlopus.mlflow.schema.Run.tags`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">mlflow</span><span class="p">:</span> <span class="n">TagsMlflow</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">TagsMlflow</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Configure how extra tags are set in the MLflow run.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LogFile"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.LogFile">[docs]</a><span class="k">class</span> <span class="nc">LogFile</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log file settings.&quot;&quot;&quot;</span>
+
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to local log file.&quot;</span><span class="p">)</span>
+    <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;File alias when uploading.&quot;</span><span class="p">)</span>
+    <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Clear file contents before the first pipeline runs.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">parse_obj</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Also accept just a `path`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span> <span class="o">:=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Logs"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Logs">[docs]</a><span class="k">class</span> <span class="nc">Logs</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to track logs.&quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Upload logs to MLflow run.&quot;</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;logs&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to logs dir inside run artifacts.&quot;</span><span class="p">)</span>
+    <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LogFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Local log files to upload.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># noqa</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_files</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse file paths into `_LogFile` objects.&quot;&quot;&quot;</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">LogFile</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="p">[])]</span>
+        <span class="k">return</span> <span class="n">values</span></div>
+
+
+<span class="k">class</span> <span class="nc">_ParamMapping</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">tgt</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">src</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">parse_obj</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Also accept a sequence of (tgt, src).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span> <span class="o">:=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">tgt</span><span class="p">,</span> <span class="n">src</span> <span class="o">=</span> <span class="n">mapping</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">tgt</span><span class="o">=</span><span class="n">tgt</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ParamsMlflow"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow">[docs]</a><span class="k">class</span> <span class="nc">ParamsMlflow</span><span class="p">(</span><span class="n">_PrefixSuffix</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to log collected params in the MLflow run.&quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Log collected params in MLflow run.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Params"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Params">[docs]</a><span class="k">class</span> <span class="nc">Params</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the collection of MLflow params.&quot;&quot;&quot;</span>
+
+    <span class="n">report</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include collected params in session report file.&quot;</span><span class="p">)</span>
+    <span class="n">mappings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">_ParamMapping</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;A mapping of target metric keys to arbitrary paths inside the Kedro configuration from where the params &quot;</span>
+            <span class="s2">&quot;for those keys will be obtained. Example: ``sampling_ratio: parameters.sampler.ratio``&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">mlflow</span><span class="p">:</span> <span class="n">ParamsMlflow</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">ParamsMlflow</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Configure how to log collected params in the MLflow run.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># noqa</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_mappings</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse (src, tgt) tuples into `_ParamMapping` objects.&quot;&quot;&quot;</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">[</span><span class="n">_ParamMapping</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mappings&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mappings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pipeline_name</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mapping Kedro config key to params: &#39;</span><span class="si">{</span><span class="n">mapping</span><span class="o">.</span><span class="n">src</span><span class="si">}</span><span class="s2">&#39; -&gt; &#39;</span><span class="si">{</span><span class="n">mapping</span><span class="o">.</span><span class="n">tgt</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="n">dicts</span><span class="o">.</span><span class="n">set_nested</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">tgt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">),</span> <span class="n">dicts</span><span class="o">.</span><span class="n">get_nested</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">src</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">params</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

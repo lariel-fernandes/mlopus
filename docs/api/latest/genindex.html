@@ -48,6 +48,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="rst/mlflow/index.html">MLflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rst/artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst/kedro/index.html">Kedro Extensions</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="rst/lineage.html">Lineage</a></li>
@@ -124,7 +125,11 @@
       <li><a href="rst/artschema/framework.html#mlopus.artschema.framework.A">A (in module mlopus.artschema.framework)</a>
 </li>
       <li><a href="rst/artschema/helpers.html#mlopus.artschema.get_schema.params.alias">alias (mlopus.artschema.get_schema parameter)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.LogFile.alias">(mlopus.kedro.hooks.mlflow_tracker.LogFile attribute)</a>
 </li>
+      </ul></li>
       <li><a href="rst/artschema/tags.html#mlopus.artschema.Tags.using.params.aliased_as">aliased_as (mlopus.artschema.Tags.using parameter)</a>
 </li>
       <li><a href="rst/artschema/helpers.html#mlopus.artschema.log_model_version.params.allow_duplication">allow_duplication (mlopus.artschema.log_model_version parameter)</a>
@@ -133,6 +138,8 @@
         <li><a href="rst/artschema/helpers.html#mlopus.artschema.log_run_artifact.params.allow_duplication">(mlopus.artschema.log_run_artifact parameter)</a>
 </li>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.LogArtifactSpec.allow_duplication">(mlopus.artschema.LogArtifactSpec attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.allow_duplication">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
 </li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_model_version.params.allow_duplication">(mlopus.mlflow.BaseMlflowApi.log_model_version parameter)</a>
 </li>
@@ -151,10 +158,10 @@
 </li>
       <li><a href="rst/mlflow/utils.html#mlopus.mlflow.api_conf_schema">api_conf_schema() (in module mlopus.mlflow)</a>
 </li>
-      <li><a href="rst/artschema/framework.html#mlopus.artschema.Dumper.Artifact">Artifact (mlopus.artschema.Dumper property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/artschema/framework.html#mlopus.artschema.Dumper.Artifact">Artifact (mlopus.artschema.Dumper property)</a>
+</li>
       <li><a href="rst/artschema/framework.html#mlopus.artschema.Dumper._dump.params.artifact">artifact (mlopus.artschema.Dumper._dump parameter)</a>
 
       <ul>
@@ -191,6 +198,8 @@
         <li><a href="rst/artschema/helpers.html#mlopus.artschema.log_run_artifact.params.auto_register">(mlopus.artschema.log_run_artifact parameter)</a>
 </li>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.LogArtifactSpec.auto_register">(mlopus.artschema.LogArtifactSpec attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.auto_register">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -239,10 +248,10 @@
 </li>
       <li><a href="rst/mlflow/apis/run.html#mlopus.mlflow.RunApi.children">children (mlopus.mlflow.RunApi property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.clean_all_cache">clean_all_cache() (mlopus.mlflow.BaseMlflowApi method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.clean_cached_artifact">clean_cached_artifact() (mlopus.mlflow.ModelVersionApi method)</a>
 
       <ul>
@@ -254,6 +263,8 @@
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.clean_cached_run_artifact">clean_cached_run_artifact() (mlopus.mlflow.BaseMlflowApi method)</a>
 </li>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.clean_temp_artifacts">clean_temp_artifacts() (mlopus.mlflow.BaseMlflowApi method)</a>
+</li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.LogFile.cleanup">cleanup (mlopus.kedro.hooks.mlflow_tracker.LogFile attribute)</a>
 </li>
       <li><a href="rst/mlflow/providers/mlflow.html#mlopus.mlflow.providers.mlflow.MlflowApi.client_settings">client_settings (mlopus.mlflow.providers.mlflow.MlflowApi attribute)</a>
 </li>
@@ -267,7 +278,11 @@
         <li><a href="rst/mlflow/utils.html#mlopus.mlflow.get_api.params.cls">(mlopus.mlflow.get_api parameter)</a>
 </li>
       </ul></li>
+      <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.MlflowArtifacts.collect_on_error">collect_on_error (mlopus.kedro.MlflowArtifacts attribute)</a>
+</li>
       <li><a href="rst/mlflow/utils.html#mlopus.mlflow.get_api.params.conf">conf (mlopus.mlflow.get_api parameter)</a>
+</li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.config">config (mlopus.kedro.MlflowTracker attribute)</a>
 </li>
       <li><a href="rst/mlflow/apis/run.html#mlopus.mlflow.RunApi.create_child">create_child() (mlopus.mlflow.RunApi method)</a>
 </li>
@@ -291,6 +306,12 @@
 </li>
       <li><a href="rst/mlflow/providers/mlflow.html#mlopus.mlflow.providers.mlflow.MlflowApi.data_translation">data_translation (mlopus.mlflow.providers.mlflow.MlflowApi attribute)</a>
 </li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Metrics.datasets">datasets (mlopus.kedro.hooks.mlflow_tracker.Metrics attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.datasets">(mlopus.kedro.MlflowTracker attribute)</a>
+</li>
+      </ul></li>
       <li><a href="rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.download">download() (mlopus.artschema.ArtifactsCatalog class method)</a>
 
       <ul>
@@ -318,13 +339,19 @@
       <li><a href="rst/artschema/framework.html#mlopus.artschema.Schema.Dumper">Dumper (mlopus.artschema.Schema property)</a>
 </li>
       <li><a href="rst/artschema/framework.html#mlopus.artschema.Schema.get_dumper.params.dumper">dumper (mlopus.artschema.Schema.get_dumper parameter)</a>
+
+      <ul>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.ArtifactSchemaDataset.dumper">(mlopus.kedro.ArtifactSchemaDataset attribute)</a>
 </li>
+      </ul></li>
       <li><a href="rst/artschema/helpers.html#mlopus.artschema.log_model_version.params.dumper_conf">dumper_conf (mlopus.artschema.log_model_version parameter)</a>
 
       <ul>
         <li><a href="rst/artschema/helpers.html#mlopus.artschema.log_run_artifact.params.dumper_conf">(mlopus.artschema.log_run_artifact parameter)</a>
 </li>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.LogArtifactSpec.dumper_conf">(mlopus.artschema.LogArtifactSpec attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.dumper_conf">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
 </li>
       </ul></li>
       <li><a href="rst/artschema/framework.html#mlopus.artschema.Schema.get_dumper.params.dumper_kwargs">dumper_kwargs (mlopus.artschema.Schema.get_dumper parameter)</a>
@@ -335,6 +362,34 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodeRule.effect">effect (mlopus.kedro.hooks.mlflow_tracker.NodeRule attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Rule.effect">(mlopus.kedro.hooks.mlflow_tracker.Rule attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.enabled">enabled (mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.enabled">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.enabled">(mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.enabled">(mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Logs.enabled">(mlopus.kedro.hooks.mlflow_tracker.Logs attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.enabled">(mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.enabled">(mlopus.kedro.hooks.mlflow_tracker.NodesMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.enabled">(mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Report.enabled">(mlopus.kedro.hooks.mlflow_tracker.Report attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.enabled">(mlopus.kedro.hooks.mlflow_tracker.TagsMlflow attribute)</a>
+</li>
+      </ul></li>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.end_run">end_run() (mlopus.mlflow.BaseMlflowApi method)</a>
 
       <ul>
@@ -375,6 +430,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.datasets.artschema.ExpSubject.exp_name">exp_name (mlopus.kedro.datasets.artschema.ExpSubject attribute)</a>
+</li>
       <li><a href="rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.export">export() (mlopus.artschema.ArtifactsCatalog class method)</a>
 
       <ul>
@@ -411,6 +468,12 @@
 </li>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.export_run_meta">export_run_meta() (mlopus.mlflow.BaseMlflowApi method)</a>
 </li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodeRule.expr">expr (mlopus.kedro.hooks.mlflow_tracker.NodeRule attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Rule.expr">(mlopus.kedro.hooks.mlflow_tracker.Rule attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -420,6 +483,8 @@
       <li><a href="rst/mlflow/schema.html#mlopus.mlflow.schema.RunStatus.FAILED">FAILED (mlopus.mlflow.schema.RunStatus attribute)</a>
 </li>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.file_transfer">file_transfer (mlopus.mlflow.BaseMlflowApi attribute)</a>
+</li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Logs.files">files (mlopus.kedro.hooks.mlflow_tracker.Logs attribute)</a>
 </li>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.find_child_runs">find_child_runs() (mlopus.mlflow.BaseMlflowApi method)</a>
 </li>
@@ -525,9 +590,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.in_offline_mode">in_offline_mode (mlopus.mlflow.BaseMlflowApi property)</a>
 </li>
-      <li><a href="rst/lineage.html#mlopus.lineage.Lineage.inputs">inputs (mlopus.lineage.Lineage attribute)</a>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Datasets.include_non_pydantic">include_non_pydantic (mlopus.kedro.hooks.mlflow_tracker.Datasets attribute)</a>
+</li>
+      <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.MlflowArtifacts.inputs">inputs (mlopus.kedro.MlflowArtifacts attribute)</a>
 
       <ul>
+        <li><a href="rst/lineage.html#mlopus.lineage.Lineage.inputs">(mlopus.lineage.Lineage attribute)</a>
+</li>
         <li><a href="rst/lineage.html#mlopus.lineage.Query.inputs">(mlopus.lineage.Query attribute)</a>
 </li>
       </ul></li>
@@ -544,6 +613,8 @@
 </li>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.LogArtifactSpec.keep_the_source">(mlopus.artschema.LogArtifactSpec attribute)</a>
 </li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.keep_the_source">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
+</li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_model_version.params.keep_the_source">(mlopus.mlflow.BaseMlflowApi.log_model_version parameter)</a>
 </li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.keep_the_source">(mlopus.mlflow.BaseMlflowApi.log_run_artifact parameter)</a>
@@ -556,6 +627,14 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodeRule.keys">keys (mlopus.kedro.hooks.mlflow_tracker.NodeRule attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Rule.keys">(mlopus.kedro.hooks.mlflow_tracker.Rule attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
 </tr></table>
 
 <h2 id="L">L</h2>
@@ -563,9 +642,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="rst/artschema/framework.html#mlopus.artschema.framework.L">L (in module mlopus.artschema.framework)</a>
 </li>
-      <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.place_model_artifact.params.link">link (mlopus.mlflow.BaseMlflowApi.place_model_artifact parameter)</a>
+      <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.link">link (mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
 
       <ul>
+        <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.place_model_artifact.params.link">(mlopus.mlflow.BaseMlflowApi.place_model_artifact parameter)</a>
+</li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.place_run_artifact.params.link">(mlopus.mlflow.BaseMlflowApi.place_run_artifact parameter)</a>
 </li>
         <li><a href="rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.place_artifact.params.link">(mlopus.mlflow.ModelVersionApi.place_artifact parameter)</a>
@@ -609,11 +690,11 @@
 </li>
       <li><a href="rst/artschema/framework.html#mlopus.artschema.Schema.Loader">Loader (mlopus.artschema.Schema property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="rst/artschema/framework.html#mlopus.artschema.Schema.get_loader.params.loader">loader (mlopus.artschema.Schema.get_loader parameter)</a>
 
       <ul>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.ArtifactSchemaDataset.loader">(mlopus.kedro.ArtifactSchemaDataset attribute)</a>
+</li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.load_model_artifact.params.loader">(mlopus.mlflow.BaseMlflowApi.load_model_artifact parameter)</a>
 </li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.load_run_artifact.params.loader">(mlopus.mlflow.BaseMlflowApi.load_run_artifact parameter)</a>
@@ -623,10 +704,14 @@
         <li><a href="rst/mlflow/apis/run.html#mlopus.mlflow.RunApi.load_artifact.params.loader">(mlopus.mlflow.RunApi.load_artifact parameter)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="rst/artschema/helpers.html#mlopus.artschema.load_artifact.params.loader_conf">loader_conf (mlopus.artschema.load_artifact parameter)</a>
 
       <ul>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.LoadArtifactSpec.loader_conf">(mlopus.artschema.LoadArtifactSpec attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.loader_conf">(mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
 </li>
       </ul></li>
       <li><a href="rst/artschema/framework.html#mlopus.artschema.Schema.get_loader.params.loader_kwargs">loader_kwargs (mlopus.artschema.Schema.get_loader parameter)</a>
@@ -635,6 +720,12 @@
 </li>
       <li><a href="rst/mlflow/apis/run.html#mlopus.mlflow.RunApi.log_artifact">log_artifact() (mlopus.mlflow.RunApi method)</a>
 </li>
+      <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.log_lineage">log_lineage (mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.log_lineage">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
+</li>
+      </ul></li>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_metrics">log_metrics() (mlopus.mlflow.BaseMlflowApi method)</a>
 
       <ul>
@@ -663,22 +754,44 @@
       </ul></li>
       <li><a href="rst/mlflow/apis/model.html#mlopus.mlflow.ModelApi.log_version">log_version() (mlopus.mlflow.ModelApi method)</a>
 </li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.logs">logs (mlopus.kedro.MlflowTracker attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Params.mappings">mappings (mlopus.kedro.hooks.mlflow_tracker.Params attribute)</a>
+</li>
       <li><a href="rst/artschema/framework.html#mlopus.artschema.Dumper.maybe_save_conf">maybe_save_conf() (mlopus.artschema.Dumper method)</a>
 </li>
-      <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_metrics.params.metrics">metrics (mlopus.mlflow.BaseMlflowApi.log_metrics parameter)</a>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.metrics">metrics (mlopus.kedro.MlflowTracker attribute)</a>
 
       <ul>
+        <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_metrics.params.metrics">(mlopus.mlflow.BaseMlflowApi.log_metrics parameter)</a>
+</li>
         <li><a href="rst/mlflow/apis/run.html#mlopus.mlflow.RunApi.metrics">(mlopus.mlflow.RunApi attribute)</a>
 </li>
         <li><a href="rst/mlflow/apis/run.html#mlopus.mlflow.RunApi.log_metrics.params.metrics">(mlopus.mlflow.RunApi.log_metrics parameter)</a>
 </li>
         <li><a href="rst/mlflow/schema.html#mlopus.mlflow.schema.Run.metrics">(mlopus.mlflow.schema.Run attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Config.mlflow">mlflow (mlopus.kedro.hooks.mlflow_tracker.Config attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Datasets.mlflow">(mlopus.kedro.hooks.mlflow_tracker.Datasets attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Metrics.mlflow">(mlopus.kedro.hooks.mlflow_tracker.Metrics attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Nodes.mlflow">(mlopus.kedro.hooks.mlflow_tracker.Nodes attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Overrides.mlflow">(mlopus.kedro.hooks.mlflow_tracker.Overrides attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Params.mlflow">(mlopus.kedro.hooks.mlflow_tracker.Params attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Tags.mlflow">(mlopus.kedro.hooks.mlflow_tracker.Tags attribute)</a>
 </li>
       </ul></li>
       <li><a href="rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.download.params.mlflow_api">mlflow_api (mlopus.artschema.ArtifactsCatalog.download parameter)</a>
@@ -687,6 +800,10 @@
         <li><a href="rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.export.params.mlflow_api">(mlopus.artschema.ArtifactsCatalog.export parameter)</a>
 </li>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.load.params.mlflow_api">(mlopus.artschema.ArtifactsCatalog.load parameter)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.mlflow_api">(mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.mlflow_api">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
 </li>
         <li><a href="rst/mlflow/traits.html#mlopus.mlflow.MlflowApiMixin.mlflow_api">(mlopus.mlflow.MlflowApiMixin attribute)</a>
 </li>
@@ -715,6 +832,62 @@
 </li>
       </ul></li>
       <li>
+    mlopus.kedro
+
+      <ul>
+        <li><a href="rst/kedro/index.html#module-mlopus.kedro">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlopus.kedro.config_loader
+
+      <ul>
+        <li><a href="rst/kedro/config_loader.html#module-mlopus.kedro.config_loader">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlopus.kedro.datasets
+
+      <ul>
+        <li><a href="rst/kedro/datasets/index.html#module-mlopus.kedro.datasets">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlopus.kedro.datasets.artschema
+
+      <ul>
+        <li><a href="rst/kedro/datasets/artschema.html#module-mlopus.kedro.datasets.artschema">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlopus.kedro.hooks
+
+      <ul>
+        <li><a href="rst/kedro/hooks/index.html#module-mlopus.kedro.hooks">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlopus.kedro.hooks.mlflow_artifacts
+
+      <ul>
+        <li><a href="rst/kedro/hooks/artifacts.html#module-mlopus.kedro.hooks.mlflow_artifacts">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlopus.kedro.hooks.mlflow_tracker
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#module-mlopus.kedro.hooks.mlflow_tracker">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlopus.kedro.session
+
+      <ul>
+        <li><a href="rst/kedro/session.html#module-mlopus.kedro.session">module</a>
+</li>
+      </ul></li>
+      <li>
     mlopus.lineage
 
       <ul>
@@ -728,6 +901,8 @@
         <li><a href="rst/mlflow/index.html#module-mlopus.mlflow">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     mlopus.mlflow.providers
 
@@ -735,6 +910,10 @@
         <li><a href="rst/mlflow/providers/index.html#module-mlopus.mlflow.providers">module</a>
 </li>
       </ul></li>
+      <li><a href="rst/kedro/config_loader.html#mlopus.kedro.MlopusConfigLoader">MlopusConfigLoader (class in mlopus.kedro)</a>
+</li>
+      <li><a href="rst/kedro/session.html#mlopus.kedro.MlopusKedroSession">MlopusKedroSession (class in mlopus.kedro)</a>
+</li>
       <li><a href="rst/artschema/helpers.html#mlopus.artschema.log_model_version.params.model">model (mlopus.artschema.log_model_version parameter)</a>
 
       <ul>
@@ -757,13 +936,17 @@
         <li><a href="rst/mlflow/schema.html#mlopus.mlflow.schema.ModelVersion.model">(mlopus.mlflow.schema.ModelVersion attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="rst/artschema/specs.html#mlopus.artschema.ModelVersionArtifact.model_name">model_name (mlopus.artschema.ModelVersionArtifact attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.datasets.artschema.ModelSubject.model_name">(mlopus.kedro.datasets.artschema.ModelSubject attribute)</a>
 </li>
+      </ul></li>
       <li><a href="rst/artschema/specs.html#mlopus.artschema.ModelVersionArtifact.model_version">model_version (mlopus.artschema.ModelVersionArtifact attribute)</a>
 
       <ul>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.datasets.artschema.ModelSubject.model_version">(mlopus.kedro.datasets.artschema.ModelSubject attribute)</a>
+</li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.cache_model_artifact.params.model_version">(mlopus.mlflow.BaseMlflowApi.cache_model_artifact parameter)</a>
 </li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.cache_model_version_meta.params.model_version">(mlopus.mlflow.BaseMlflowApi.cache_model_version_meta parameter)</a>
@@ -802,6 +985,22 @@
         <li><a href="rst/artschema/helpers.html#module-mlopus.artschema.helpers">mlopus.artschema.helpers</a>
 </li>
         <li><a href="rst/artschema/specs.html#module-mlopus.artschema.specs">mlopus.artschema.specs</a>
+</li>
+        <li><a href="rst/kedro/index.html#module-mlopus.kedro">mlopus.kedro</a>
+</li>
+        <li><a href="rst/kedro/config_loader.html#module-mlopus.kedro.config_loader">mlopus.kedro.config_loader</a>
+</li>
+        <li><a href="rst/kedro/datasets/index.html#module-mlopus.kedro.datasets">mlopus.kedro.datasets</a>
+</li>
+        <li><a href="rst/kedro/datasets/artschema.html#module-mlopus.kedro.datasets.artschema">mlopus.kedro.datasets.artschema</a>
+</li>
+        <li><a href="rst/kedro/hooks/index.html#module-mlopus.kedro.hooks">mlopus.kedro.hooks</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#module-mlopus.kedro.hooks.mlflow_artifacts">mlopus.kedro.hooks.mlflow_artifacts</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#module-mlopus.kedro.hooks.mlflow_tracker">mlopus.kedro.hooks.mlflow_tracker</a>
+</li>
+        <li><a href="rst/kedro/session.html#module-mlopus.kedro.session">mlopus.kedro.session</a>
 </li>
         <li><a href="rst/lineage.html#module-mlopus.lineage">mlopus.lineage</a>
 </li>
@@ -861,6 +1060,10 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.nodes">nodes (mlopus.kedro.MlflowTracker attribute)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="O">O</h2>
@@ -878,17 +1081,25 @@
         <li><a href="rst/mlflow/providers/generic.html#mlopus.mlflow.providers.generic.GenericMlflowApi.offline_mode">(mlopus.mlflow.providers.generic.GenericMlflowApi attribute)</a>
 </li>
       </ul></li>
-      <li><a href="rst/lineage.html#mlopus.lineage.Lineage.outputs">outputs (mlopus.lineage.Lineage attribute)</a>
+      <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.MlflowArtifacts.outputs">outputs (mlopus.kedro.MlflowArtifacts attribute)</a>
 
       <ul>
+        <li><a href="rst/lineage.html#mlopus.lineage.Lineage.outputs">(mlopus.lineage.Lineage attribute)</a>
+</li>
         <li><a href="rst/lineage.html#mlopus.lineage.Query.outputs">(mlopus.lineage.Query attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.overrides">overrides (mlopus.kedro.MlflowTracker attribute)</a>
+</li>
       <li><a href="rst/artschema/framework.html#mlopus.artschema.Dumper.dump.params.overwrite">overwrite (mlopus.artschema.Dumper.dump parameter)</a>
 
       <ul>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.ArtifactSchemaDataset.overwrite">(mlopus.kedro.ArtifactSchemaDataset attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.overwrite">(mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
+</li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.place_model_artifact.params.overwrite">(mlopus.mlflow.BaseMlflowApi.place_model_artifact parameter)</a>
 </li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.place_run_artifact.params.overwrite">(mlopus.mlflow.BaseMlflowApi.place_run_artifact parameter)</a>
@@ -904,9 +1115,11 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_params.params.params">params (mlopus.mlflow.BaseMlflowApi.log_params parameter)</a>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.params">params (mlopus.kedro.MlflowTracker attribute)</a>
 
       <ul>
+        <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_params.params.params">(mlopus.mlflow.BaseMlflowApi.log_params parameter)</a>
+</li>
         <li><a href="rst/mlflow/apis/run.html#mlopus.mlflow.RunApi.params">(mlopus.mlflow.RunApi attribute)</a>
 </li>
         <li><a href="rst/mlflow/apis/run.html#mlopus.mlflow.RunApi.log_params.params.params">(mlopus.mlflow.RunApi.log_params parameter)</a>
@@ -942,6 +1155,18 @@
         <li><a href="rst/artschema/framework.html#mlopus.artschema.Loader._load.params.path">(mlopus.artschema.Loader._load parameter)</a>
 </li>
         <li><a href="rst/artschema/framework.html#mlopus.artschema.Loader.load.params.path">(mlopus.artschema.Loader.load parameter)</a>
+</li>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.ArtifactSchemaDataset.path">(mlopus.kedro.ArtifactSchemaDataset attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.path">(mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.path">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.LogFile.path">(mlopus.kedro.hooks.mlflow_tracker.LogFile attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Logs.path">(mlopus.kedro.hooks.mlflow_tracker.Logs attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Report.path">(mlopus.kedro.hooks.mlflow_tracker.Report attribute)</a>
 </li>
       </ul></li>
       <li><a href="rst/artschema/helpers.html#mlopus.artschema.load_artifact.params.path_in_run">path_in_run (mlopus.artschema.load_artifact parameter)</a>
@@ -1014,6 +1239,12 @@
         <li><a href="rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.list_artifacts.params.path_suffix">(mlopus.mlflow.ModelVersionApi.list_artifacts parameter)</a>
 </li>
       </ul></li>
+      <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.pipelines">pipelines (mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.pipelines">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
+</li>
+      </ul></li>
       <li><a href="rst/artschema/tags.html#mlopus.artschema.ClassSpec.pkg">pkg (mlopus.artschema.ClassSpec attribute)</a>
 </li>
       <li><a href="rst/mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.place_artifact">place_artifact() (mlopus.mlflow.ModelVersionApi method)</a>
@@ -1032,6 +1263,22 @@
         <li><a href="rst/mlflow/utils.html#mlopus.mlflow.get_api.params.plugin">(mlopus.mlflow.get_api parameter)</a>
 </li>
       </ul></li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.prefix">prefix (mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.prefix">(mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.prefix">(mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.prefix">(mlopus.kedro.hooks.mlflow_tracker.NodesMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.prefix">(mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.prefix">(mlopus.kedro.hooks.mlflow_tracker.TagsMlflow attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.prepend_pipeline">prepend_pipeline (mlopus.kedro.hooks.mlflow_tracker.NodesMlflow attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1096,10 +1343,44 @@
         <li><a href="rst/mlflow/schema.html#mlopus.mlflow.schema.Run.repo_url">(mlopus.mlflow.schema.Run property)</a>
 </li>
       </ul></li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Config.report">report (mlopus.kedro.hooks.mlflow_tracker.Config attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Datasets.report">(mlopus.kedro.hooks.mlflow_tracker.Datasets attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Metrics.report">(mlopus.kedro.hooks.mlflow_tracker.Metrics attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Nodes.report">(mlopus.kedro.hooks.mlflow_tracker.Nodes attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Overrides.report">(mlopus.kedro.hooks.mlflow_tracker.Overrides attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Params.report">(mlopus.kedro.hooks.mlflow_tracker.Params attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Tags.report">(mlopus.kedro.hooks.mlflow_tracker.Tags attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.report">(mlopus.kedro.MlflowTracker attribute)</a>
+</li>
+      </ul></li>
       <li><a href="rst/mlflow/apis/run.html#mlopus.mlflow.RunApi.resume">resume() (mlopus.mlflow.RunApi method)</a>
 </li>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.resume_run">resume_run() (mlopus.mlflow.BaseMlflowApi method)</a>
 </li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Config.rules">rules (mlopus.kedro.hooks.mlflow_tracker.Config attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.rules">(mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Datasets.rules">(mlopus.kedro.hooks.mlflow_tracker.Datasets attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.rules">(mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Nodes.rules">(mlopus.kedro.hooks.mlflow_tracker.Nodes attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.rules">(mlopus.kedro.hooks.mlflow_tracker.NodesMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Overrides.rules">(mlopus.kedro.hooks.mlflow_tracker.Overrides attribute)</a>
+</li>
+      </ul></li>
       <li><a href="rst/artschema/helpers.html#mlopus.artschema.log_model_version.params.run">run (mlopus.artschema.log_model_version parameter)</a>
 
       <ul>
@@ -1165,6 +1446,8 @@
       <ul>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.RunArtifact.run_id">(mlopus.artschema.RunArtifact attribute)</a>
 </li>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.datasets.artschema.RunSubject.run_id">(mlopus.kedro.datasets.artschema.RunSubject attribute)</a>
+</li>
         <li><a href="rst/lineage.html#mlopus.lineage.Lineage.with_input_artifact.params.run_id">(mlopus.lineage.Lineage.with_input_artifact parameter)</a>
 </li>
         <li><a href="rst/lineage.html#mlopus.lineage.Lineage.with_output_artifact.params.run_id">(mlopus.lineage.Lineage.with_output_artifact parameter)</a>
@@ -1174,8 +1457,16 @@
         <li><a href="rst/lineage.html#mlopus.lineage.Query.with_output_artifact.params.run_id">(mlopus.lineage.Query.with_output_artifact parameter)</a>
 </li>
       </ul></li>
-      <li><a href="rst/mlflow/traits.html#mlopus.mlflow.MlflowRunMixin.run_manager">run_manager (mlopus.mlflow.MlflowRunMixin attribute)</a>
+      <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.ArtifactSchemaDataset.run_manager">run_manager (mlopus.kedro.ArtifactSchemaDataset attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.MlflowArtifacts.run_manager">(mlopus.kedro.MlflowArtifacts attribute)</a>
 </li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.run_manager">(mlopus.kedro.MlflowTracker attribute)</a>
+</li>
+        <li><a href="rst/mlflow/traits.html#mlopus.mlflow.MlflowRunMixin.run_manager">(mlopus.mlflow.MlflowRunMixin attribute)</a>
+</li>
+      </ul></li>
       <li><a href="rst/mlflow/schema.html#mlopus.mlflow.schema.RunStatus.RUNNING">RUNNING (mlopus.mlflow.schema.RunStatus attribute)</a>
 </li>
       <li><a href="rst/lineage.html#mlopus.lineage.Inputs.runs">runs (mlopus.lineage.Inputs attribute)</a>
@@ -1215,9 +1506,23 @@
       <ul>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.LogArtifactSpec.schema_">(mlopus.artschema.LogArtifactSpec attribute)</a>
 </li>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.ArtifactSchemaDataset.schema_">(mlopus.kedro.ArtifactSchemaDataset attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.schema_">(mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.schema_">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
+</li>
       </ul></li>
       <li><a href="rst/artschema/tags.html#mlopus.artschema.Tags.schemas">schemas (mlopus.artschema.Tags attribute)</a>
 </li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Config.scopes">scopes (mlopus.kedro.hooks.mlflow_tracker.Config attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.scopes">(mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Overrides.scopes">(mlopus.kedro.hooks.mlflow_tracker.Overrides attribute)</a>
+</li>
+      </ul></li>
       <li><a href="rst/mlflow/apis/exp.html#mlopus.mlflow.ExpApi.set_tags">set_tags() (mlopus.mlflow.ExpApi method)</a>
 
       <ul>
@@ -1248,6 +1553,12 @@
         <li><a href="rst/artschema/helpers.html#mlopus.artschema.log_run_artifact.params.skip_reqs_check">(mlopus.artschema.log_run_artifact parameter)</a>
 </li>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.LogArtifactSpec.skip_reqs_check">(mlopus.artschema.LogArtifactSpec attribute)</a>
+</li>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.ArtifactSchemaDataset.skip_reqs_check">(mlopus.kedro.ArtifactSchemaDataset attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.skip_reqs_check">(mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.skip_reqs_check">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
 </li>
       </ul></li>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.find_exps.params.sorting">sorting (mlopus.mlflow.BaseMlflowApi.find_exps parameter)</a>
@@ -1317,9 +1628,29 @@
 </li>
         <li><a href="rst/artschema/tags.html#mlopus.artschema.Tags.register.params.subject">(mlopus.artschema.Tags.register parameter)</a>
 </li>
+        <li><a href="rst/kedro/datasets/artschema.html#mlopus.kedro.ArtifactSchemaDataset.subject">(mlopus.kedro.ArtifactSchemaDataset attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.subject">(mlopus.kedro.hooks.mlflow_artifacts.PipelineInput attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.subject">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
+</li>
       </ul></li>
       <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.end_run.params.succeeded">succeeded (mlopus.mlflow.BaseMlflowApi.end_run parameter)</a>
 </li>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.suffix">suffix (mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow attribute)</a>
+
+      <ul>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.suffix">(mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.suffix">(mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.suffix">(mlopus.kedro.hooks.mlflow_tracker.NodesMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.suffix">(mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.suffix">(mlopus.kedro.hooks.mlflow_tracker.TagsMlflow attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1332,6 +1663,10 @@
 
       <ul>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.ModelVersionArtifact.tags">(mlopus.artschema.ModelVersionArtifact attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.NodeRule.tags">(mlopus.kedro.hooks.mlflow_tracker.NodeRule attribute)</a>
+</li>
+        <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.MlflowTracker.tags">(mlopus.kedro.MlflowTracker attribute)</a>
 </li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.create_exp.params.tags">(mlopus.mlflow.BaseMlflowApi.create_exp parameter)</a>
 </li>
@@ -1469,6 +1804,8 @@
 </li>
         <li><a href="rst/artschema/specs.html#mlopus.artschema.LogArtifactSpec.use_cache">(mlopus.artschema.LogArtifactSpec attribute)</a>
 </li>
+        <li><a href="rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.use_cache">(mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput attribute)</a>
+</li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_model_version.params.use_cache">(mlopus.mlflow.BaseMlflowApi.log_model_version parameter)</a>
 </li>
         <li><a href="rst/mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.use_cache">(mlopus.mlflow.BaseMlflowApi.log_run_artifact parameter)</a>
@@ -1494,6 +1831,8 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Tags.values">values (mlopus.kedro.hooks.mlflow_tracker.Tags attribute)</a>
+</li>
       <li><a href="rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.download.params.verify">verify (mlopus.artschema.ArtifactsCatalog.download parameter)</a>
 
       <ul>

@@ -48,6 +48,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/mlflow/index.html">MLflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/kedro/index.html">Kedro Extensions</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../rst/lineage.html">Lineage</a></li>
@@ -239,23 +240,24 @@
     <span class="n">schema_</span><span class="p">:</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="n">_DummySchema</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`load_artifact.schema`&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.load_artifact.schema`&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">loader_conf</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`Schema.get_loader.loader`&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.Schema.get_loader.loader`&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">skip_reqs_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`load_artifact.skip_reqs_check`&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.load_artifact.skip_reqs_check`&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">subject</span><span class="p">:</span> <span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">LA</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Instance (or `dict` to be parsed into instance) of :class:`RunArtifact` or :class:`ModelVersionArtifact`. &quot;</span>
-            <span class="s2">&quot;See also: :paramref:`load_artifact.subject`.&quot;</span>
+            <span class="s2">&quot;Instance (or `dict` to be parsed into instance) of &quot;</span>
+            <span class="s2">&quot;:class:`~mlopus.artschema.RunArtifact` or :class:`~mlopus.artschema.ModelVersionArtifact`. &quot;</span>
+            <span class="s2">&quot;See also: :paramref:`~mlopus.artschema.load_artifact.subject`.&quot;</span>
         <span class="p">)</span>
     <span class="p">)</span>
 
@@ -331,22 +333,25 @@
     <span class="n">schema_</span><span class="p">:</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="n">_DummySchema</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`load_artifact.schema`&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.load_artifact.schema`&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">dumper_conf</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`Schema.get_dumper.dumper`&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.Schema.get_dumper.dumper`&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">skip_reqs_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`load_artifact.skip_reqs_check`&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.load_artifact.skip_reqs_check`&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">auto_register</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`log_run_artifact.auto_register` and :paramref:`log_model_version.auto_register`&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;See :paramref:`mlopus.artschema.log_run_artifact.auto_register` &quot;</span>
+            <span class="s2">&quot;and :paramref:`mlopus.artschema.log_model_version.auto_register`&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="n">keep_the_source</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
@@ -367,7 +372,7 @@
     <span class="n">subject</span><span class="p">:</span> <span class="n">ArtifactSubject</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">LA</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">&quot;Instance (or `dict` to be parsed into instance) of :class:`RunArtifact` or :class:`ModelVersionArtifact`. &quot;</span>
-            <span class="s2">&quot;See also: :paramref:`load_artifact.subject`.&quot;</span>
+            <span class="s2">&quot;See also: :paramref:`~mlopus.artschema.load_artifact.subject`.&quot;</span>
         <span class="p">)</span>
     <span class="p">)</span>
 

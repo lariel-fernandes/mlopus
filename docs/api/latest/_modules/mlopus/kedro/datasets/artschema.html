@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlopus.kedro.datasets.artschema &mdash; MLOpus 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx_paramlinks.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../rst/mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../rst/artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../rst/kedro/index.html">Kedro Extensions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../rst/lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mlopus.kedro.datasets.artschema</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mlopus.kedro.datasets.artschema</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">kedro.io</span> <span class="kn">import</span> <span class="n">AbstractDataset</span>
+
+<span class="kn">import</span> <span class="nn">mlopus</span>
+<span class="kn">from</span> <span class="nn">mlopus.artschema</span> <span class="kn">import</span> <span class="n">helpers</span><span class="p">,</span> <span class="n">Dumper</span><span class="p">,</span> <span class="n">Loader</span><span class="p">,</span> <span class="n">Schema</span>
+<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.entity</span> <span class="kn">import</span> <span class="n">EntityApi</span>
+<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.exp</span> <span class="kn">import</span> <span class="n">ExpApi</span>
+<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.model</span> <span class="kn">import</span> <span class="n">ModelApi</span>
+<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.mv</span> <span class="kn">import</span> <span class="n">ModelVersionApi</span>
+<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.run</span> <span class="kn">import</span> <span class="n">RunApi</span>
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">paths</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>  <span class="c1"># Type of artifact</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Dumper</span><span class="p">)</span>  <span class="c1"># Type of Dumper</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Loader</span><span class="p">)</span>  <span class="c1"># Type of Loader</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">EntityApi</span><span class="p">)</span>  <span class="c1"># Type of entity API</span>
+
+
+<span class="k">class</span> <span class="nc">SchemaSubject</span><span class="p">(</span><span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">MlflowApiMixin</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ExcludeEmptyMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subject for artifact schema inference by alias.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">with_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SchemaSubject&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Complement eventually missing fields in schema subject using the provided defaults.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EntityApi</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get entity API.&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="ExpSubject"><a class="viewcode-back" href="../../../../rst/kedro/datasets/artschema.html#mlopus.kedro.ExpSubject">[docs]</a><span class="k">class</span> <span class="nc">ExpSubject</span><span class="p">(</span><span class="n">SchemaSubject</span><span class="p">[</span><span class="n">ExpApi</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specifies an experiment as subject for artifact schema inferrence.&quot;&quot;&quot;</span>
+
+    <span class="n">exp_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Experiment name. &quot;</span>
+            <span class="s2">&quot;Defaults to the experiment used in the :attr:`~mlopus.kedro.ArtifactSchemaDataset.run_manager`&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">with_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExpSubject&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Complement eventually missing fields in schema subject using the provided defaults.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span> <span class="ow">or</span> <span class="n">exp_name</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExpApi</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get entity API.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="o">.</span><span class="n">get_or_create_exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RunSubject"><a class="viewcode-back" href="../../../../rst/kedro/datasets/artschema.html#mlopus.kedro.RunSubject">[docs]</a><span class="k">class</span> <span class="nc">RunSubject</span><span class="p">(</span><span class="n">SchemaSubject</span><span class="p">[</span><span class="n">RunApi</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specifies a run as subject for artifact schema inferrence.&quot;&quot;&quot;</span>
+
+    <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Run ID. Defaults to the run used in the :attr:`~mlopus.kedro.ArtifactSchemaDataset.run_manager`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">with_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RunSubject&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Complement eventually missing fields in schema subject using the provided defaults.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="ow">or</span> <span class="n">run_id</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_run_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunApi</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get entity API.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="ow">or</span> <span class="n">default_run_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModelSubject"><a class="viewcode-back" href="../../../../rst/kedro/datasets/artschema.html#mlopus.kedro.ModelSubject">[docs]</a><span class="k">class</span> <span class="nc">ModelSubject</span><span class="p">(</span><span class="n">SchemaSubject</span><span class="p">[</span><span class="n">ModelApi</span> <span class="o">|</span> <span class="n">ModelVersionApi</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specifies a registered model or model version as subject for artifact schema inferrence.&quot;&quot;&quot;</span>
+
+    <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Registered model name.&quot;</span><span class="p">)</span>
+    <span class="n">model_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Model version.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelApi</span> <span class="o">|</span> <span class="n">ModelVersionApi</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">get_version</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">v</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_version</span><span class="p">)</span> <span class="k">else</span> <span class="n">model</span></div>
+
+
+<span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">_parse_subject</span><span class="p">(</span><span class="n">subj</span><span class="p">:</span> <span class="n">ExpSubject</span> <span class="o">|</span> <span class="n">RunSubject</span> <span class="o">|</span> <span class="n">ModelSubject</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaSubject</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">subj</span>
+
+
+<span class="k">class</span> <span class="nc">SchemaInfo</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ExcludeEmptyMixin</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Schema information for tracking purposes.&quot;&quot;&quot;</span>
+
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span>
+    <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="n">SchemaSubject</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">reqs_checked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">_parse_subject</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">validator</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">_parse_subject</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ArtifactSchemaDataset"><a class="viewcode-back" href="../../../../rst/kedro/datasets/artschema.html#mlopus.kedro.ArtifactSchemaDataset">[docs]</a><span class="k">class</span> <span class="nc">ArtifactSchemaDataset</span><span class="p">(</span>
+    <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">MlflowRunMixin</span><span class="p">,</span>
+    <span class="n">pydantic</span><span class="o">.</span><span class="n">EmptyStrAsMissing</span><span class="p">,</span>
+    <span class="n">pydantic</span><span class="o">.</span><span class="n">EmptyDictAsMissing</span><span class="p">,</span>
+    <span class="n">pydantic</span><span class="o">.</span><span class="n">ExcludeEmptyMixin</span><span class="p">,</span>
+    <span class="n">AbstractDataset</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span>
+    <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">],</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Saves/loads data using inferred or explicitly specified artifact schema.</span>
+
+<span class="sd">    See also:</span>
+<span class="sd">        - :mod:`mlopus.artschema`</span>
+
+<span class="sd">    Usage with explicit schema</span>
+<span class="sd">    ==========================</span>
+
+<span class="sd">        .. code-block:: yaml</span>
+
+<span class="sd">            # conf/&lt;env&gt;/catalog.yml</span>
+<span class="sd">            model:</span>
+<span class="sd">                type: mlopus.kedro.ArtifactSchemaDataset</span>
+<span class="sd">                path: data/model</span>
+<span class="sd">                schema: my_package.artschema:TorchModelSchema  # fully qualified class name</span>
+
+<span class="sd">    Usage with inferred schema</span>
+<span class="sd">    ==========================</span>
+
+<span class="sd">    1. Register the schema in the model&#39;s tags (also valid for experiments, runs and model versions):</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import mlopus</span>
+
+<span class="sd">            mlopus.artschema.Tags() \\</span>
+<span class="sd">                .with(</span>
+<span class="sd">                    my_package.artschema.TorchModelSchema,</span>
+<span class="sd">                    aliased_as=&quot;torch_model&quot;,</span>
+<span class="sd">                ) \\</span>
+<span class="sd">                .register(</span>
+<span class="sd">                    mlopus.mlflow.get_api().get_or_create_model(&quot;my_lang_model&quot;)</span>
+<span class="sd">                )</span>
+
+<span class="sd">    2. Reference the schema by alias:</span>
+
+<span class="sd">        .. code-block:: yaml</span>
+
+<span class="sd">            # conf/&lt;env&gt;/catalog.yml</span>
+<span class="sd">            model:</span>
+<span class="sd">                type: mlopus.kedro.ArtifactSchemaDataset</span>
+<span class="sd">                path: data/model</span>
+<span class="sd">                schema: torch_model                   # Get schema with this alias</span>
+<span class="sd">                subject: {model_name: my_lang_model}  # from this model&#39;s tags</span>
+<span class="sd">                mlflow: ${globals:mlflow}             # using this MLflow API handle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Target path for saving/loading artifact file or dir.&quot;</span><span class="p">)</span>
+
+    <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Overwrite :attr:`path` if exists.&quot;</span><span class="p">)</span>
+
+    <span class="n">skip_reqs_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.load_artifact.skip_reqs_check`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">subject</span><span class="p">:</span> <span class="n">ExpSubject</span> <span class="o">|</span> <span class="n">RunSubject</span> <span class="o">|</span> <span class="n">ModelSubject</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;If :attr:`schema_` is an alias to a previously registered artifact schema, load the respective &quot;</span>
+            <span class="s2">&quot;schema class from this subject&#39;s tags. See also :meth:`~mlopus.artschema.Tags.parse_subject`.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">schema_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.load_artifact.schema`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">dumper</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">D</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.Schema.get_dumper.dumper`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">loader</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">L</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.Schema.get_loader.loader`&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">schema_info</span><span class="p">:</span> <span class="n">SchemaInfo</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">_parse_subject</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">validator</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">_parse_subject</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;mlflow&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">schema_info</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">schema_</span><span class="p">,</span> <span class="n">alias</span> <span class="o">=</span> <span class="n">helpers</span><span class="o">.</span><span class="n">resolve_schema_and_alias</span><span class="p">(</span>
+            <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_</span><span class="p">,</span>
+            <span class="n">subject</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_subject_api</span><span class="p">,</span>
+            <span class="n">skip_reqs_check</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skip_reqs_check</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">schema_info</span> <span class="o">=</span> <span class="n">SchemaInfo</span><span class="p">(</span>
+            <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+            <span class="bp">cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
+            <span class="n">subject</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_subject</span> <span class="k">if</span> <span class="n">alias</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># subject is only relevant when inferring schema by alias</span>
+            <span class="n">reqs_checked</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_reqs_check</span> <span class="k">if</span> <span class="n">alias</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># reqs check only happens when inferring by alias</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaSubject</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">subj</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">subj</span> <span class="o">=</span> <span class="n">RunSubject</span><span class="p">(</span><span class="n">run_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_manager</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot resolve subject for schema inference when `mlflow=None`&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">subj</span><span class="o">.</span><span class="n">with_defaults</span><span class="p">(</span>  <span class="c1"># noqa</span>
+            <span class="n">run_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_manager</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">exp_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_manager</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_manager</span><span class="o">.</span><span class="n">mlflow_api</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_subject_api</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EntityApi</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">subj</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subject</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">subj</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_</span><span class="o">.</span><span class="n">get_loader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">paths</span><span class="o">.</span><span class="n">ensure_only_parents</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">overwrite</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_</span><span class="o">.</span><span class="n">get_dumper</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dumper</span><span class="p">),</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="n">paths</span><span class="o">.</span><span class="n">place_path</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;link&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">source</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_describe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArtifactSchemaDataset &mdash; MLOpus 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Hooks" href="../hooks/index.html" />
+    <link rel="prev" title="Datasets" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Kedro Extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../session.html">Session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../config_loader.html">Config Loader</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Datasets</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ArtifactSchemaDataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.kedro.ArtifactSchemaDataset"><code class="docutils literal notranslate"><span class="pre">ArtifactSchemaDataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.kedro.datasets.artschema.ExpSubject"><code class="docutils literal notranslate"><span class="pre">ExpSubject</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.kedro.datasets.artschema.RunSubject"><code class="docutils literal notranslate"><span class="pre">RunSubject</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.kedro.datasets.artschema.ModelSubject"><code class="docutils literal notranslate"><span class="pre">ModelSubject</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../hooks/index.html">Hooks</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Kedro Extensions</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Datasets</a></li>
+      <li class="breadcrumb-item active">ArtifactSchemaDataset</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/rst/kedro/datasets/artschema.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mlopus.kedro.datasets.artschema">
+<span id="artifactschemadataset"></span><h1>ArtifactSchemaDataset<a class="headerlink" href="#module-mlopus.kedro.datasets.artschema" title="Permalink to this heading"></a></h1>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.kedro.ArtifactSchemaDataset">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.</span></span><span class="sig-name descname"><span class="pre">ArtifactSchemaDataset</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/datasets/artschema.html#ArtifactSchemaDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.ArtifactSchemaDataset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../mlflow/traits.html#mlopus.mlflow.MlflowRunMixin" title="mlopus.mlflow.traits.MlflowRunMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowRunMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">EmptyStrAsMissing</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">EmptyDictAsMissing</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ExcludeEmptyMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataset</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">A</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">A</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">A</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">D</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">L</span></code>]</p>
+<p>Saves/loads data using inferred or explicitly specified artifact schema.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../artschema/index.html#module-mlopus.artschema" title="mlopus.artschema"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlopus.artschema</span></code></a></p></li>
+</ul>
+</div>
+<section id="usage-with-explicit-schema">
+<h2>Usage with explicit schema<a class="headerlink" href="#usage-with-explicit-schema" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># conf/&lt;env&gt;/catalog.yml</span>
+<span class="nt">model</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlopus.kedro.ArtifactSchemaDataset</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data/model</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_package.artschema:TorchModelSchema</span><span class="w">  </span><span class="c1"># fully qualified class name</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="usage-with-inferred-schema">
+<h2>Usage with inferred schema<a class="headerlink" href="#usage-with-inferred-schema" title="Permalink to this heading"></a></h2>
+<ol class="arabic">
+<li><p>Register the schema in the model’s tags (also valid for experiments, runs and model versions):</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mlopus</span>
+
+<span class="n">mlopus</span><span class="o">.</span><span class="n">artschema</span><span class="o">.</span><span class="n">Tags</span><span class="p">()</span> \
+    <span class="o">.</span><span class="k">with</span><span class="p">(</span>
+        <span class="n">my_package</span><span class="o">.</span><span class="n">artschema</span><span class="o">.</span><span class="n">TorchModelSchema</span><span class="p">,</span>
+        <span class="n">aliased_as</span><span class="o">=</span><span class="s2">&quot;torch_model&quot;</span><span class="p">,</span>
+    <span class="p">)</span> \
+    <span class="o">.</span><span class="n">register</span><span class="p">(</span>
+        <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">get_api</span><span class="p">()</span><span class="o">.</span><span class="n">get_or_create_model</span><span class="p">(</span><span class="s2">&quot;my_lang_model&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Reference the schema by alias:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># conf/&lt;env&gt;/catalog.yml</span>
+<span class="nt">model</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlopus.kedro.ArtifactSchemaDataset</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data/model</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">torch_model</span><span class="w">                   </span><span class="c1"># Get schema with this alias</span>
+<span class="w">    </span><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="nv">my_lang_model</span><span class="p p-Indicator">}</span><span class="w">  </span><span class="c1"># from this model&#39;s tags</span>
+<span class="w">    </span><span class="nt">mlflow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${globals:mlflow}</span><span class="w">             </span><span class="c1"># using this MLflow API handle.</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.ArtifactSchemaDataset.dumper">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dumper</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">D</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Dumper" title="mlopus.artschema.framework.Dumper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dumper</span></code></a><span class="pre">),</span> <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.ArtifactSchemaDataset.dumper" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Schema.get_dumper.params.dumper" title="mlopus.artschema.Schema.get_dumper"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">dumper</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.ArtifactSchemaDataset.loader">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">L</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Loader" title="mlopus.artschema.framework.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a><span class="pre">),</span> <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.ArtifactSchemaDataset.loader" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Schema.get_loader.params.loader" title="mlopus.artschema.Schema.get_loader"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">loader</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.ArtifactSchemaDataset.overwrite">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">overwrite</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.ArtifactSchemaDataset.overwrite" title="Permalink to this definition"></a></dt>
+<dd><p>Overwrite <a class="reference internal" href="#mlopus.kedro.ArtifactSchemaDataset.path" title="mlopus.kedro.ArtifactSchemaDataset.path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code></a> if exists.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.ArtifactSchemaDataset.path">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.ArtifactSchemaDataset.path" title="Permalink to this definition"></a></dt>
+<dd><p>Target path for saving/loading artifact file or dir.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.ArtifactSchemaDataset.run_manager">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MlflowRunManager</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'mlflow')</span></em><a class="headerlink" href="#mlopus.kedro.ArtifactSchemaDataset.run_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Instance or dict to be parsed into instance of <a class="reference internal" href="../../mlflow/traits.html#mlopus.mlflow.MlflowRunManager" title="mlopus.mlflow.MlflowRunManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowRunManager</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.ArtifactSchemaDataset.schema_">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code><span class="pre">,</span> <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Schema" title="mlopus.artschema.framework.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">A</span></code><span class="pre">,</span> <span class="pre">bound=</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code><span class="pre">),</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">D</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Dumper" title="mlopus.artschema.framework.Dumper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dumper</span></code></a><span class="pre">),</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">L</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Loader" title="mlopus.artschema.framework.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a><span class="pre">)],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code><span class="pre">[</span><a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Schema" title="mlopus.artschema.framework.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">A</span></code><span class="pre">,</span> <span class="pre">bound=</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code><span class="pre">),</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">D</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Dumper" title="mlopus.artschema.framework.Dumper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dumper</span></code></a><span class="pre">),</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code><span class="pre">(</span><code class="docutils literal notranslate"><span class="pre">L</span></code><span class="pre">,</span> <span class="pre">bound=</span> <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Loader" title="mlopus.artschema.framework.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a><span class="pre">)]]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'schema')</span></em><a class="headerlink" href="#mlopus.kedro.ArtifactSchemaDataset.schema_" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.load_artifact.params.schema" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.ArtifactSchemaDataset.skip_reqs_check">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">skip_reqs_check</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.kedro.ArtifactSchemaDataset.skip_reqs_check" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.load_artifact.params.skip_reqs_check" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">skip_reqs_check</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.ArtifactSchemaDataset.subject">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subject</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">UnionType</span></code><span class="pre">[</span><a class="reference internal" href="#mlopus.kedro.datasets.artschema.ExpSubject" title="mlopus.kedro.datasets.artschema.ExpSubject"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpSubject</span></code></a><span class="pre">,</span> <a class="reference internal" href="#mlopus.kedro.datasets.artschema.RunSubject" title="mlopus.kedro.datasets.artschema.RunSubject"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunSubject</span></code></a><span class="pre">,</span> <a class="reference internal" href="#mlopus.kedro.datasets.artschema.ModelSubject" title="mlopus.kedro.datasets.artschema.ModelSubject"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelSubject</span></code></a><span class="pre">,</span> <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.ArtifactSchemaDataset.subject" title="Permalink to this definition"></a></dt>
+<dd><p>If <a class="reference internal" href="#mlopus.kedro.ArtifactSchemaDataset.schema_" title="mlopus.kedro.ArtifactSchemaDataset.schema_"><code class="xref py py-attr docutils literal notranslate"><span class="pre">schema_</span></code></a> is an alias to a previously registered artifact schema, load the respective schema class from this subject’s tags. See also <a class="reference internal" href="../../artschema/tags.html#mlopus.artschema.Tags.parse_subject" title="mlopus.artschema.Tags.parse_subject"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse_subject()</span></code></a>.</p>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.kedro.datasets.artschema.ExpSubject">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.datasets.artschema.</span></span><span class="sig-name descname"><span class="pre">ExpSubject</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/datasets/artschema.html#ExpSubject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.datasets.artschema.ExpSubject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaSubject</span></code>[<a class="reference internal" href="../../mlflow/apis/exp.html#mlopus.mlflow.ExpApi" title="mlopus.mlflow.api.exp.ExpApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpApi</span></code></a>]</p>
+<p>Specifies an experiment as subject for artifact schema inferrence.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.datasets.artschema.ExpSubject.exp_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exp_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.datasets.artschema.ExpSubject.exp_name" title="Permalink to this definition"></a></dt>
+<dd><p>Experiment name. Defaults to the experiment used in the <a class="reference internal" href="#mlopus.kedro.ArtifactSchemaDataset.run_manager" title="mlopus.kedro.ArtifactSchemaDataset.run_manager"><code class="xref py py-attr docutils literal notranslate"><span class="pre">run_manager</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.kedro.datasets.artschema.RunSubject">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.datasets.artschema.</span></span><span class="sig-name descname"><span class="pre">RunSubject</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/datasets/artschema.html#RunSubject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.datasets.artschema.RunSubject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaSubject</span></code>[<a class="reference internal" href="../../mlflow/apis/run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>]</p>
+<p>Specifies a run as subject for artifact schema inferrence.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.datasets.artschema.RunSubject.run_id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.datasets.artschema.RunSubject.run_id" title="Permalink to this definition"></a></dt>
+<dd><p>Run ID. Defaults to the run used in the <a class="reference internal" href="#mlopus.kedro.ArtifactSchemaDataset.run_manager" title="mlopus.kedro.ArtifactSchemaDataset.run_manager"><code class="xref py py-attr docutils literal notranslate"><span class="pre">run_manager</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.kedro.datasets.artschema.ModelSubject">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.datasets.artschema.</span></span><span class="sig-name descname"><span class="pre">ModelSubject</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/datasets/artschema.html#ModelSubject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.datasets.artschema.ModelSubject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaSubject</span></code>[<a class="reference internal" href="../../mlflow/apis/model.html#mlopus.mlflow.ModelApi" title="mlopus.mlflow.api.model.ModelApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelApi</span></code></a> | <a class="reference internal" href="../../mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a>]</p>
+<p>Specifies a registered model or model version as subject for artifact schema inferrence.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.datasets.artschema.ModelSubject.model_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.datasets.artschema.ModelSubject.model_name" title="Permalink to this definition"></a></dt>
+<dd><p>Registered model name.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.datasets.artschema.ModelSubject.model_version">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.datasets.artschema.ModelSubject.model_version" title="Permalink to this definition"></a></dt>
+<dd><p>Model version.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../hooks/index.html" class="btn btn-neutral float-right" title="Hooks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
