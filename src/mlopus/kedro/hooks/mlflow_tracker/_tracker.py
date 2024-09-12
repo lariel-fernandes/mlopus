@@ -97,6 +97,12 @@ class DatasetsMlflow(_PrefixSuffixRuleSet):
     """Configure how to store dataset settings in MLFlow run params."""
 
     enabled: bool = pydantic.Field(default=True, description="Store dataset settings in MLflow run params.")
+    prepend_dataset: bool = pydantic.Field(default=True, description="Prepend dataset name to metric keys.")
+
+    def apply(self, data: dict) -> dict:
+        if not self.prepend_dataset:
+            data = dicts.deep_merge(*data.values())
+        return super().apply(data)
 
 
 class Datasets(_RuleSet):
