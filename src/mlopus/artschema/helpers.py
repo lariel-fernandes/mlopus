@@ -239,9 +239,16 @@ def resolve_schema_and_alias(
     if isinstance(schema, str) and ":" in schema:
         schema = import_utils.find_type(schema, Schema)
     if isinstance(schema, str) or schema is None:
-        assert subject, "Cannot resolve schema by alias without a subject (exp, run, model or version)."
-        logger.info("Using schema '%s' for subject %s", alias := schema or DEFAULT_ALIAS, subject)
-        schema = get_schema(subject, alias).load(Schema, skip_reqs_check=skip_reqs_check)
+        try:
+            assert subject, "Cannot resolve schema by alias without a subject (exp, run, model or version)."
+            logger.info("Using schema '%s' for subject %s", alias := schema or DEFAULT_ALIAS, subject)
+            schema = get_schema(subject, alias).load(Schema, skip_reqs_check=skip_reqs_check)
+        except Exception as e:
+            logger.error(
+                "If you intended to specify the schema by fully qualified name, "
+                "make sure to use the format `package.module:Class`"
+            )
+            raise e
     if typing_utils.safe_issubclass(schema, Schema):
         schema = schema()
     if not isinstance(schema, Schema):
