@@ -47,7 +47,7 @@ class Dumper(pydantic.BaseModel, ABC, Generic[A]):
     # =======================================================================================================
     # === Public methods ====================================================================================
 
-    def dump(self, path: Path, artifact: A | dict, overwrite: bool = False) -> None:
+    def dump(self, path: Path | str, artifact: A | dict, overwrite: bool = False) -> None:
         """Save artifact to :paramref:`path` as file or dir.
 
         If possible, also saves a file with this dumper's conf.
@@ -63,7 +63,7 @@ class Dumper(pydantic.BaseModel, ABC, Generic[A]):
         self.verify(path)
         self.maybe_save_conf(path, strict=True)
 
-    def verify(self, path: Path) -> None:
+    def verify(self, path: Path | str) -> None:
         """Verify the :paramref:`path`.
 
         :param path: Path where an instance of :attr:`.Artifact` is
@@ -72,7 +72,7 @@ class Dumper(pydantic.BaseModel, ABC, Generic[A]):
         :raises AssertionError: Unless :paramref:`path` is a file
                                 or dir in the expected structure.
         """
-        if path.exists():
+        if (path := Path(path)).exists():
             self._verify(path)
         else:
             raise FileNotFoundError(path)
@@ -167,7 +167,7 @@ class Loader(pydantic.BaseModel, ABC, Generic[A, D]):
     # =======================================================================================================
     # === Public methods ====================================================================================
 
-    def load(self, path: Path, dry_run: bool = False) -> A | Path:
+    def load(self, path: Path | str, dry_run: bool = False) -> A | Path:
         """Load artifact from :paramref:`path`.
 
         As a side effect, this will use a :attr:`.Dumper` to :meth:`~Dumper.verify` the :paramref:`path`.
@@ -180,7 +180,7 @@ class Loader(pydantic.BaseModel, ABC, Generic[A, D]):
             - If :paramref:`dry_run` is `True`, the same :paramref:`path`.
             - Otherwise, an instance of :attr:`.Artifact`.
         """
-        (dumper := self._load_dumper(path)).verify(path)
+        (dumper := self._load_dumper(path := Path(path))).verify(path)
 
         if dry_run:
             return path
