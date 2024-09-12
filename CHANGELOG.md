@@ -1,3 +1,9 @@
+## 0.3.2 (2024-09-12)
+
+### Fix
+
+- **kedro.hooks.mlflow_tracker**: fix param `prepend_dataset` for mlflow metrics
+
 ## 0.3.1 (2024-09-12)
 
 ### Fix
