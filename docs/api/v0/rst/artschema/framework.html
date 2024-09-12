@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Framework &mdash; MLOpus 0.3.0 documentation</title>
+  <title>Framework &mdash; MLOpus 0.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -190,7 +190,7 @@ or dir in the expected structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="mlopus.artschema.Dumper.dump.params.path"></span><a class="paramname reference internal" href="#mlopus.artschema.Dumper.dump.params.path"><strong>path</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.Dumper.dump.params.path">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – Target path.</p></li>
+<li><p><span class="target" id="mlopus.artschema.Dumper.dump.params.path"></span><a class="paramname reference internal" href="#mlopus.artschema.Dumper.dump.params.path"><strong>path</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.Dumper.dump.params.path">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Target path.</p></li>
 <li><p><span class="target" id="mlopus.artschema.Dumper.dump.params.artifact"></span><a class="paramname reference internal" href="#mlopus.artschema.Dumper.dump.params.artifact"><strong>artifact</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.Dumper.dump.params.artifact">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>, bound= <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]) – <ul>
 <li><p>An instance of <a class="reference internal" href="#mlopus.artschema.Dumper.Artifact" title="mlopus.artschema.Dumper.Artifact"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Artifact</span></code></a>.</p></li>
 <li><p>A <cite>dict</cite> that can be parsed into an <a class="reference internal" href="#mlopus.artschema.Dumper.Artifact" title="mlopus.artschema.Dumper.Artifact"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Artifact</span></code></a> (in case <a class="reference internal" href="#mlopus.artschema.Dumper.Artifact" title="mlopus.artschema.Dumper.Artifact"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Artifact</span></code></a> is a Pydantic model)</p></li>
@@ -232,7 +232,7 @@ conf file already exists in <a class="reference internal" href="#mlopus.artschem
 <dd><p>Verify the <a class="reference internal" href="#mlopus.artschema.Dumper.verify.params.path" title="mlopus.artschema.Dumper.verify"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">path</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="mlopus.artschema.Dumper.verify.params.path"></span><a class="paramname reference internal" href="#mlopus.artschema.Dumper.verify.params.path"><strong>path</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.Dumper.verify.params.path">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – Path where an instance of <a class="reference internal" href="#mlopus.artschema.Dumper.Artifact" title="mlopus.artschema.Dumper.Artifact"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Artifact</span></code></a> is
+<dd class="field-odd"><p><span class="target" id="mlopus.artschema.Dumper.verify.params.path"></span><a class="paramname reference internal" href="#mlopus.artschema.Dumper.verify.params.path"><strong>path</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.Dumper.verify.params.path">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path where an instance of <a class="reference internal" href="#mlopus.artschema.Dumper.Artifact" title="mlopus.artschema.Dumper.Artifact"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Artifact</span></code></a> is
 supposed to have been dumped, downloaded or placed.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -302,7 +302,7 @@ that was originally used to save the artifact. Otherwise, it’s a <a class="ref
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="mlopus.artschema.Loader.load.params.path"></span><a class="paramname reference internal" href="#mlopus.artschema.Loader.load.params.path"><strong>path</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.Loader.load.params.path">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – Path to artifact file or dir.</p></li>
+<li><p><span class="target" id="mlopus.artschema.Loader.load.params.path"></span><a class="paramname reference internal" href="#mlopus.artschema.Loader.load.params.path"><strong>path</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.Loader.load.params.path">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path to artifact file or dir.</p></li>
 <li><p><span class="target" id="mlopus.artschema.Loader.load.params.dry_run"></span><a class="paramname reference internal" href="#mlopus.artschema.Loader.load.params.dry_run"><strong>dry_run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.Loader.load.params.dry_run">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Just verify the artifact path.</p></li>
 </ul>
 </dd>

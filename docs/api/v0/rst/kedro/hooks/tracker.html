@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MlflowTracker &mdash; MLOpus 0.3.0 documentation</title>
+  <title>MlflowTracker &mdash; MLOpus 0.3.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -173,7 +173,7 @@ a fully commented example covering all settings that can be customized in this h
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.MlflowTracker.datasets">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">datasets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.Datasets" title="mlopus.kedro.hooks.mlflow_tracker._tracker.Datasets"><code class="xref py py-class docutils literal notranslate"><span class="pre">Datasets</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Datasets(rules=[],</span> <span class="pre">report=True,</span> <span class="pre">include_non_pydantic=False,</span> <span class="pre">mlflow=DatasetsMlflow(rules=[],</span> <span class="pre">prefix=[],</span> <span class="pre">suffix=[],</span> <span class="pre">enabled=False))</span></em><a class="headerlink" href="#mlopus.kedro.MlflowTracker.datasets" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">datasets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.Datasets" title="mlopus.kedro.hooks.mlflow_tracker._tracker.Datasets"><code class="xref py py-class docutils literal notranslate"><span class="pre">Datasets</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Datasets(rules=[],</span> <span class="pre">report=True,</span> <span class="pre">include_non_pydantic=False,</span> <span class="pre">mlflow=DatasetsMlflow(rules=[],</span> <span class="pre">prefix=[],</span> <span class="pre">suffix=[],</span> <span class="pre">enabled=False,</span> <span class="pre">prepend_dataset=True))</span></em><a class="headerlink" href="#mlopus.kedro.MlflowTracker.datasets" title="Permalink to this definition"></a></dt>
 <dd><p>Configure how to track Kedro dataset settings.</p>
 </dd></dl>
 
@@ -528,7 +528,7 @@ a fully commented example covering all settings that can be customized in this h
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Datasets.mlflow">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mlflow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow" title="mlopus.kedro.hooks.mlflow_tracker._tracker.DatasetsMlflow"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetsMlflow</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">DatasetsMlflow(rules=[],</span> <span class="pre">prefix=[],</span> <span class="pre">suffix=[],</span> <span class="pre">enabled=False)</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Datasets.mlflow" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mlflow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow" title="mlopus.kedro.hooks.mlflow_tracker._tracker.DatasetsMlflow"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetsMlflow</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">DatasetsMlflow(rules=[],</span> <span class="pre">prefix=[],</span> <span class="pre">suffix=[],</span> <span class="pre">enabled=False,</span> <span class="pre">prepend_dataset=True)</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Datasets.mlflow" title="Permalink to this definition"></a></dt>
 <dd><p>Configure how to store dataset settings in MLFlow run params.</p>
 </dd></dl>
 
@@ -549,6 +549,12 @@ a fully commented example covering all settings that can be customized in this h
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.enabled">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.enabled" title="Permalink to this definition"></a></dt>
 <dd><p>Store dataset settings in MLflow run params.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.prepend_dataset">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepend_dataset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.prepend_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Prepend dataset name to metric keys.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
