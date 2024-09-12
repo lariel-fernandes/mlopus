@@ -76,6 +76,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../kedro/index.html">Kedro Extensions</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../lineage.html">Lineage</a></li>
@@ -152,7 +153,8 @@
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.mlflow.MlflowRunMixin.run_manager">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><a class="reference internal" href="#mlopus.mlflow.MlflowRunManager" title="mlopus.mlflow.traits.MlflowRunManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowRunManager</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'mlflow')</span></em><a class="headerlink" href="#mlopus.mlflow.MlflowRunMixin.run_manager" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Instance or dict to be parsed into instance of <a class="reference internal" href="#mlopus.mlflow.MlflowRunManager" title="mlopus.mlflow.MlflowRunManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowRunManager</span></code></a></p>
+</dd></dl>
 
 </dd></dl>
 
@@ -162,9 +164,9 @@
 <dd><p>Bases: <a class="reference internal" href="#mlopus.mlflow.MlflowApiMixin" title="mlopus.mlflow.traits.MlflowApiMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowApiMixin</span></code></a></p>
 <p>A pydantic object that holds a reference to an ongoing MLflow Run.</p>
 <ol class="arabic simple">
-<li><p>If <cite>run.id</cite> is given, that run is resumed.</p></li>
-<li><p>Otherwise, an ongoing run is searched for in <cite>exp.name</cite> with <cite>run.tags</cite></p></li>
-<li><p>If none can be found, a new one is started in <cite>exp.name</cite> with <cite>run.tags</cite></p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">run.id</span></code> is given, that run is resumed.</p></li>
+<li><p>Otherwise, an ongoing run is searched for in <code class="docutils literal notranslate"><span class="pre">exp.name</span></code> containing <code class="docutils literal notranslate"><span class="pre">run.tags</span></code></p></li>
+<li><p>If none can be found, a new run is started in <code class="docutils literal notranslate"><span class="pre">exp.name</span></code> containing <code class="docutils literal notranslate"><span class="pre">run.tags</span></code></p></li>
 </ol>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
@@ -191,7 +193,8 @@
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.mlflow.MlflowRunManager.mlflow_api">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mlflow_api</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'api')</span></em><a class="headerlink" href="#mlopus.mlflow.MlflowRunManager.mlflow_api" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Instance of <a class="reference internal" href="apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a> or a <cite>dict</cite> of keyword arguments for <a class="reference internal" href="utils.html#mlopus.mlflow.get_api" title="mlopus.mlflow.get_api"><code class="xref py py-func docutils literal notranslate"><span class="pre">mlopus.mlflow.get_api()</span></code></a>.</p>
+</dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.mlflow.MlflowRunManager.run_conf">

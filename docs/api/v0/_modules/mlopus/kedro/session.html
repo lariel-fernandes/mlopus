@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlopus.kedro.session &mdash; MLOpus 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/kedro/index.html">Kedro Extensions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mlopus.kedro.session</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mlopus.kedro.session</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span> <span class="nn">toml</span>
+<span class="kn">from</span> <span class="nn">kedro.config</span> <span class="kn">import</span> <span class="n">AbstractConfigLoader</span>
+<span class="kn">from</span> <span class="nn">kedro.framework.context</span> <span class="kn">import</span> <span class="n">KedroContext</span>
+<span class="kn">from</span> <span class="nn">kedro.framework.hooks.manager</span> <span class="kn">import</span> <span class="n">_register_hooks</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">kedro.framework.project</span> <span class="kn">import</span> <span class="n">pipelines</span><span class="p">,</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">kedro.framework.session</span> <span class="kn">import</span> <span class="n">KedroSession</span>
+<span class="kn">from</span> <span class="nn">kedro.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">kedro.runner</span> <span class="kn">import</span> <span class="n">AbstractRunner</span>
+
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">packaging</span>
+<span class="kn">from</span> <span class="nn">.config_resolvers</span> <span class="kn">import</span> <span class="n">DictResolver</span>
+<span class="kn">from</span> <span class="nn">.hooks</span> <span class="kn">import</span> <span class="n">HookFactory</span>
+<span class="kn">from</span> <span class="nn">.pipeline_factory</span> <span class="kn">import</span> <span class="n">PipelineFactory</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">log_errors</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MlopusKedroSession"><a class="viewcode-back" href="../../../rst/kedro/session.html#mlopus.kedro.MlopusKedroSession">[docs]</a><span class="k">class</span> <span class="nc">MlopusKedroSession</span><span class="p">(</span><span class="n">KedroSession</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patch of KedroSession.</span>
+
+<span class="sd">    Enabling the patch</span>
+<span class="sd">    ==================</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            # &lt;your_package&gt;/settings.py</span>
+<span class="sd">            from mlopus.kedro import MlopusKedroSession</span>
+<span class="sd">            from kedro.framework.session import KedroSession</span>
+
+<span class="sd">            KedroSession.create = MlopusKedroSession.create</span>
+
+<span class="sd">    Resolving env vars and session store details in config files</span>
+<span class="sd">    ============================================================</span>
+
+<span class="sd">        .. code-block:: yaml</span>
+
+<span class="sd">            # conf/&lt;env&gt;/parameters.yml</span>
+<span class="sd">            my_env_var: &quot;${env:MY_ENV_VAR,default}&quot;  # resolve env var</span>
+<span class="sd">            package_version: &quot;${session:pkg.version}&quot;  # resolve session store details</span>
+
+<span class="sd">    Lazy-evaluated pipelines with direct config access</span>
+<span class="sd">    ==================================================</span>
+
+<span class="sd">    In the following example, the function `prepare_images` will be called to build the</span>
+<span class="sd">    pipeline from the config **only** when the respective pipeline is chosen for execution.</span>
+
+<span class="sd">    If the node function `SetImageContrast` is a Pydantic BaseModel or has any other form of</span>
+<span class="sd">    schema validation, the mapped configuration will be validated **before** the pipeline runs.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            # &lt;your_package&gt;/pipeline_registry.py</span>
+<span class="sd">            from mlopus.kedro import pipeline_factory</span>
+
+<span class="sd">            def register_pipelines():</span>
+<span class="sd">                return {&quot;e2e&quot;: prepare_images}</span>
+
+<span class="sd">            @pipeline_factory</span>
+<span class="sd">            def prepare_images(config):</span>
+<span class="sd">                return Pipeline([</span>
+<span class="sd">                    node(</span>
+<span class="sd">                        name=&quot;set_contrast&quot;,</span>
+<span class="sd">                        inputs=&quot;original_images&quot;,</span>
+<span class="sd">                        outputs=&quot;modified_images&quot;,</span>
+<span class="sd">                        func=SetImageContrast(config[&quot;parameters&quot;][&quot;contrast&quot;]),</span>
+<span class="sd">                    ),</span>
+<span class="sd">                ])</span>
+
+<span class="sd">    Lazy-evaluated hooks with direct config access</span>
+<span class="sd">    ==============================================</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            # &lt;your_package&gt;/settings.py</span>
+<span class="sd">            from mlopus.kedro import hook_factory</span>
+
+<span class="sd">            @hook_factory</span>
+<span class="sd">            def upload_logs(config):</span>
+<span class="sd">                return UploadLogs(bucket=config[&quot;globals&quot;][&quot;logs_bucket&quot;])</span>
+
+<span class="sd">            HOOKS = [upload_logs]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">package_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">project_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">save_on_close</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">conf_source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hiding_hooks</span><span class="p">():</span>  <span class="c1"># prevent parent class from registering uninitialized hooks</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_id</span><span class="p">,</span> <span class="n">package_name</span><span class="p">,</span> <span class="n">project_path</span><span class="p">,</span> <span class="n">save_on_close</span><span class="p">,</span> <span class="n">conf_source</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_package_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># resolve package name from project metadata if not specified</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_package_name</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_path</span> <span class="o">/</span> <span class="s2">&quot;pyproject.toml&quot;</span><span class="p">)[</span><span class="s2">&quot;tool&quot;</span><span class="p">][</span><span class="s2">&quot;kedro&quot;</span><span class="p">][</span><span class="s2">&quot;package_name&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="s2">&quot;pkg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_package_name</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">packaging</span><span class="o">.</span><span class="n">get_dist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_package_name</span><span class="p">)</span><span class="o">.</span><span class="n">version</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>  <span class="c1"># generate UUID (not datetime-bound like the session ID)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hook_manager</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">setwriter</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># fix to prevent data dumping on call to pluggy</span>
+
+        <span class="n">DictResolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">)</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>  <span class="c1"># expose session info for interpolation in config keys</span>
+
+        <span class="n">DictResolver</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;env&quot;</span><span class="p">)</span>  <span class="c1"># expose environment variables for interpolation in config keys</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># lazy initialized cached context</span>
+
+    <span class="k">def</span> <span class="nf">create_context</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KedroContext</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load and cache context. Initialize and register hooks now that config is available.&quot;&quot;&quot;</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_context</span><span class="p">()</span>  <span class="c1"># evaluate the context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="s2">&quot;env&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">config_loader</span><span class="o">.</span><span class="n">env</span>  <span class="c1"># save env name (default is only applied on context creation)</span>
+        <span class="n">hooks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_hook</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">config_loader</span><span class="p">,</span> <span class="n">hook</span><span class="p">)</span> <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">HOOKS</span><span class="p">]</span>  <span class="c1"># evaluate hook factories</span>
+        <span class="n">_register_hooks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_manager</span><span class="p">,</span> <span class="n">hooks</span><span class="p">)</span>  <span class="c1"># register hooks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hook_manager</span><span class="o">.</span><span class="n">hook</span><span class="o">.</span><span class="n">after_context_created</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">ctx</span><span class="p">)</span>  <span class="c1"># run post-context creation hooks</span>
+        <span class="k">return</span> <span class="n">ctx</span>
+
+    <span class="k">def</span> <span class="nf">load_context</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KedroContext</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get cached context.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_context</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span>
+
+    <span class="nd">@log_errors</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>  <span class="c1"># noqa: PLR0913</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pipeline_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">runner</span><span class="p">:</span> <span class="n">AbstractRunner</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">node_names</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">from_nodes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">to_nodes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">from_inputs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">to_outputs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">load_versions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_context</span><span class="p">()</span><span class="o">.</span><span class="n">config_loader</span><span class="p">,</span> <span class="n">pipeline_name</span> <span class="o">:=</span> <span class="n">pipeline_name</span> <span class="ow">or</span> <span class="s2">&quot;__default__&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="n">pipeline_name</span><span class="p">,</span>
+                <span class="n">tags</span><span class="p">,</span>
+                <span class="n">runner</span><span class="p">,</span>
+                <span class="n">node_names</span><span class="p">,</span>
+                <span class="n">from_nodes</span><span class="p">,</span>
+                <span class="n">to_nodes</span><span class="p">,</span>
+                <span class="n">from_inputs</span><span class="p">,</span>
+                <span class="n">to_outputs</span><span class="p">,</span>
+                <span class="n">load_versions</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="k">def</span> <span class="nf">_hiding_hooks</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="n">hooks</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">HOOKS</span>  <span class="c1"># save original hooks</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">HOOKS</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># hide hooks</span>
+        <span class="k">yield</span> <span class="kc">None</span>  <span class="c1"># let the context run</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">HOOKS</span> <span class="o">=</span> <span class="n">hooks</span>  <span class="c1"># restore hooks</span>
+
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="k">def</span> <span class="nf">_loaded_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">AbstractConfigLoader</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">pipeline</span> <span class="o">=</span> <span class="n">pipelines</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>  <span class="c1"># save original pipeline definition</span>
+        <span class="n">pipelines</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_pipeline</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span>  <span class="c1"># replace definition with loaded pipeline</span>
+        <span class="k">yield</span> <span class="kc">None</span>  <span class="c1"># let the context run</span>
+        <span class="n">pipelines</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pipeline</span>  <span class="c1"># restore the original pipeline definition</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_load_hook</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">AbstractConfigLoader</span><span class="p">,</span> <span class="n">hook</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="n">HookFactory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hook</span><span class="p">,</span> <span class="n">HookFactory</span><span class="p">):</span>
+            <span class="n">hook</span> <span class="o">=</span> <span class="n">hook</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hook</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arbitrary_types_allowed&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="k">def</span> <span class="nf">_load_pipeline</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">AbstractConfigLoader</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">:</span> <span class="n">Pipeline</span> <span class="o">|</span> <span class="n">PipelineFactory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Pipeline</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">PipelineFactory</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading pipeline &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">pipeline</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Pipeline &#39;</span><span class="si">%s</span><span class="s2">&#39; has been loaded&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pipeline</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

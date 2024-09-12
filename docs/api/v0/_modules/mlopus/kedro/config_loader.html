@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlopus.kedro.config_loader &mdash; MLOpus 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/kedro/index.html">Kedro Extensions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mlopus.kedro.config_loader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mlopus.kedro.config_loader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">kedro.config</span> <span class="kn">import</span> <span class="n">MissingConfigException</span>
+<span class="kn">from</span> <span class="nn">kedro.config.omegaconf_config</span> <span class="kn">import</span> <span class="n">OmegaConfigLoader</span>
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">dicts</span>
+
+
+<div class="viewcode-block" id="MlopusConfigLoader"><a class="viewcode-back" href="../../../rst/kedro/config_loader.html#mlopus.kedro.MlopusConfigLoader">[docs]</a><span class="k">class</span> <span class="nc">MlopusConfigLoader</span><span class="p">(</span><span class="n">OmegaConfigLoader</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patch of OmegaConfigLoader.</span>
+
+<span class="sd">    Enabling the patch</span>
+<span class="sd">    ==================</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            # &lt;your_package&gt;/settings.py</span>
+<span class="sd">            from mlopus.kedro import MlopusConfigLoader</span>
+
+<span class="sd">            CONFIG_LOADER_CLASS = MlopusConfigLoader</span>
+
+<span class="sd">    `dict`-like `get` behavior</span>
+<span class="sd">    ==========================</span>
+<span class="sd">    Assuming there are no files matching ``conf/&lt;env&gt;/credentials*``, the</span>
+<span class="sd">    following example would raise an exception with the original OmegaConfigLoader:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            config.get(&quot;credentials&quot;)  # returns: None</span>
+<span class="sd">            config.get(&quot;credentials&quot;, {})  # returns: {}</span>
+
+<span class="sd">    Any scope overrides (CLI)</span>
+<span class="sd">    =========================</span>
+
+<span class="sd">        .. code-block:: bash</span>
+
+<span class="sd">            kedro run ... --params globals.key=value</span>
+<span class="sd">            kedro run ... --params catalog.key=value</span>
+<span class="sd">            kedro run ... --params parameters.key=value</span>
+<span class="sd">            kedro run ... --params credentials.key=value</span>
+
+<span class="sd">    Any scope overrides (Python)</span>
+<span class="sd">    ============================</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            with KedroSession.create(</span>
+<span class="sd">                ...,</span>
+<span class="sd">                extra_params={</span>
+<span class="sd">                    &quot;globals&quot;: {&quot;key&quot;: &quot;value&quot;},</span>
+<span class="sd">                    &quot;catalog&quot;: {&quot;key&quot;: &quot;value&quot;},</span>
+<span class="sd">                    &quot;parameters&quot;: {&quot;key&quot;: &quot;value&quot;},</span>
+<span class="sd">                    &quot;credentials&quot;: {&quot;key&quot;: &quot;value&quot;},</span>
+<span class="sd">                },</span>
+<span class="sd">            ) as session:</span>
+<span class="sd">                ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">conf_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">runtime_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">config_patterns</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_env</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_run_env</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">custom_resolvers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">merge_strategy</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="p">(</span><span class="n">config_patterns</span> <span class="o">:=</span> <span class="n">config_patterns</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;globals&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;globals*&quot;</span><span class="p">,</span> <span class="s2">&quot;globals*/**&quot;</span><span class="p">,</span> <span class="s2">&quot;**/globals*&quot;</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">conf_source</span><span class="p">,</span>
+            <span class="n">env</span> <span class="ow">or</span> <span class="n">default_run_env</span> <span class="ow">or</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span>
+            <span class="n">runtime_params</span><span class="p">,</span>
+            <span class="n">config_patterns</span><span class="o">=</span><span class="n">config_patterns</span><span class="p">,</span>
+            <span class="n">base_env</span><span class="o">=</span><span class="n">base_env</span><span class="p">,</span>
+            <span class="n">default_run_env</span><span class="o">=</span><span class="n">default_run_env</span><span class="p">,</span>
+            <span class="n">custom_resolvers</span><span class="o">=</span><span class="n">custom_resolvers</span><span class="p">,</span>
+            <span class="n">merge_strategy</span><span class="o">=</span><span class="n">merge_strategy</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Enforce that runtime params (overrides) specify one of the available config scopes</span>
+        <span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scope</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_patterns</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Unrecognized scope &#39;</span><span class="si">{</span><span class="n">scope</span><span class="si">}</span><span class="s2">&#39; in runtime params (overrides), &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;expected one of: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_patterns</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dict-like `get` returning either `None` or the specified `default`.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">MissingConfigException</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+
+    <span class="nd">@typing</span><span class="o">.</span><span class="n">no_type_check</span>
+    <span class="k">def</span> <span class="nf">load_and_merge_dir_config</span><span class="p">(</span>  <span class="c1"># noqa: PLR0913</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">conf_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">patterns</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">processed_files</span><span class="p">:</span> <span class="nb">set</span><span class="p">,</span>
+        <span class="n">read_environment_variables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Omit `key` in call to `super` to avoid an early apply of runtime params (overrides).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_and_merge_dir_config</span><span class="p">(</span><span class="n">conf_path</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">processed_files</span><span class="p">,</span> <span class="n">read_environment_variables</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply runtime params (overrides) after the config of all matching files has been merged.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dicts</span><span class="o">.</span><span class="n">deep_merge</span><span class="p">(</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runtime_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{}),</span>
+        <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
