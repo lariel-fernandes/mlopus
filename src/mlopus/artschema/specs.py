@@ -159,23 +159,24 @@ class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
     schema_: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = pydantic.Field(
         alias="schema",
         default_factory=_DummySchema,
-        description="See :paramref:`load_artifact.schema`",
+        description="See :paramref:`~mlopus.artschema.load_artifact.schema`",
     )
 
     loader_conf: Dict[str, Any] | None = pydantic.Field(
         default=None,
-        description="See :paramref:`Schema.get_loader.loader`",
+        description="See :paramref:`~mlopus.artschema.Schema.get_loader.loader`",
     )
 
     skip_reqs_check: bool = pydantic.Field(
         default=False,
-        description="See :paramref:`load_artifact.skip_reqs_check`",
+        description="See :paramref:`~mlopus.artschema.load_artifact.skip_reqs_check`",
     )
 
     subject: ArtifactSubject[T, LA] = pydantic.Field(
         description=(
-            "Instance (or `dict` to be parsed into instance) of :class:`RunArtifact` or :class:`ModelVersionArtifact`. "
-            "See also: :paramref:`load_artifact.subject`."
+            "Instance (or `dict` to be parsed into instance) of "
+            ":class:`~mlopus.artschema.RunArtifact` or :class:`~mlopus.artschema.ModelVersionArtifact`. "
+            "See also: :paramref:`~mlopus.artschema.load_artifact.subject`."
         )
     )
 
@@ -251,22 +252,25 @@ class LogArtifactSpec(MlflowApiMixin, Generic[T, LA]):
     schema_: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = pydantic.Field(
         alias="schema",
         default_factory=_DummySchema,
-        description="See :paramref:`load_artifact.schema`",
+        description="See :paramref:`~mlopus.artschema.load_artifact.schema`",
     )
 
     dumper_conf: Dict[str, Any] | None = pydantic.Field(
         default=None,
-        description="See :paramref:`Schema.get_dumper.dumper`",
+        description="See :paramref:`~mlopus.artschema.Schema.get_dumper.dumper`",
     )
 
     skip_reqs_check: bool = pydantic.Field(
         default=False,
-        description="See :paramref:`load_artifact.skip_reqs_check`",
+        description="See :paramref:`~mlopus.artschema.load_artifact.skip_reqs_check`",
     )
 
     auto_register: bool | Dict[str, Any] = pydantic.Field(
         default=False,
-        description="See :paramref:`log_run_artifact.auto_register` and :paramref:`log_model_version.auto_register`",
+        description=(
+            "See :paramref:`mlopus.artschema.log_run_artifact.auto_register` "
+            "and :paramref:`mlopus.artschema.log_model_version.auto_register`"
+        ),
     )
 
     keep_the_source: bool | None = pydantic.Field(
@@ -287,7 +291,7 @@ class LogArtifactSpec(MlflowApiMixin, Generic[T, LA]):
     subject: ArtifactSubject[T, LA] = pydantic.Field(
         description=(
             "Instance (or `dict` to be parsed into instance) of :class:`RunArtifact` or :class:`ModelVersionArtifact`. "
-            "See also: :paramref:`load_artifact.subject`."
+            "See also: :paramref:`~mlopus.artschema.load_artifact.subject`."
         )
     )
 

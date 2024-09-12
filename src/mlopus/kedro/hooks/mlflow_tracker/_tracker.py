@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import List, Mapping, Dict
 
 from mlopus.utils import pydantic, dicts
-
 from ._rules import (
     _NodeRuleSet,
     _ScopedRuleSet,
@@ -17,70 +16,139 @@ from ._rules import (
 logger = logging.getLogger(__name__)
 
 
-class _Report(pydantic.BaseModel):
-    enabled: bool = True
-    path: str = "kedro-session.yml"
+class Report(pydantic.BaseModel):
+    """Configure the session report."""
+
+    enabled: bool = pydantic.Field(default=True, description="Add session report file to MLflow run artifacts.")
+    path: str = pydantic.Field(
+        default="kedro-session.yml",
+        description="Session report file path inside run artifacts.",
+    )
 
 
-class _MetricsMlflow(_PrefixSuffix):
-    enabled: bool = True
+class MetricsMlflow(_PrefixSuffix):
+    """Configure how to log metrics in the MLflow run."""
+
+    enabled: bool = pydantic.Field(default=True, description="Log metrics in the MLflow run.")
 
 
-class _Metrics(pydantic.BaseModel):
-    report: bool = True
-    datasets: List[str] = []
-    mlflow: _MetricsMlflow = _MetricsMlflow(enabled=True)
+class Metrics(pydantic.BaseModel):
+    """Configure the collection of MLflow metrics."""
+
+    report: bool = pydantic.Field(default=True, description="Include metrics in session report file.")
+    datasets: List[str] = pydantic.Field(
+        default_factory=list,
+        description=(
+            "If a node outputs to any of these datasets, collect the output data as metrics (must be a `dict`). "
+            "See :attr:`mlopus.mlflow.schema.Run.metrics`"
+        ),
+    )
+    mlflow: MetricsMlflow = pydantic.Field(
+        default=MetricsMlflow(enabled=True),
+        description="Configure how to log metrics in the MLflow run.",
+    )
 
 
-class _ConfigMlflow(_ScopedPrefixSuffixRuleSet):
-    enabled: bool = True
+class ConfigMlflow(_ScopedPrefixSuffixRuleSet):
+    """Configure how to store in MLflow run params."""
+
+    enabled: bool = pydantic.Field(default=True, description="Store in MLflow run params.")
 
 
-class _Config(_ScopedRuleSet):
-    report: bool = True
-    mlflow: _ConfigMlflow = _ConfigMlflow(enabled=False)
+class Config(_ScopedRuleSet):
+    """Configure how to track the Kedro config."""
+
+    report: bool = pydantic.Field(default=True, description="Include in session report file.")
+    mlflow: ConfigMlflow = pydantic.Field(
+        default=ConfigMlflow(enabled=False),
+        description=(
+            "Configure how to store in MLflow run params. "
+            "The :attr:`~ConfigMlflow.rules` and :attr:`~ConfigMlflow.scopes` defined in the :attr:`mlflow` "
+            "section will further narrow down the :attr:`rules` and :attr:`scopes` already defined here."
+        ),
+    )
 
 
-class _Overrides(_Config):
-    pass
+class Overrides(Config):
+    """Configure how to track Kedro config overrides."""
 
 
-class _NodesMlflow(_PipelinesRuleSet):
-    enabled: bool = True
+class NodesMlflow(_PipelinesRuleSet):
+    """Configure how to store in MLflow run params."""
+
+    enabled: bool = pydantic.Field(default=True, description="Store in MLflow run params.")
 
 
-class _Nodes(_NodeRuleSet):
-    report: bool = True
-    mlflow: _NodesMlflow = _NodesMlflow(enabled=False)
+class Nodes(_NodeRuleSet):
+    """Configure how to track Kedro node settings."""
+
+    report: bool = pydantic.Field(default=True, description="Include in session report file.")
+    mlflow: NodesMlflow = pydantic.Field(
+        default=NodesMlflow(enabled=False),
+        description=(
+            "Configure how to store in MLflow run params. "
+            "The :attr:`~NodesMlflow.rules` defined in the :attr:`mlflow` section will further narrow down the "
+            ":attr:`rules` already defined here."
+        ),
+    )
 
 
-class _DatasetsMlflow(_PrefixSuffixRuleSet):
-    enabled: bool = True
+class DatasetsMlflow(_PrefixSuffixRuleSet):
+    """Configure how to store dataset settings in MLFlow run params."""
+
+    enabled: bool = pydantic.Field(default=True, description="Store dataset settings in MLflow run params.")
 
 
-class _Datasets(_RuleSet):
-    report: bool = True
-    include_non_pydantic: bool = False
-    mlflow: _DatasetsMlflow = _DatasetsMlflow(enabled=False)
+class Datasets(_RuleSet):
+    """Configure how to track Kedro dataset settings.
+
+    Important:
+        - The tracking of a dataset is only triggered when a node attempts to save/load to/from it.
+    """
+
+    report: bool = pydantic.Field(default=True, description="Include in session report file.")
+    include_non_pydantic: bool = pydantic.Field(
+        default=False,
+        description="Use the ``__dict__`` attribute to describe settings of non-pydantic datasets.",
+    )
+    mlflow: DatasetsMlflow = pydantic.Field(
+        default=DatasetsMlflow(enabled=False),
+        description="Configure how to store dataset settings in MLFlow run params.",
+    )
 
 
-class _TagsMlflow(_PrefixSuffix):
-    enabled: bool = True
+class TagsMlflow(_PrefixSuffix):
+    """Configure how extra tags are set in the MLflow run."""
+
+    enabled: bool = pydantic.Field(default=True, description="Enable setting extra tags in MLflow run.")
 
     def apply(self, data: dict) -> dict:
         return super().apply(dicts.filter_empty_leaves(data))
 
 
-class _Tags(pydantic.BaseModel):
-    report: bool = False
-    values: dict = {}
-    mlflow: _TagsMlflow = _TagsMlflow(enabled=True)
+class Tags(pydantic.BaseModel):
+    """Configure extra tags."""
+
+    report: bool = pydantic.Field(
+        default=False,
+        description="Include extra tags in session report file.",
+    )
+    values: dict = pydantic.Field(
+        default_factory=dict,
+        description="Extra tags dict. See :attr:`mlopus.mlflow.schema.Run.tags`",
+    )
+    mlflow: TagsMlflow = pydantic.Field(
+        default=TagsMlflow(enabled=True),
+        description="Configure how extra tags are set in the MLflow run.",
+    )
 
 
-class _LogFile(pydantic.BaseModel):
-    path: str
-    alias: str = None
-    cleanup: bool = True
+class LogFile(pydantic.BaseModel):
+    """Log file settings."""
+
+    path: str = pydantic.Field(description="Path to local log file.")
+    alias: str = pydantic.Field(default=None, description="File alias when uploading.")
+    cleanup: bool = pydantic.Field(default=True, description="Clear file contents before the first pipeline runs.")
 
     @classmethod
     def parse_obj(cls, *args, **kwargs):
@@ -90,16 +158,18 @@ class _LogFile(pydantic.BaseModel):
         return super().parse_obj(*args, **kwargs)
 
 
-class _Logs(pydantic.BaseModel):
-    enabled: bool = True
-    path: str = "logs"
-    files: List[_LogFile] = []
+class Logs(pydantic.BaseModel):
+    """Configure how to track logs."""
+
+    enabled: bool = pydantic.Field(default=True, description="Upload logs to MLflow run.")
+    path: str = pydantic.Field(default="logs", description="Path to logs dir inside run artifacts.")
+    files: List[LogFile] = pydantic.Field(default_factory=list, description="Local log files to upload.")
 
     @pydantic.root_validator(pre=True)  # noqa
     @classmethod
     def _parse_files(cls, values: dict) -> dict:
         """Parse file paths into `_LogFile` objects."""
-        values["files"] = [_LogFile.parse_obj(file) for file in values.get("files", [])]
+        values["files"] = [LogFile.parse_obj(file) for file in values.get("files", [])]
         return values
 
 
@@ -116,14 +186,27 @@ class _ParamMapping(pydantic.BaseModel):
         return super().parse_obj(*args, **kwargs)
 
 
-class _ParamsMlflow(_PrefixSuffix):
-    enabled: bool = True
+class ParamsMlflow(_PrefixSuffix):
+    """Configure how to log collected params in the MLflow run."""
+
+    enabled: bool = pydantic.Field(default=True, description="Log collected params in MLflow run.")
 
 
-class _Params(pydantic.BaseModel):
-    report: bool = True
-    mappings: Dict[str, List[_ParamMapping]] = {}
-    mlflow: _ParamsMlflow = _ParamsMlflow(enabled=True)
+class Params(pydantic.BaseModel):
+    """Configure the collection of MLflow params."""
+
+    report: bool = pydantic.Field(default=True, description="Include collected params in session report file.")
+    mappings: Dict[str, List[_ParamMapping]] = pydantic.Field(
+        default_factory=dict,
+        description=(
+            "A mapping of target metric keys to arbitrary paths inside the Kedro configuration from where the params "
+            "for those keys will be obtained. Example: ``sampling_ratio: parameters.sampler.ratio``"
+        ),
+    )
+    mlflow: ParamsMlflow = pydantic.Field(
+        default=ParamsMlflow(enabled=True),
+        description="Configure how to log collected params in the MLflow run.",
+    )
 
     @pydantic.root_validator(pre=True)  # noqa
     @classmethod
@@ -140,15 +223,3 @@ class _Params(pydantic.BaseModel):
             dicts.set_nested(params, mapping.tgt.split("."), dicts.get_nested(conf, mapping.src.split(".")))
 
         return params
-
-
-class _TrackerSettings(pydantic.BaseModel):
-    logs: _Logs = _Logs(enabled=True)
-    report: _Report = _Report(enabled=True)
-    tags: _Tags = _Tags(report=False)
-    metrics: _Metrics = _Metrics(report=False)
-    params: _Params = _Params(enable=False)
-    overrides: _Overrides = _Overrides(report=False)
-    config: _Config = _Config(report=False)
-    nodes: _Nodes = _Nodes(report=True)
-    datasets: _Datasets = _Datasets(report=True)

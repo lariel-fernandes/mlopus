@@ -2,8 +2,9 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TypeVar, Generic, Any, Type, Dict
 
-import mlopus
 from kedro.io import AbstractDataset
+
+import mlopus
 from mlopus.artschema import helpers, Dumper, Loader, Schema
 from mlopus.mlflow.api.entity import EntityApi
 from mlopus.mlflow.api.exp import ExpApi
@@ -32,9 +33,14 @@ class SchemaSubject(mlopus.mlflow.MlflowApiMixin, pydantic.ExcludeEmptyMixin, AB
 
 
 class ExpSubject(SchemaSubject[ExpApi]):
-    """Looks for artifact schema alias in experiment tags (defaults to parent experiment of Kedro session run)."""
+    """Specifies an experiment as subject for artifact schema inferrence."""
 
-    exp_name: str
+    exp_name: str = pydantic.Field(
+        description=(
+            "Experiment name. "
+            "Defaults to the experiment used in the :attr:`~mlopus.kedro.ArtifactSchemaDataset.run_manager`"
+        ),
+    )
 
     def with_defaults(self, exp_name: str | None = None, **__) -> "ExpSubject":
         """Complement eventually missing fields in schema subject using the provided defaults."""
@@ -47,9 +53,11 @@ class ExpSubject(SchemaSubject[ExpApi]):
 
 
 class RunSubject(SchemaSubject[RunApi]):
-    """Looks for artifact schema alias in run and parent experiment tags (defaults to Kedro session run)."""
+    """Specifies a run as subject for artifact schema inferrence."""
 
-    run_id: str
+    run_id: str = pydantic.Field(
+        description="Run ID. Defaults to the run used in the :attr:`~mlopus.kedro.ArtifactSchemaDataset.run_manager`",
+    )
 
     def with_defaults(self, run_id: str | None = None, **__) -> "RunSubject":
         """Complement eventually missing fields in schema subject using the provided defaults."""
@@ -62,10 +70,10 @@ class RunSubject(SchemaSubject[RunApi]):
 
 
 class ModelSubject(SchemaSubject[ModelApi | ModelVersionApi]):
-    """Looks for artifact schema alias in model version and parent model tags (version is optional)."""
+    """Specifies a registered model or model version as subject for artifact schema inferrence."""
 
-    model_name: str
-    model_version: str | None = None
+    model_name: str = pydantic.Field(description="Registered model name.")
+    model_version: str | None = pydantic.Field(default=None, description="Model version.")
 
     def resolve(self, **__) -> ModelApi | ModelVersionApi:
         model = self.mlflow_api.get_model(self.model_name)
@@ -96,15 +104,87 @@ class ArtifactSchemaDataset(
     AbstractDataset[A, A],
     Generic[A, D, L],
 ):
-    """Dump/Load artifact using inferred or explicitly specified artifact schema."""
+    """Saves/loads data using inferred or explicitly specified artifact schema.
 
-    path: Path
-    overwrite: bool = True
-    skip_reqs_check: bool = pydantic.Field(False, exclude=True)
-    subject: SchemaSubject = pydantic.Field(None, exclude=True)
-    schema_: str | None | Schema[A, D, L] | Type[Schema[A, D, L]] = pydantic.Field(alias="schema", exclude=True)
-    dumper: dict | D | None = None
-    loader: dict | L | None = None
+    See also:
+        - :mod:`mlopus.artschema`
+
+    Usage with explicit schema
+    ==========================
+
+        .. code-block:: yaml
+
+            # conf/<env>/catalog.yml
+            model:
+                type: mlopus.kedro.ArtifactSchemaDataset
+                path: data/model
+                schema: my_package.artschema:TorchModelSchema  # fully qualified class name
+
+    Usage with inferred schema
+    ==========================
+
+    1. Register the schema in the model's tags (also valid for experiments, runs and model versions):
+
+        .. code-block:: python
+
+            import mlopus
+
+            mlopus.artschema.Tags() \\
+                .with(
+                    my_package.artschema.TorchModelSchema,
+                    aliased_as="torch_model",
+                ) \\
+                .register(
+                    mlopus.mlflow.get_api().get_or_create_model("my_lang_model")
+                )
+
+    2. Reference the schema by alias:
+
+        .. code-block:: yaml
+
+            # conf/<env>/catalog.yml
+            model:
+                type: mlopus.kedro.ArtifactSchemaDataset
+                path: data/model
+                schema: torch_model                   # Get schema with this alias
+                subject: {model_name: my_lang_model}  # from this model's tags
+                mlflow: ${globals:mlflow}             # using this MLflow API handle.
+    """
+
+    path: Path = pydantic.Field(description="Target path for saving/loading artifact file or dir.")
+
+    overwrite: bool = pydantic.Field(default=True, description="Overwrite :attr:`path` if exists.")
+
+    skip_reqs_check: bool = pydantic.Field(
+        default=False,
+        description="See :paramref:`~mlopus.artschema.load_artifact.skip_reqs_check`",
+    )
+
+    subject: ExpSubject | RunSubject | ModelSubject | None = pydantic.Field(
+        default=None,
+        exclude=True,
+        description=(
+            "If :attr:`schema_` is an alias to a previously registered artifact schema, load the respective "
+            "schema class from this subject's tags. See also :meth:`~mlopus.artschema.Tags.parse_subject`."
+        ),
+    )
+
+    schema_: str | None | Schema[A, D, L] | Type[Schema[A, D, L]] = pydantic.Field(
+        exclude=True,
+        alias="schema",
+        description="See :paramref:`~mlopus.artschema.load_artifact.schema`",
+    )
+
+    dumper: dict | D | None = pydantic.Field(
+        default=None,
+        description="See :paramref:`~mlopus.artschema.Schema.get_dumper.dumper`",
+    )
+
+    loader: dict | L | None = pydantic.Field(
+        default=None,
+        description="See :paramref:`~mlopus.artschema.Schema.get_loader.loader`",
+    )
+
     schema_info: SchemaInfo = None
 
     _parse_subject = pydantic.validator("subject", pre=True, allow_reuse=True)(_parse_subject)

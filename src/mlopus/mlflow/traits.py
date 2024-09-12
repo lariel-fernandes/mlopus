@@ -35,7 +35,8 @@ class MlflowApiMixin(pydantic.BaseModel):
         exclude=True,
         default=None,
         description=(
-            "Instance of :class:`BaseMlflowApi` or a `dict` of keyword arguments for :func:`mlopus.mlflow.get_api`."
+            "Instance of :class:`~mlopus.mlflow.BaseMlflowApi` "
+            "or a `dict` of keyword arguments for :func:`mlopus.mlflow.get_api`."
         ),
     )
 
@@ -69,9 +70,9 @@ class RunConf(pydantic.BaseModel, pydantic.EmptyStrAsMissing):
 class MlflowRunManager(MlflowApiMixin):
     """A pydantic object that holds a reference to an ongoing MLflow Run.
 
-    1. If `run.id` is given, that run is resumed.
-    2. Otherwise, an ongoing run is searched for in `exp.name` with `run.tags`
-    3. If none can be found, a new one is started in `exp.name` with `run.tags`
+    1. If ``run.id`` is given, that run is resumed.
+    2. Otherwise, an ongoing run is searched for in ``exp.name`` containing ``run.tags``
+    3. If none can be found, a new run is started in ``exp.name`` containing ``run.tags``
 
     Example:
 
@@ -92,7 +93,13 @@ class MlflowRunManager(MlflowApiMixin):
         # Accessing the cached property `run` triggers the resume/search/creation of the run.
     """
 
-    mlflow_api: BaseMlflowApi = pydantic.Field(exclude=True, alias="api")
+    mlflow_api: BaseMlflowApi = pydantic.Field(
+        alias="api",
+        exclude=True,
+        description=(
+            "Instance of :class:`BaseMlflowApi` or a `dict` of keyword arguments for :func:`mlopus.mlflow.get_api`."
+        ),
+    )
 
     exp: ExpConf = pydantic.Field(
         default_factory=ExpConf,
@@ -136,4 +143,8 @@ class MlflowRunManager(MlflowApiMixin):
 class MlflowRunMixin(pydantic.BaseModel):
     """Mixin for pydantic classes that hold a reference to a `MlflowRunManager`."""
 
-    run_manager: MlflowRunManager | None = pydantic.Field(exclude=True, alias="mlflow")
+    run_manager: MlflowRunManager | None = pydantic.Field(
+        exclude=True,
+        alias="mlflow",
+        description="Instance or dict to be parsed into instance of :class:`~mlopus.mlflow.MlflowRunManager`",
+    )

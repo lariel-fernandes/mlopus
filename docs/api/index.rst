@@ -14,6 +14,7 @@ As a starting point for learning MLOpus we highly recommend looking at the `tuto
 
    rst/mlflow/index
    rst/artschema/index
+   rst/kedro/index
 
 .. toctree::
    :maxdepth: 1
