@@ -3,7 +3,9 @@ from typing import Iterable, Any
 
 from kedro.config import MissingConfigException
 from kedro.config.omegaconf_config import OmegaConfigLoader
+
 from mlopus.utils import dicts
+from .config_resolvers import DictResolver
 
 
 class MlopusConfigLoader(OmegaConfigLoader):
@@ -63,7 +65,7 @@ class MlopusConfigLoader(OmegaConfigLoader):
         runtime_params: dict[str, Any] | None = None,
         *,
         config_patterns: dict[str, list[str]] | None = None,
-        base_env: str | None = None,
+        base_env: str = "base",
         default_run_env: str | None = None,
         custom_resolvers: dict[str, typing.Callable] | None = None,
         merge_strategy: dict[str, str] | None = None,
@@ -80,6 +82,11 @@ class MlopusConfigLoader(OmegaConfigLoader):
             custom_resolvers=custom_resolvers,
             merge_strategy=merge_strategy,
         )
+
+        # Register extra scopes as config resolvers
+        for scope in self.config_patterns:
+            if scope not in ("globals", "catalog", "parameters", "credentials"):
+                DictResolver(self, prefix=scope).register(scope)
 
         # Enforce that runtime params (overrides) specify one of the available config scopes
         for scope in self.runtime_params:
