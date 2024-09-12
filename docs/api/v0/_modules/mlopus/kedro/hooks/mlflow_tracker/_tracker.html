@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.kedro.hooks.mlflow_tracker._tracker &mdash; MLOpus 0.3.1 documentation</title>
+  <title>mlopus.kedro.hooks.mlflow_tracker._tracker &mdash; MLOpus 0.3.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
@@ -110,7 +110,13 @@
 <div class="viewcode-block" id="MetricsMlflow"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow">[docs]</a><span class="k">class</span> <span class="nc">MetricsMlflow</span><span class="p">(</span><span class="n">_PrefixSuffix</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to log metrics in the MLflow run.&quot;&quot;&quot;</span>
 
-    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Log metrics in the MLflow run.&quot;</span><span class="p">)</span></div>
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Log metrics in the MLflow run.&quot;</span><span class="p">)</span>
+    <span class="n">prepend_dataset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Prepend dataset name to metric keys.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_dataset</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">dicts</span><span class="o">.</span><span class="n">deep_merge</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Metrics"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Metrics">[docs]</a><span class="k">class</span> <span class="nc">Metrics</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -177,13 +183,7 @@
 <div class="viewcode-block" id="DatasetsMlflow"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow">[docs]</a><span class="k">class</span> <span class="nc">DatasetsMlflow</span><span class="p">(</span><span class="n">_PrefixSuffixRuleSet</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure how to store dataset settings in MLFlow run params.&quot;&quot;&quot;</span>
 
-    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Store dataset settings in MLflow run params.&quot;</span><span class="p">)</span>
-    <span class="n">prepend_dataset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Prepend dataset name to metric keys.&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_dataset</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">dicts</span><span class="o">.</span><span class="n">deep_merge</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Store dataset settings in MLflow run params.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Datasets"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/tracker.html#mlopus.kedro.hooks.mlflow_tracker.Datasets">[docs]</a><span class="k">class</span> <span class="nc">Datasets</span><span class="p">(</span><span class="n">_RuleSet</span><span class="p">):</span>
