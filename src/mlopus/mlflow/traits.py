@@ -61,6 +61,7 @@ class RunConf(pydantic.BaseModel, pydantic.EmptyStrAsMissing):
 
     id: str | None = pydantic.Field(default=None, description="Run ID for resuming a previous run.")
     name: str | None = pydantic.Field(default=None, description="Run name for starting a new run.")
+    parent: str | None = pydantic.Field(default=None, description="Parent run ID for starting a new run.")
     tags: dicts.AnyDict = pydantic.Field(
         default_factory=dict,
         description="Run tags for starting a new run or finding an ongoing one.",
@@ -135,7 +136,7 @@ class MlflowRunManager(MlflowApiMixin):
         for run in self.mlflow_api.find_runs(query, sorting=[("start_time", -1)]):
             return run.resume()
 
-        run = self.mlflow_api.start_run(exp, self.run_conf.name, self.run_conf.tags)
+        run = self.mlflow_api.start_run(exp, self.run_conf.name, self.run_conf.tags, parent=self.run_conf.parent)
         logger.info("MLflow Run URL: %s", run.url)
         return run
 
