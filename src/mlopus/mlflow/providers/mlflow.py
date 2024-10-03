@@ -365,8 +365,12 @@ class MlflowApi(BaseMlflowApi):
         ),
     )
 
-    healthcheck: bool | None = pydantic.Field(
-        default=None, description="If true, eagerly attempt connection to the server after initialization."
+    healthcheck: bool = pydantic.Field(
+        default=True,
+        description=(
+            "If true and not in :attr:`~mlopus.mlflow.BaseMlflowApi.offline_mode`, "
+            "eagerly attempt connection to the server after initialization."
+        ),
     )
 
     client_settings: Dict[str, str | int] = pydantic.Field(
@@ -413,21 +417,13 @@ class MlflowApi(BaseMlflowApi):
         values["tracking_uri"] = str(urls.parse_url(raw_url, resolve_if_local=True))
         return values
 
-    @pydantic.root_validator  # noqa
-    @classmethod
-    def _default_healthcheck(cls, values: dicts.AnyDict) -> dicts.AnyDict:
-        """Default to False if on offline mode, otherwise to True."""
-        if values.get("healthcheck") is None:
-            values["healthcheck"] = not values["offline_mode"]
-        return values
-
     def __init__(self, **kwargs):
         """Let the query push down use the same data translator as the API."""
         super().__init__(**kwargs)
         if self.query_push_down.data_translation is None:
             self.query_push_down.data_translation = self.data_translation
 
-        if self.healthcheck:
+        if self.healthcheck and not self.offline_mode:
             with self._client() as cli:
                 cli.healthcheck()
 
@@ -497,7 +493,7 @@ class MlflowApi(BaseMlflowApi):
             run=run,
             model=model,
             path_in_run=path_in_run,
-            version=native_mv.version,
+            version=str(native_mv.version),
             tags=self.data_translation.deprocess_tags(native_mv.tags),
         )
 
