@@ -7,7 +7,7 @@ import os
 import sys
 from typing import Mapping
 
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 sys.path.insert(0, os.path.abspath("../../src"))
 
