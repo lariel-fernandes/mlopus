@@ -2,9 +2,8 @@ import sys
 from abc import ABC
 from typing import Generic, TypeVar
 
-import pydantic as pydantic_v2
+import pydantic
 import pytest
-from pydantic import v1 as pydantic_v1
 
 import mlopus
 
@@ -77,33 +76,14 @@ def test_type_param_inference():
 
 sys.path.append("examples/1_introduction/code/my-schemas")
 
-from my_schemas import foobar as _FoobarV1  # noqa
+from my_schemas import foobar  # noqa
 
 
-class _FoobarV2:
-    """Patch of `foobar` artifact schema from example 1, but using Pydantic V2 for the artifact class."""
-
-    class Artifact(pydantic_v2.BaseModel):
-        some_data: dict[str, str]
-
-    class Dumper(_FoobarV1.Dumper[Artifact]):
-        pass
-
-    class Loader(_FoobarV1.Loader[Artifact, Dumper]):
-        def _load(self, path, dumper):
-            original = super()._load(path, dumper)  # noqa
-            return _FoobarV2.Artifact(some_data=original.some_data)
-
-    class Schema(_FoobarV1.Schema[Artifact, Dumper, Loader]):
-        pass
-
-
-@pytest.mark.parametrize("module,pydantic", [(_FoobarV1, pydantic_v1), (_FoobarV2, pydantic_v2)])
-def test_schema(temp_dir, module, pydantic):
+def test_schema(temp_dir):
     data = {"some_data": {"foo": "bar"}}
-    artifact = module.Artifact.parse_obj(data)  # noqa
-    schema: mlopus.artschema.Schema = module.Schema()
-    custom_loader: mlopus.artschema.Loader = module.Loader(max_files=0)
+    artifact = foobar.Artifact.model_validate(data)
+    schema: mlopus.artschema.Schema = foobar.Schema()
+    custom_loader: mlopus.artschema.Loader = foobar.Loader(max_files=0)
 
     with temp_dir() as tmp:
         stg = tmp / "stg"  # temporary staging dir
@@ -137,7 +117,7 @@ def test_schema(temp_dir, module, pydantic):
         # Load with custom loader conf (max_files=0)
         assert schema.get_loader(**custom_loader.dict())(stg).some_data == {}
 
-        class _DictLoader(module.Loader):
+        class _DictLoader(foobar.Loader):
             def _load(self, path, dumper) -> dict:
                 return super()._load(path, dumper).dict()  # noqa
 
