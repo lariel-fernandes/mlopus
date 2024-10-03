@@ -1,20 +1,20 @@
 import functools
 import inspect
 from collections.abc import Mapping
-from typing import Any, Type, TypeVar, Dict, Union
+from typing import Any, Type, TypeVar, Dict
 
-from pydantic import BaseModel as _BaseModelLatest  # Pyantic v1 or v2 BaseModel (whichever is installed)
-from pydantic.v1 import (
-    BaseModel as _BaseModelV1,  # Pydantic V1 BaseModel (not patched)
+from pydantic import (
+    BaseModel as _BaseModel,
     create_model,
     fields,
     Field,
-    validator,
-    root_validator,
+    field_validator,
+    model_validator,
     ValidationError,
     types,
-    validate_arguments as _validate_arguments,
+    validate_call,
 )
+from typing_extensions import Self
 
 from mlopus.utils import typing_utils, common
 
@@ -28,17 +28,31 @@ __all__ = [
     "Field",
     "validator",
     "root_validator",
+    "field_validator",
+    "model_validator",
     "ValidationError",
 ]
 
-ConfigType = Union[Type[Any], Dict[str, Any], None]  # Class config type
+P = TypeVar("P", bound=_BaseModel)  # Any type of `BaseModel` (patched or not)
 
-P = TypeVar("P", _BaseModelV1, _BaseModelLatest)  # Any type of `BaseModel` (v1 or v2, patched or not)
-
-ModelLike = Mapping | _BaseModelV1 | _BaseModelLatest  # Anything that can be parsed into a `BaseModel`
+ModelLike = Mapping | _BaseModel  # Anything that can be parsed into a `BaseModel`
 
 
-class BaseModel(_BaseModelV1):
+def root_validator(*args, **kwargs):
+    if not kwargs and len(args) == 1:
+        return root_validator()(args[0])
+    kwargs.pop("allow_reuse", None)
+    kwargs.setdefault("mode", "before" if kwargs.pop("pre", False) else "after")
+    return model_validator(*args, **kwargs)
+
+
+def validator(field: str, *args, **kwargs):
+    kwargs.pop("allow_reuse", None)
+    kwargs.setdefault("mode", "before" if kwargs.pop("pre", False) else "after")
+    return field_validator(field, *args, **kwargs)
+
+
+class BaseModel(_BaseModel):
     """Patch for pydantic BaseModel."""
 
     class Config:
@@ -46,16 +60,18 @@ class BaseModel(_BaseModelV1):
 
         repr_empty: bool = True  # If `False`, skip fields with empty values in representation
         arbitrary_types_allowed = True  # Fixes: RuntimeError: no validator found for <class '...'>
-        keep_untouched = (functools.cached_property,)  # Fixes: TypeError: cannot pickle '_thread.RLock' object
+        ignored_types = (functools.cached_property,)  # Fixes: TypeError: cannot pickle '_thread.RLock' object
+        protected_namespaces = ()  # Fixes: UserWarning: Field "model_*" has conflict with protected namespace "model_"
 
     def __repr__(self):
-        """Representation skips fields with `repr=False`."""
+        """Representation skips fields if:
+        - Field conf has `repr=False` or `exclude=True`.
+        - Field value is empty and class conf has `repr_empty=False`.
+        """
         args = [
             f"{k}={v}"  # noqa
-            for k, f in self.__fields__.items()
-            if f.field_info.repr
-            and not f.field_info.exclude
-            and (not common.is_empty(v := getattr(self, k)) or self.Config.repr_empty)
+            for k, f in self.model_fields.items()
+            if f.repr and not f.exclude and (not common.is_empty(v := getattr(self, k)) or self.Config.repr_empty)
         ]
         return "%s(%s)" % (self.__class__.__name__, ", ".join(args))
 
@@ -63,8 +79,17 @@ class BaseModel(_BaseModelV1):
         """String matches representation."""
         return repr(self)
 
+    def dict(self, *args, **kwargs):
+        """Replace deprecated `dict` with `model_dump`."""
+        return self.model_dump(*args, **kwargs)
 
-class EmptyStrAsMissing(_BaseModelV1):
+    @classmethod
+    def parse_obj(cls, obj: Any) -> Self:
+        """Replace deprecated `parse_obj` with `model_validate`."""
+        return cls.model_validate(obj)
+
+
+class EmptyStrAsMissing(_BaseModel):
     """Mixin for BaseModel."""
 
     @root_validator(pre=True)  # noqa
@@ -74,7 +99,7 @@ class EmptyStrAsMissing(_BaseModelV1):
         return {k: v for k, v in values.items() if v != ""}
 
 
-class EmptyDictAsMissing(_BaseModelV1):
+class EmptyDictAsMissing(_BaseModel):
     """Mixin for BaseModel."""
 
     @root_validator(pre=True)  # noqa
@@ -84,16 +109,16 @@ class EmptyDictAsMissing(_BaseModelV1):
         return {k: v for k, v in values.items() if v != {}}
 
 
-class ExcludeEmptyMixin(_BaseModelV1):
+class ExcludeEmptyMixin(_BaseModel):
     """Mixin for BaseModel."""
 
-    def dict(self, **kwargs) -> dict:
+    def model_dump(self, **kwargs) -> dict:
         """Ignores empty fields when serializing to dict."""
         kwargs["exclude"] = kwargs.get("exclude") or {}
-        for field in self.__fields__:
+        for field in self.model_fields:
             if common.is_empty(getattr(self, field)):
                 kwargs["exclude"][field] = True
-        return super().dict(**kwargs)
+        return super().model_dump(**kwargs)
 
 
 class HashableMixin:
@@ -114,7 +139,7 @@ class SignatureMixin:
         return super().__getattribute__(attr)
 
 
-class MappingMixin(_BaseModelV1, Mapping):
+class MappingMixin(_BaseModel, Mapping):
     """Mixin that allows passing BaseModel instances as kwargs with the '**' operator.
 
     Example:
@@ -135,13 +160,30 @@ class MappingMixin(_BaseModelV1, Mapping):
         super().__init__(**kwargs)
 
     def __iter__(self):
-        return iter(self.__fields__)
+        return iter(self.model_fields)
 
     def __getitem__(self, __key):
         return getattr(self, __key)
 
     def __len__(self):
-        return len(self.__fields__)
+        return len(self.model_fields)
+
+
+class BaseParamsMixin(_BaseModel):
+    """Mixin for BaseModel that stores a mapping of parameterized generic bases and their respective type args."""
+
+    @classmethod
+    def __pydantic_init_subclass__(cls, **kwargs):
+        cls.__parameterized_bases__ = dict(typing_utils.iter_parameterized_bases(cls))
+
+    @classmethod
+    def _find_base_param(cls, of_base: type, at_pos: int, as_type_of: Type[T] | None = None) -> Type[T]:
+        for base, params in cls.__parameterized_bases__.items():
+            if issubclass(base, of_base):
+                break
+        else:
+            raise TypeError(f"Cannot find parameterized base of type {of_base}")
+        return typing_utils.as_type(params[at_pos], of=as_type_of, strict=True)
 
 
 def create_model_from_data(
@@ -179,7 +221,7 @@ def force_set_attr(obj, key: str, val: Any):
 
 def is_model_cls(type_: type) -> bool:
     """Check if type is pydantic base model."""
-    return typing_utils.safe_issubclass(type_, _BaseModelV1) or typing_utils.safe_issubclass(type_, _BaseModelLatest)
+    return typing_utils.safe_issubclass(type_, _BaseModel)
 
 
 def is_model_obj(obj: Any) -> bool:
@@ -197,25 +239,18 @@ def as_model_obj(obj: Any) -> P | None:
     return obj if is_model_obj(obj) else None
 
 
-def parse_config(config: Type[Any] | Dict[str, Any] | None) -> Type[Any]:
-    """Parse argument into model config class."""
-    if isinstance(config := config or {}, dict):
-        config = type("Config", (), config)
-    return config
-
-
-def validate_arguments(_func: callable = None, *, config: ConfigType = None):
+def validate_arguments(_func: callable = None, *, config: Dict[str, Any] = None):
     """Patch of `validate_arguments` that allows skipping the return type validation.
 
     Return type validation is turned off by default when the function's
     return type is a string alias to a type that hasn't been defined yet.
     """
+    config = config or {}
+
     if _func is None:
         return functools.partial(validate_arguments, config=config)
 
-    config = parse_config(config)
-
-    if not getattr(config, "validate_return", not isinstance(_func.__annotations__.get("return"), str)):
+    if not config.get("validate_return", not isinstance(_func.__annotations__.get("return"), str)):
         _func.__annotations__.pop("return", None)
 
-    return _validate_arguments(config=config)(_func)
+    return validate_call(config=config)(_func)
