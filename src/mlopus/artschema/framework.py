@@ -87,7 +87,8 @@ class Dumper(pydantic.BaseModel, ABC, Generic[A]):
                                  conf file already exists in :paramref:`path`.
         """
         if path.is_file():
-            logger.warning("Artifact dump is not a directory, dumper conf file will not be saved.")
+            if self.dict():  # Do not warn if there's no conf to be saved
+                logger.warning("Artifact dump is not a directory, dumper conf file will not be saved.")
         elif path.is_dir():
             if (conf_path := path / self.Config.dumper_conf_file).exists():
                 if strict:
