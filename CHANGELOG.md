@@ -1,3 +1,11 @@
+## 0.3.3 (2024-10-03)
+
+### Fix
+
+- **artschema.framework**: skip warning when there's no dumper conf to be saved
+- **kedro.pipeline_factory**: accept mapping instead of config loader
+- **mlflow.traits**: allow passing parent run ID to run manager
+
 ## 0.3.2 (2024-09-12)
 
 ### Fix
