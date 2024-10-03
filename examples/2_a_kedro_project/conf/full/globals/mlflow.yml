@@ -12,8 +12,9 @@ mlflow:  # Arguments for `mlopus.mlflow.traits.MlflowRunManager`
 
   run:  # Arguments for `mlopus.mlflow.traits.RunConf`
 
-    id: ""  # Override this to resume a previous run. If specified, `name` and `tags` are not used.
+    id: ""  # Override this to resume a previous run. If specified, `name`, `tags` and `parent` are not used.
     name: ""  # Defaults to a random name (only used if `id` is not specified).
+    parent: ""  # Parent run ID for a new child run (only used if `id` is not specified).
     tags:  # Tags for finding or creating the shared MLflow run (only used if `id` is not specified).
       kedro:
         active_session:
