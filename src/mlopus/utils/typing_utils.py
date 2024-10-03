@@ -1,6 +1,6 @@
 import types
 import typing
-from typing import Any, TypeVar, Type, Callable, Set
+from typing import Any, TypeVar, Type, Tuple, Iterator
 
 T = TypeVar("T")  # Any type
 
@@ -28,15 +28,24 @@ def assert_issubclass(subject: Any, type_: type):
         raise TypeError(f"Expected a subclass of {type_}: {subject}")
 
 
-def as_type(subject: Any) -> type | None:
-    """If subject is a type, return it as it is. If it's a typing alias, return its origin. Otherwise, return None."""
-    if isinstance(subject, type):
-        return subject
+def as_type(subject: Any, of: Type[T] | None = None, strict: bool = False) -> Type[T] | type | None:
+    """Coerce subject to type."""
 
     if origin := typing.get_origin(subject):
-        return origin
+        subject = origin
 
-    return None
+    elif isinstance(subject, TypeVar) and (bound := subject.__bound__):
+        subject = bound
+
+    if not isinstance(subject, type):
+        if strict:
+            raise TypeError(f"Cannot coerce to type: {subject}")
+        return None
+
+    if of is not None and not issubclass(subject, of):
+        raise TypeError(f"Expected a subclass of {of}: {subject}")
+
+    return subject
 
 
 def safe_issubclass(subject: Any, bound: type) -> bool:
@@ -58,60 +67,26 @@ def safe_issubclass(subject: Any, bound: type) -> bool:
     return False
 
 
-def get_type_param(subject: type, bound: Type[T], pos: int, strict: bool) -> Type[T] | None:
-    """Extract type param at specified position."""
-    try:
-        param = typing.get_args(subject)[pos]
-    except IndexError:
-        if strict:
-            raise TypeError(f"No type param at position #{pos} in type {subject}")
-        return None
-
-    if isinstance(param, TypeVar):
-        param = param.__bound__ or param
-
-    if not safe_issubclass(param, bound):
-        raise TypeError(f"Expected a subclass of {bound}, found {param}")
-
-    return param
+def get_origin(subject: type) -> type:
+    """Get type origin from parameterized generic type (handles edge case for Pydantic v2)."""
+    if pgm := getattr(subject, "__pydantic_generic_metadata__", None):
+        return pgm["origin"]
+    else:
+        return typing.get_origin(subject)
 
 
-def iter_bases(cls: type, recursive: bool = False) -> Set[type]:
-    """Iterate all base types from a class."""
-    for base in getattr(as_type(cls), "__orig_bases__", []):
-        yield base
-        if recursive:
-            yield from iter_bases(base)
+def get_args(subject: type) -> Tuple[type, ...]:
+    """Get type param args from parameterized generic type (handles edge case for Pydantic v2)."""
+    if pgm := getattr(subject, "__pydantic_generic_metadata__", None):
+        return pgm["args"]
+    else:
+        return typing.get_args(subject)
 
 
-def find_bases(
-    cls: type,
-    filter_: Callable[[type], bool] | None = None,
-    _as_type: Type[T] | None = None,
-    min_: int | None = None,
-    max_: int | None = None,
-    recursive: bool = False,
-) -> Set[Type[T]]:
-    """Find base classes of `cls` that satisfy the filter."""
-    bases = {b for b in iter_bases(cls, recursive) if filter_ is None or filter_(b)}
-
-    if min_ is not None and len(bases) < min_ or max_ is not None and len(bases) > max_:
-        raise TypeError(
-            f"Expected at least {min_} and at most {max_} base classes of {cls} "
-            f"matching filter {filter_}, found {len(bases)}: {bases}"
-        )
-
-    if _as_type is not None:
-        bases = typing.cast(Set[_as_type], bases)
-
-    return bases
-
-
-def find_base(
-    cls: type,
-    filter_: Callable[[type], bool] | None = None,
-    _as_type: Type[T] | None = None,
-    recursive: bool = False,
-) -> Type[T]:
-    """Find the one base class of `cls` that satisfies the filter."""
-    return list(find_bases(cls, filter_, _as_type, min_=1, max_=1, recursive=recursive))[0]
+def iter_parameterized_bases(cls: type) -> Iterator[Tuple[type, Tuple[type, ...]]]:
+    """Iterate pairs of (type_origin, type_param_args) for all parameterized generic types in the class bases."""
+    for base in set(cls.__bases__).union([cls.__base__]):
+        if base is not None:
+            if args := get_args(base):
+                yield get_origin(base), args
+            yield from iter_parameterized_bases(base)
