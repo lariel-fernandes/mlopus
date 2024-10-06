@@ -5,7 +5,7 @@
 name = "mlOpus"
 version = "0.3.3"
 readme = "README.md"
-license = { text = "LGPL-3.0-or-later" }
+license = { text = "Apache-2.0" }
 description = "MLOps tools for research and development."
 authors = [{name = "Lariel Fernandes", email = "lariel.c2.fernandes@gmail.com"}]
 classifiers = [
@@ -17,7 +17,7 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "License :: OSI Approved :: Apache Software License",
 ]
 requires-python = ">=3.10,<4"
 dependencies = [
