@@ -25,7 +25,7 @@ dependencies = [
     "dacite             ~=1.5",
     "pyyaml             >=5,<7",
     "urllib3            ~=2.2",
-    "pydantic           >=1.10.17,<3",
+    "pydantic           ~=2.8",
     "packaging          >=22",
     "rclone-python      ~=0.1",
     "importlib-metadata >=6.8",
@@ -57,13 +57,13 @@ dev-dependencies = [
     "pytest-mock     ~=3.14",
     "pytest-coverage ~=0.0",
     "sphinx                    <7",
-    "autodoc-pydantic          <2",
+    "sphinx-toolbox            ~=3.8",
+    "autodoc-pydantic          ~=2.2",
     "sphinx-rtd-theme          ~=2.0",
     "sphinx-paramlinks         ~=0.6",
     "enum-tools[sphinx]        ~=0.12",
     "sphinx-code-include       ~=1.4",
     "sphinx-autodoc-typehints  ~=1.23",
-    "sphinx-toolbox>=3.8.0",
 ]
 
 # === Commitizen ==================================================================================

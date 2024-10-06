@@ -1,11 +1,9 @@
 version = 1
 requires-python = ">=3.10, <4"
-environment-markers = [
+resolution-markers = [
     "python_full_version < '3.11'",
     "python_full_version == '3.11.*'",
-    "python_full_version < '3.11'",
-    "python_full_version == '3.11.*'",
-    "python_full_version == '3.12.*'",
+    "python_full_version < '3.13'",
     "python_full_version >= '3.13'",
 ]
 
@@ -23,12 +21,12 @@ name = "aiohttp"
 version = "3.10.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "aiohappyeyeballs", marker = "python_full_version == '3.12.*'" },
-    { name = "aiosignal", marker = "python_full_version == '3.12.*'" },
-    { name = "attrs", marker = "python_full_version == '3.12.*'" },
-    { name = "frozenlist", marker = "python_full_version == '3.12.*'" },
-    { name = "multidict", marker = "python_full_version == '3.12.*'" },
-    { name = "yarl", marker = "python_full_version == '3.12.*'" },
+    { name = "aiohappyeyeballs" },
+    { name = "aiosignal" },
+    { name = "attrs" },
+    { name = "frozenlist" },
+    { name = "multidict" },
+    { name = "yarl" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/80/5e/42678cd8af232a01441b375b963a6c79943718a0cb9da90ab7e5ff14f1d3/aiohttp-3.10.4.tar.gz", hash = "sha256:23a5f97e7dd22e181967fb6cb6c3b11653b0fdbbc4bb7739d9b6052890ccab96", size = 7524267 }
 wheels = [
@@ -84,7 +82,7 @@ name = "aiosignal"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "frozenlist", marker = "python_full_version == '3.12.*'" },
+    { name = "frozenlist" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ae/67/0952ed97a9793b4958e5736f6d2b346b414a2cd63e82d05940032f45b32f/aiosignal-1.3.1.tar.gz", hash = "sha256:54cd96e15e1649b75d6c87526a6ff0b6c1b0dd3459f43d9ca11d48c339b68cfc", size = 19422 }
 wheels = [
@@ -1572,7 +1570,7 @@ wheels = [
 
 [[package]]
 name = "mlopus"
-version = "0.0.0"
+version = "0.3.3"
 source = { editable = "../../" }
 dependencies = [
     { name = "dacite" },
@@ -1587,7 +1585,6 @@ dependencies = [
 
 [package.optional-dependencies]
 kedro = [
-    { name = "click" },
     { name = "kedro" },
 ]
 mlflow = [
@@ -1599,16 +1596,15 @@ search = [
 
 [package.metadata]
 requires-dist = [
-    { name = "click", marker = "extra == 'kedro'", specifier = "~=8.1" },
     { name = "dacite", specifier = "~=1.5" },
     { name = "importlib-metadata", specifier = ">=6.8" },
     { name = "kedro", marker = "extra == 'kedro'", specifier = "~=0.19" },
     { name = "mlflow-skinny", marker = "extra == 'mlflow'", specifier = "~=2.9" },
     { name = "mongomock", marker = "extra == 'search'", specifier = "~=4.1" },
     { name = "packaging", specifier = ">=22" },
-    { name = "pydantic", specifier = "<3.0,>=1.10.17" },
+    { name = "pydantic", specifier = "~=2.8" },
     { name = "pytz", specifier = ">=2024" },
-    { name = "pyyaml", specifier = "~=6.0" },
+    { name = "pyyaml", specifier = ">=5,<7" },
     { name = "rclone-python", specifier = "~=0.1" },
     { name = "urllib3", specifier = "~=2.2" },
 ]
@@ -1616,13 +1612,21 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "annoy", specifier = "~=1.17" },
+    { name = "autodoc-pydantic", specifier = "~=2.2" },
     { name = "devtools", specifier = "~=0.12" },
+    { name = "enum-tools", extras = ["sphinx"], specifier = "~=0.12" },
     { name = "jupyter", specifier = "~=1.0" },
     { name = "numpy", specifier = "~=2.1" },
     { name = "pandas", specifier = "~=2.2" },
     { name = "pytest", specifier = "~=7.2" },
     { name = "pytest-coverage", specifier = "~=0.0" },
     { name = "pytest-mock", specifier = "~=3.14" },
+    { name = "sphinx", specifier = "<7" },
+    { name = "sphinx-autodoc-typehints", specifier = "~=1.23" },
+    { name = "sphinx-code-include", specifier = "~=1.4" },
+    { name = "sphinx-paramlinks", specifier = "~=0.6" },
+    { name = "sphinx-rtd-theme", specifier = "~=2.0" },
+    { name = "sphinx-toolbox", specifier = "~=3.8" },
     { name = "tzlocal", specifier = "~=5.2" },
 ]
 
@@ -1637,10 +1641,7 @@ dependencies = [
 
 [package.optional-dependencies]
 pipelines = [
-    { name = "mlopus" },
-    { name = "mlopus", extra = ["kedro"] },
-    { name = "mlopus", extra = ["mlflow"] },
-    { name = "mlopus", extra = ["search"] },
+    { name = "mlopus", extra = ["kedro", "mlflow", "search"] },
 ]
 
 [package.dev-dependencies]
@@ -1658,7 +1659,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "annoy", specifier = "~=1.17" },
-    { name = "mlopus", extras = ["kedro", "mlflow", "search"], marker = "extra == 'pipelines'", editable = "../../" },
+    { name = "mlopus", extras = ["mlflow", "kedro", "search"], marker = "extra == 'pipelines'", editable = "../../" },
     { name = "numpy", specifier = "~=1.26" },
 ]
 
@@ -3172,8 +3173,8 @@ name = "yarl"
 version = "1.9.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "idna", marker = "python_full_version == '3.12.*'" },
-    { name = "multidict", marker = "python_full_version == '3.12.*'" },
+    { name = "idna" },
+    { name = "multidict" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e0/ad/bedcdccbcbf91363fd425a948994f3340924145c2bc8ccb296f4a1e52c28/yarl-1.9.4.tar.gz", hash = "sha256:566db86717cf8080b99b58b083b773a908ae40f06681e87e589a976faf8246bf", size = 141869 }
 wheels = [

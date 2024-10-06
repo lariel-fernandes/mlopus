@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TypeVar, Generic, Type, Callable
 
-from mlopus.utils import pydantic, paths, typing_utils, json_utils
+from mlopus.utils import pydantic, paths, json_utils
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ A = TypeVar("A", bound=object)
 """Type of artifact"""
 
 
-class Dumper(pydantic.BaseModel, ABC, Generic[A]):
+class Dumper(pydantic.BaseModel, pydantic.BaseParamsMixin, ABC, Generic[A]):
     """Base class for artifact dumpers."""
 
     class Config(pydantic.BaseModel.Config):
@@ -103,7 +103,7 @@ class Dumper(pydantic.BaseModel, ABC, Generic[A]):
 
     def _pre_dump(self, artifact: A | dict) -> A:
         if isinstance(artifact, dict) and (model := pydantic.as_model_cls(self.Artifact)):
-            artifact = model.parse_obj(artifact)
+            artifact = model.model_validate(artifact)
         return artifact
 
     def _save_conf_to(self, path: Path):
@@ -126,8 +126,7 @@ class Dumper(pydantic.BaseModel, ABC, Generic[A]):
     @classmethod
     def _get_artifact_type(cls) -> Type[A]:
         """Infer artifact type used by this dumper."""
-        base = typing_utils.find_base(cls, lambda b: typing_utils.safe_issubclass(b, Dumper))
-        return typing_utils.get_type_param(base, object, pos=0, strict=True)
+        return cls._find_base_param(of_base=Dumper, at_pos=0, as_type_of=object)
 
 
 class _DummyDumper(Dumper[object]):
@@ -144,7 +143,7 @@ D = TypeVar("D", bound=Dumper)
 """Type of :class:`Dumper`"""
 
 
-class Loader(pydantic.BaseModel, ABC, Generic[A, D]):
+class Loader(pydantic.BaseModel, pydantic.BaseParamsMixin, ABC, Generic[A, D]):
     """Base class for artifact loaders."""
 
     # =======================================================================================================
@@ -193,7 +192,7 @@ class Loader(pydantic.BaseModel, ABC, Generic[A, D]):
 
     def _post_load(self, artifact: A | dict) -> A:
         if isinstance(artifact, dict) and (model := pydantic.as_model_cls(self.Artifact)):
-            artifact = model.parse_obj(artifact)
+            artifact = model.model_validate(artifact)
         return artifact
 
     def _load_dumper(self, path: Path) -> D:
@@ -232,15 +231,13 @@ class Loader(pydantic.BaseModel, ABC, Generic[A, D]):
 
     @classmethod
     def _get_artifact_type(cls) -> Type[A]:
-        """Infer artifact type used by this schema."""
-        base = typing_utils.find_base(cls, lambda b: typing_utils.safe_issubclass(b, Loader))
-        return typing_utils.get_type_param(base, object, pos=0, strict=True)
+        """Infer artifact type used by this loader."""
+        return cls._find_base_param(of_base=Loader, at_pos=0, as_type_of=object)
 
     @classmethod
     def _get_dumper_type(cls) -> Type[D]:
-        """Infer dumper class used by this schema."""
-        base = typing_utils.find_base(cls, lambda b: typing_utils.safe_issubclass(b, Loader))
-        return typing_utils.get_type_param(base, Dumper, pos=1, strict=True)
+        """Infer dumper class used by this loader."""
+        return cls._find_base_param(of_base=Loader, at_pos=1, as_type_of=Dumper)
 
 
 class _DummyLoader(Loader[object, _DummyDumper]):
@@ -254,7 +251,7 @@ L = TypeVar("L", bound=Loader)
 """Type of :class:`Loader`"""
 
 
-class Schema(pydantic.BaseModel, Generic[A, D, L]):
+class Schema(pydantic.BaseModel, pydantic.BaseParamsMixin, Generic[A, D, L]):
     """Base class for artifact schemas.
 
     Serves for putting together the types of :class:`Artifact`, :class:`Dumper` and :class:`Loader`.
@@ -404,20 +401,17 @@ class Schema(pydantic.BaseModel, Generic[A, D, L]):
     @classmethod
     def _get_artifact_type(cls) -> Type[A]:
         """Infer artifact type used by this schema."""
-        base = typing_utils.find_base(cls, lambda b: typing_utils.safe_issubclass(b, Schema))
-        return typing_utils.get_type_param(base, object, pos=0, strict=True)
+        return cls._find_base_param(of_base=Schema, at_pos=0, as_type_of=object)
 
     @classmethod
     def _get_dumper_type(cls) -> Type[D]:
         """Infer dumper class used by this schema."""
-        base = typing_utils.find_base(cls, lambda b: typing_utils.safe_issubclass(b, Schema))
-        return typing_utils.get_type_param(base, Dumper, pos=1, strict=True)
+        return cls._find_base_param(of_base=Schema, at_pos=1, as_type_of=Dumper)
 
     @classmethod
     def _get_loader_type(cls) -> Type[L]:
         """Infer loader class used by this schema."""
-        base = typing_utils.find_base(cls, lambda b: typing_utils.safe_issubclass(b, Schema))
-        return typing_utils.get_type_param(base, Loader, pos=2, strict=True)
+        return cls._find_base_param(of_base=Schema, at_pos=2, as_type_of=Loader)
 
 
 class _DummySchema(Schema[object, _DummyDumper, _DummyLoader]):

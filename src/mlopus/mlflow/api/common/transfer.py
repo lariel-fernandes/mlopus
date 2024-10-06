@@ -27,12 +27,10 @@ class FileTransfer(pydantic.BaseModel):
     prog_bar: bool = True
     tool: Any = "rclone_python.rclone"
 
-    @pydantic.root_validator  # noqa
-    @classmethod
-    def _find_tool(cls, values: dict) -> dict:
-        if isinstance(tool := values.get("tool"), str):
-            values["tool"] = import_utils.find_attr(tool)
-        return values
+    @pydantic.root_validator
+    def _find_tool(self):
+        self.tool = import_utils.find_attr(self.tool) if isinstance(self.tool, str) else self.tool
+        return self
 
     def ls(self, url: urls.UrlLike) -> LsResult:
         """If `url` is a dir, list the objects in it. If it's a file, return the file metadata."""

@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
+from typing import TypeVar, Generic
 
 import mlopus
-import pydantic.v1 as pydantic
-from typing import TypeVar, Generic
+import pydantic
 
 
 class Artifact(pydantic.BaseModel):

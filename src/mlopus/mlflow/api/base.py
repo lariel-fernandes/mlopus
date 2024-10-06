@@ -42,7 +42,7 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         so multiple API instances can coexist in the same program if necessary.
     """
 
-    cache_dir: Path = pydantic.Field(
+    cache_dir: Path | None = pydantic.Field(
         default=None,
         description=(
             "Root path for cached artifacts and metadata. "
@@ -120,7 +120,7 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
     @property
     def in_offline_mode(self) -> "BaseMlflowApi":
         """Get an offline copy of this API."""
-        return self.copy(update={"offline_mode": True})
+        return self.model_copy(update={"offline_mode": True})
 
     # =======================================================================================================
     # === Metadata cache locators ===========================================================================
@@ -858,7 +858,7 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         if paths.is_sub_dir(target, self.cache_dir) or paths.is_sub_dir(self.cache_dir, target):
             raise paths.IllegalPath(f"Cannot export cache to itself, its subdirs or parents: {target}")
         cache = self._get_run_artifact(run, path_in_run)
-        target = self.copy(update={"cache_dir": target})._get_run_artifact_cache_path(run, path_in_run)
+        target = self.model_copy(update={"cache_dir": target})._get_run_artifact_cache_path(run, path_in_run)
         paths.place_path(cache, target, mode="copy", overwrite=True)
         paths.rchmod(target, paths.Mode.rwx)  # Exported caches are not write-protected
         return target

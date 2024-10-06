@@ -16,9 +16,9 @@ A = TypeVar("A", bound=Artifact)
 class Dumper(mlopus.artschema.Dumper[A], Generic[A]):
     """Dumps and verifies files for `AnnModel`."""
 
-    index_file = "index.bin"
-    labels_file = "labels.npy"
-    params_file = "params.json"
+    index_file: str = "index.bin"
+    labels_file: str = "labels.npy"
+    params_file: str = "params.json"
 
     def _dump(self, path: Path, artifact: A) -> None:
         path.mkdir()

@@ -69,7 +69,10 @@ class RunSubject(SchemaSubject[RunApi]):
         return self.mlflow_api.get_run(self.run_id or default_run_id)
 
 
-class ModelSubject(SchemaSubject[ModelApi | ModelVersionApi]):
+M = TypeVar("M", ModelApi, ModelVersionApi)  # Type of subject API for `ModelSubject`
+
+
+class ModelSubject(SchemaSubject[M]):
     """Specifies a registered model or model version as subject for artifact schema inferrence."""
 
     model_name: str = pydantic.Field(description="Registered model name.")
@@ -88,7 +91,7 @@ def _parse_subject(subj: ExpSubject | RunSubject | ModelSubject | None) -> Schem
 class SchemaInfo(pydantic.BaseModel, pydantic.ExcludeEmptyMixin, Generic[A, D, L]):
     """Schema information for tracking purposes."""
 
-    cls: Type[Schema[A, D, L]]
+    cls: Type[Schema]
     alias: str | None
     subject: SchemaSubject | None = None
     reqs_checked: bool | None = None
@@ -169,7 +172,7 @@ class ArtifactSchemaDataset(
         ),
     )
 
-    schema_: str | None | Schema[A, D, L] | Type[Schema[A, D, L]] = pydantic.Field(
+    schema_: str | None | Schema | Type[Schema] = pydantic.Field(
         exclude=True,
         alias="schema",
         description="See :paramref:`~mlopus.artschema.load_artifact.schema`",
@@ -185,7 +188,7 @@ class ArtifactSchemaDataset(
         description="See :paramref:`~mlopus.artschema.Schema.get_loader.loader`",
     )
 
-    schema_info: SchemaInfo = None
+    schema_info: SchemaInfo | None = None
 
     _parse_subject = pydantic.validator("subject", pre=True, allow_reuse=True)(_parse_subject)
 
