@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MlflowArtifacts &mdash; MLOpus 0.3.3 documentation</title>
+  <title>MlflowArtifacts &mdash; MLOpus 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -125,9 +125,16 @@ a fully commented example covering all settings that can be customized in this h
 <dd><p>Configure outputs.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.MlflowArtifacts.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.MlflowArtifacts.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.MlflowArtifacts.run_manager">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MlflowRunManager</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'mlflow')</span></em><a class="headerlink" href="#mlopus.kedro.MlflowArtifacts.run_manager" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MlflowRunManager</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"> <span class="pre">[Required]</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'mlflow')</span></em><a class="headerlink" href="#mlopus.kedro.MlflowArtifacts.run_manager" title="Permalink to this definition"></a></dt>
 <dd><p>Instance or dict to be parsed into instance of <a class="reference internal" href="../../mlflow/traits.html#mlopus.mlflow.MlflowRunManager" title="mlopus.mlflow.MlflowRunManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowRunManager</span></code></a></p>
 </dd></dl>
 
@@ -183,6 +190,13 @@ a fully commented example covering all settings that can be customized in this h
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.pipelines">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pipelines</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.pipelines" title="Permalink to this definition"></a></dt>
 <dd><p>If specified, enable input for these pipelines only.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -255,6 +269,13 @@ a fully commented example covering all settings that can be customized in this h
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.pipelines">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pipelines</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.pipelines" title="Permalink to this definition"></a></dt>
 <dd><p>If specified, enable output for these pipelines only.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">

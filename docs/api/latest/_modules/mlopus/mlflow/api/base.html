@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.mlflow.api.base &mdash; MLOpus 0.3.3 documentation</title>
+  <title>mlopus.mlflow.api.base &mdash; MLOpus 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -123,7 +123,7 @@
 <span class="sd">        so multiple API instances can coexist in the same program if necessary.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">&quot;Root path for cached artifacts and metadata. &quot;</span>
@@ -201,7 +201,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">in_offline_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BaseMlflowApi&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an offline copy of this API.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;offline_mode&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;offline_mode&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 
     <span class="c1"># =======================================================================================================</span>
     <span class="c1"># === Metadata cache locators ===========================================================================</span>
@@ -939,7 +939,7 @@
         <span class="k">if</span> <span class="n">paths</span><span class="o">.</span><span class="n">is_sub_dir</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">)</span> <span class="ow">or</span> <span class="n">paths</span><span class="o">.</span><span class="n">is_sub_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">paths</span><span class="o">.</span><span class="n">IllegalPath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot export cache to itself, its subdirs or parents: </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_artifact</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cache_dir&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span><span class="o">.</span><span class="n">_get_run_artifact_cache_path</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cache_dir&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span><span class="o">.</span><span class="n">_get_run_artifact_cache_path</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span>
         <span class="n">paths</span><span class="o">.</span><span class="n">place_path</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;copy&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">paths</span><span class="o">.</span><span class="n">rchmod</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">paths</span><span class="o">.</span><span class="n">Mode</span><span class="o">.</span><span class="n">rwx</span><span class="p">)</span>  <span class="c1"># Exported caches are not write-protected</span>
         <span class="k">return</span> <span class="n">target</span></div>

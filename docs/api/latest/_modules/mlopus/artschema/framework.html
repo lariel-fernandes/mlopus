@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.artschema.framework &mdash; MLOpus 0.3.3 documentation</title>
+  <title>mlopus.artschema.framework &mdash; MLOpus 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -85,7 +85,7 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="n">typing_utils</span><span class="p">,</span> <span class="n">json_utils</span>
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="n">json_utils</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -93,13 +93,13 @@
 <span class="sd">&quot;&quot;&quot;Type of artifact&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="Dumper"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper">[docs]</a><span class="k">class</span> <span class="nc">Dumper</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">]):</span>
+<div class="viewcode-block" id="Dumper"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper">[docs]</a><span class="k">class</span> <span class="nc">Dumper</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">BaseParamsMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for artifact dumpers.&quot;&quot;&quot;</span>
 
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="o">.</span><span class="n">Config</span><span class="p">):</span>
+<div class="viewcode-block" id="Dumper.Config"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Dumper.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="o">.</span><span class="n">Config</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Class-level config.&quot;&quot;&quot;</span>
 
-        <span class="n">dumper_conf_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dumper_conf.json&quot;</span>
+        <span class="n">dumper_conf_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dumper_conf.json&quot;</span></div>
 
     <span class="c1"># =======================================================================================================</span>
     <span class="c1"># === Abstract methods ==================================================================================</span>
@@ -184,7 +184,7 @@
 
     <span class="k">def</span> <span class="nf">_pre_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model</span> <span class="o">:=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">as_model_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Artifact</span><span class="p">)):</span>
-            <span class="n">artifact</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+            <span class="n">artifact</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">artifact</span>
 
     <span class="k">def</span> <span class="nf">_save_conf_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
@@ -207,8 +207,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_artifact_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer artifact type used by this dumper.&quot;&quot;&quot;</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">find_base</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Dumper</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">get_type_param</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_find_base_param</span><span class="p">(</span><span class="n">of_base</span><span class="o">=</span><span class="n">Dumper</span><span class="p">,</span> <span class="n">at_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">as_type_of</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">_DummyDumper</span><span class="p">(</span><span class="n">Dumper</span><span class="p">[</span><span class="nb">object</span><span class="p">]):</span>
@@ -225,7 +224,7 @@
 <span class="sd">&quot;&quot;&quot;Type of :class:`Dumper`&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="Loader"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Loader">[docs]</a><span class="k">class</span> <span class="nc">Loader</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">]):</span>
+<div class="viewcode-block" id="Loader"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Loader">[docs]</a><span class="k">class</span> <span class="nc">Loader</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">BaseParamsMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for artifact loaders.&quot;&quot;&quot;</span>
 
     <span class="c1"># =======================================================================================================</span>
@@ -274,7 +273,7 @@
 
     <span class="k">def</span> <span class="nf">_post_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">A</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">model</span> <span class="o">:=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">as_model_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Artifact</span><span class="p">)):</span>
-            <span class="n">artifact</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+            <span class="n">artifact</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">artifact</span>
 
     <span class="k">def</span> <span class="nf">_load_dumper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">D</span><span class="p">:</span>
@@ -313,15 +312,13 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_artifact_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer artifact type used by this schema.&quot;&quot;&quot;</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">find_base</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Loader</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">get_type_param</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer artifact type used by this loader.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_find_base_param</span><span class="p">(</span><span class="n">of_base</span><span class="o">=</span><span class="n">Loader</span><span class="p">,</span> <span class="n">at_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">as_type_of</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_dumper_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">D</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer dumper class used by this schema.&quot;&quot;&quot;</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">find_base</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Loader</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">get_type_param</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">Dumper</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer dumper class used by this loader.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_find_base_param</span><span class="p">(</span><span class="n">of_base</span><span class="o">=</span><span class="n">Loader</span><span class="p">,</span> <span class="n">at_pos</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">as_type_of</span><span class="o">=</span><span class="n">Dumper</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">_DummyLoader</span><span class="p">(</span><span class="n">Loader</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="n">_DummyDumper</span><span class="p">]):</span>
@@ -335,7 +332,7 @@
 <span class="sd">&quot;&quot;&quot;Type of :class:`Loader`&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="Schema"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Schema">[docs]</a><span class="k">class</span> <span class="nc">Schema</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]):</span>
+<div class="viewcode-block" id="Schema"><a class="viewcode-back" href="../../../rst/artschema/framework.html#mlopus.artschema.framework.Schema">[docs]</a><span class="k">class</span> <span class="nc">Schema</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">BaseParamsMixin</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for artifact schemas.</span>
 
 <span class="sd">    Serves for putting together the types of :class:`Artifact`, :class:`Dumper` and :class:`Loader`.</span>
@@ -485,20 +482,17 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_artifact_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer artifact type used by this schema.&quot;&quot;&quot;</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">find_base</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Schema</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">get_type_param</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_find_base_param</span><span class="p">(</span><span class="n">of_base</span><span class="o">=</span><span class="n">Schema</span><span class="p">,</span> <span class="n">at_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">as_type_of</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_dumper_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">D</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer dumper class used by this schema.&quot;&quot;&quot;</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">find_base</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Schema</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">get_type_param</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">Dumper</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_find_base_param</span><span class="p">(</span><span class="n">of_base</span><span class="o">=</span><span class="n">Schema</span><span class="p">,</span> <span class="n">at_pos</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">as_type_of</span><span class="o">=</span><span class="n">Dumper</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_loader_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">L</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Infer loader class used by this schema.&quot;&quot;&quot;</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">find_base</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Schema</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">get_type_param</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">Loader</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_find_base_param</span><span class="p">(</span><span class="n">of_base</span><span class="o">=</span><span class="n">Schema</span><span class="p">,</span> <span class="n">at_pos</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">as_type_of</span><span class="o">=</span><span class="n">Loader</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">_DummySchema</span><span class="p">(</span><span class="n">Schema</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="n">_DummyDumper</span><span class="p">,</span> <span class="n">_DummyLoader</span><span class="p">]):</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.mlflow.providers.mlflow &mdash; MLOpus 0.3.3 documentation</title>
+  <title>mlopus.mlflow.providers.mlflow &mdash; MLOpus 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -446,8 +446,12 @@
         <span class="p">),</span>
     <span class="p">)</span>
 
-    <span class="n">healthcheck</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If true, eagerly attempt connection to the server after initialization.&quot;</span>
+    <span class="n">healthcheck</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;If true and not in :attr:`~mlopus.mlflow.BaseMlflowApi.offline_mode`, &quot;</span>
+            <span class="s2">&quot;eagerly attempt connection to the server after initialization.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="n">client_settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
@@ -494,21 +498,13 @@
         <span class="n">values</span><span class="p">[</span><span class="s2">&quot;tracking_uri&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">urls</span><span class="o">.</span><span class="n">parse_url</span><span class="p">(</span><span class="n">raw_url</span><span class="p">,</span> <span class="n">resolve_if_local</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">values</span>
 
-    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">root_validator</span>  <span class="c1"># noqa</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_default_healthcheck</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">dicts</span><span class="o">.</span><span class="n">AnyDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dicts</span><span class="o">.</span><span class="n">AnyDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Default to False if on offline mode, otherwise to True.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;healthcheck&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;healthcheck&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;offline_mode&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">values</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Let the query push down use the same data translator as the API.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_push_down</span><span class="o">.</span><span class="n">data_translation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">query_push_down</span><span class="o">.</span><span class="n">data_translation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">healthcheck</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">healthcheck</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">offline_mode</span><span class="p">:</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">cli</span><span class="p">:</span>
                 <span class="n">cli</span><span class="o">.</span><span class="n">healthcheck</span><span class="p">()</span>
 
@@ -578,7 +574,7 @@
             <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
             <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
             <span class="n">path_in_run</span><span class="o">=</span><span class="n">path_in_run</span><span class="p">,</span>
-            <span class="n">version</span><span class="o">=</span><span class="n">native_mv</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">native_mv</span><span class="o">.</span><span class="n">version</span><span class="p">),</span>
             <span class="n">tags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_translation</span><span class="o">.</span><span class="n">deprocess_tags</span><span class="p">(</span><span class="n">native_mv</span><span class="o">.</span><span class="n">tags</span><span class="p">),</span>
         <span class="p">)</span>
 

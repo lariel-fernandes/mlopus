@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.kedro.datasets.artschema &mdash; MLOpus 0.3.3 documentation</title>
+  <title>mlopus.kedro.datasets.artschema &mdash; MLOpus 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -150,7 +150,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span> <span class="ow">or</span> <span class="n">default_run_id</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ModelSubject"><a class="viewcode-back" href="../../../../rst/kedro/datasets/artschema.html#mlopus.kedro.ModelSubject">[docs]</a><span class="k">class</span> <span class="nc">ModelSubject</span><span class="p">(</span><span class="n">SchemaSubject</span><span class="p">[</span><span class="n">ModelApi</span> <span class="o">|</span> <span class="n">ModelVersionApi</span><span class="p">]):</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">ModelApi</span><span class="p">,</span> <span class="n">ModelVersionApi</span><span class="p">)</span>  <span class="c1"># Type of subject API for `ModelSubject`</span>
+
+
+<div class="viewcode-block" id="ModelSubject"><a class="viewcode-back" href="../../../../rst/kedro/datasets/artschema.html#mlopus.kedro.ModelSubject">[docs]</a><span class="k">class</span> <span class="nc">ModelSubject</span><span class="p">(</span><span class="n">SchemaSubject</span><span class="p">[</span><span class="n">M</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Specifies a registered model or model version as subject for artifact schema inferrence.&quot;&quot;&quot;</span>
 
     <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Registered model name.&quot;</span><span class="p">)</span>
@@ -169,7 +172,7 @@
 <span class="k">class</span> <span class="nc">SchemaInfo</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ExcludeEmptyMixin</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Schema information for tracking purposes.&quot;&quot;&quot;</span>
 
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span>
     <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="n">subject</span><span class="p">:</span> <span class="n">SchemaSubject</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">reqs_checked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -250,7 +253,7 @@
         <span class="p">),</span>
     <span class="p">)</span>
 
-    <span class="n">schema_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+    <span class="n">schema_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">Schema</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.load_artifact.schema`&quot;</span><span class="p">,</span>
@@ -266,7 +269,7 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;See :paramref:`~mlopus.artschema.Schema.get_loader.loader`&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">schema_info</span><span class="p">:</span> <span class="n">SchemaInfo</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">schema_info</span><span class="p">:</span> <span class="n">SchemaInfo</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">_parse_subject</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">validator</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">_parse_subject</span><span class="p">)</span>
 

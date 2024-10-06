@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MlflowTracker &mdash; MLOpus 0.3.3 documentation</title>
+  <title>MlflowTracker &mdash; MLOpus 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -177,9 +177,16 @@ a fully commented example covering all settings that can be customized in this h
 <dd><p>Configure how to track Kedro dataset settings.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.MlflowTracker.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.MlflowTracker.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.MlflowTracker.run_manager">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MlflowRunManager</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'mlflow')</span></em><a class="headerlink" href="#mlopus.kedro.MlflowTracker.run_manager" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MlflowRunManager</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"> <span class="pre">[Required]</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'mlflow')</span></em><a class="headerlink" href="#mlopus.kedro.MlflowTracker.run_manager" title="Permalink to this definition"></a></dt>
 <dd><p>Instance or dict to be parsed into instance of <a class="reference internal" href="../../mlflow/traits.html#mlopus.mlflow.MlflowRunManager" title="mlopus.mlflow.MlflowRunManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowRunManager</span></code></a></p>
 </dd></dl>
 
@@ -290,15 +297,22 @@ a fully commented example covering all settings that can be customized in this h
 <dd><p>Enable setting extra tags in MLflow run.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.prefix">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.prefix" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[str]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.prefix" title="Permalink to this definition"></a></dt>
 <dd><p>Prefix for every key.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.suffix">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.suffix" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[str]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.TagsMlflow.suffix" title="Permalink to this definition"></a></dt>
 <dd><p>Suffix for every key.</p>
 </dd></dl>
 
@@ -346,15 +360,22 @@ a fully commented example covering all settings that can be customized in this h
 <dd><p>Prepend dataset name to metric keys.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.prefix">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.prefix" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[str]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.prefix" title="Permalink to this definition"></a></dt>
 <dd><p>Prefix for every key.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.suffix">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.suffix" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[str]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.MetricsMlflow.suffix" title="Permalink to this definition"></a></dt>
 <dd><p>Suffix for every key.</p>
 </dd></dl>
 
@@ -396,15 +417,22 @@ a fully commented example covering all settings that can be customized in this h
 <dd><p>Log collected params in MLflow run.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.prefix">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.prefix" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[str]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.prefix" title="Permalink to this definition"></a></dt>
 <dd><p>Prefix for every key.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.suffix">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.suffix" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[str]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.ParamsMlflow.suffix" title="Permalink to this definition"></a></dt>
 <dd><p>Suffix for every key.</p>
 </dd></dl>
 
@@ -415,6 +443,13 @@ a fully commented example covering all settings that can be customized in this h
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.hooks.mlflow_tracker.</span></span><span class="sig-name descname"><span class="pre">Overrides</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/hooks/mlflow_tracker/_tracker.html#Overrides"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Overrides" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.Config" title="mlopus.kedro.hooks.mlflow_tracker._tracker.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a></p>
 <p>Configure how to track Kedro config overrides.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Overrides.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Overrides.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Overrides.report">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">report</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Overrides.report" title="Permalink to this definition"></a></dt>
@@ -458,6 +493,13 @@ a fully commented example covering all settings that can be customized in this h
 <dd><p>Configure how to store in MLflow run params. The <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.rules" title="mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.rules"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rules</span></code></a> and <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.scopes" title="mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.scopes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">scopes</span></code></a> defined in the <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.Config.mlflow" title="mlopus.kedro.hooks.mlflow_tracker.Config.mlflow"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mlflow</span></code></a> section will further narrow down the <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.Config.rules" title="mlopus.kedro.hooks.mlflow_tracker.Config.rules"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rules</span></code></a> and <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.Config.scopes" title="mlopus.kedro.hooks.mlflow_tracker.Config.scopes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">scopes</span></code></a> already defined here.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Config.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Config.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Config.scopes">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scopes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[str]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Config.scopes" title="Permalink to this definition"></a></dt>
@@ -481,6 +523,13 @@ a fully commented example covering all settings that can be customized in this h
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.enabled">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.enabled" title="Permalink to this definition"></a></dt>
 <dd><p>Store in MLflow run params.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.ConfigMlflow.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -538,6 +587,13 @@ a fully commented example covering all settings that can be customized in this h
 <dd><p>Configure how to store dataset settings in MLFlow run params.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Datasets.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Datasets.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Datasets.rules">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[Rule]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Datasets.rules" title="Permalink to this definition"></a></dt>
@@ -555,6 +611,13 @@ a fully commented example covering all settings that can be customized in this h
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.enabled">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.enabled" title="Permalink to this definition"></a></dt>
 <dd><p>Store dataset settings in MLflow run params.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.DatasetsMlflow.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -594,6 +657,13 @@ a fully commented example covering all settings that can be customized in this h
 <dd><p>Configure how to store in MLflow run params. The <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.rules" title="mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.rules"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rules</span></code></a> defined in the <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.Nodes.mlflow" title="mlopus.kedro.hooks.mlflow_tracker.Nodes.mlflow"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mlflow</span></code></a> section will further narrow down the <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_tracker.Nodes.rules" title="mlopus.kedro.hooks.mlflow_tracker.Nodes.rules"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rules</span></code></a> already defined here.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Nodes.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Nodes.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Nodes.rules">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[NodeRule]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Nodes.rules" title="Permalink to this definition"></a></dt>
@@ -611,6 +681,13 @@ a fully commented example covering all settings that can be customized in this h
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.enabled">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.enabled" title="Permalink to this definition"></a></dt>
 <dd><p>Store in MLflow run params.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.NodesMlflow.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -642,22 +719,29 @@ a fully commented example covering all settings that can be customized in this h
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Rule">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.hooks.mlflow_tracker.</span></span><span class="sig-name descname"><span class="pre">Rule</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/hooks/mlflow_tracker/_rules.html#Rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Rule" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRule</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]]</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRule[Tuple[str,</span> <span class="pre">dict]]</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Rule.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Rule.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Rule.effect">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">effect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code><span class="pre">[</span><code class="docutils literal notranslate"><span class="pre">'exclude-all'</span></code><span class="pre">,</span> <code class="docutils literal notranslate"><span class="pre">'include-only'</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Rule.effect" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">effect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Effect</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Rule.effect" title="Permalink to this definition"></a></dt>
 <dd><p>Rule effect: <code class="docutils literal notranslate"><span class="pre">exclude-all</span></code> matching keys or <code class="docutils literal notranslate"><span class="pre">include-only</span></code> matching keys.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Rule.keys">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Rule.keys" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[str]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Rule.keys" title="Permalink to this definition"></a></dt>
 <dd><p>Match rule if key is in list.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.Rule.expr">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Pattern</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Rule.expr" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[re.Pattern]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.Rule.expr" title="Permalink to this definition"></a></dt>
 <dd><p>Match rule if key matches any of these patterns.</p>
 </dd></dl>
 
@@ -666,7 +750,7 @@ a fully commented example covering all settings that can be customized in this h
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.NodeRule">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.hooks.mlflow_tracker.</span></span><span class="sig-name descname"><span class="pre">NodeRule</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/hooks/mlflow_tracker/_rules.html#NodeRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.NodeRule" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRule</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">_Node</span></code>]</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRule[_Node]</span></code></p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.NodeRule.keys">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'names')</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.NodeRule.keys" title="Permalink to this definition"></a></dt>
@@ -679,15 +763,22 @@ a fully commented example covering all settings that can be customized in this h
 <dd><p>Match rule if node has any of these tags.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.NodeRule.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.NodeRule.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.NodeRule.effect">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">effect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code><span class="pre">[</span><code class="docutils literal notranslate"><span class="pre">'exclude-all'</span></code><span class="pre">,</span> <code class="docutils literal notranslate"><span class="pre">'include-only'</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.NodeRule.effect" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">effect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Effect</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.NodeRule.effect" title="Permalink to this definition"></a></dt>
 <dd><p>Rule effect: <code class="docutils literal notranslate"><span class="pre">exclude-all</span></code> matching keys or <code class="docutils literal notranslate"><span class="pre">include-only</span></code> matching keys.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_tracker.NodeRule.expr">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Pattern</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.NodeRule.expr" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[re.Pattern]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_tracker.NodeRule.expr" title="Permalink to this definition"></a></dt>
 <dd><p>Match rule if key matches any of these patterns.</p>
 </dd></dl>
 
