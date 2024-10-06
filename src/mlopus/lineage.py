@@ -66,8 +66,8 @@ class _LineageInfo(pydantic.BaseModel, pydantic.ExcludeEmptyMixin):
         return lookup
 
     def add(self, arg: _LineageArg) -> "_LineageInfo":
-        for key, field in self.__fields__.items():
-            if isinstance(arg, field.field_info.extra.get("arg_type")):
+        for key, field in self.model_fields.items():
+            if isinstance(arg, field.json_schema_extra.get("arg_type")):
                 values = getattr(self, key).setdefault(arg.key, set())
                 if arg.val is not None:
                     values.add(arg.val)
