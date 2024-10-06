@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MlflowArtifacts &mdash; MLOpus 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Lineage" href="../../lineage.html" />
+    <link rel="prev" title="MlflowTracker" href="tracker.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Kedro Extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../session.html">Session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../config_loader.html">Config Loader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/index.html">Datasets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Hooks</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tracker.html">MlflowTracker</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">MlflowArtifacts</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.kedro.MlflowArtifacts"><code class="docutils literal notranslate"><span class="pre">MlflowArtifacts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput"><code class="docutils literal notranslate"><span class="pre">PipelineInput</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput"><code class="docutils literal notranslate"><span class="pre">PipelineOutput</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Kedro Extensions</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Hooks</a></li>
+      <li class="breadcrumb-item active">MlflowArtifacts</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/rst/kedro/hooks/artifacts.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mlopus.kedro.hooks.mlflow_artifacts">
+<span id="mlflowartifacts"></span><h1>MlflowArtifacts<a class="headerlink" href="#module-mlopus.kedro.hooks.mlflow_artifacts" title="Permalink to this heading"></a></h1>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.kedro.MlflowArtifacts">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.</span></span><span class="sig-name descname"><span class="pre">MlflowArtifacts</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/hooks/mlflow_artifacts.html#MlflowArtifacts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.MlflowArtifacts" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../mlflow/traits.html#mlopus.mlflow.MlflowRunMixin" title="mlopus.mlflow.traits.MlflowRunMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowRunMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">HookWithFactory</span></code></p>
+<p>Hook to set up inputs and collect outputs using MLflow artifacts.</p>
+<p>Find <a class="reference external" href="https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/full/parameters/hooks/mlflow_artifacts.yml">here</a>
+a fully commented example covering all settings that can be customized in this hook.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.MlflowArtifacts.collect_on_error">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">collect_on_error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.kedro.MlflowArtifacts.collect_on_error" title="Permalink to this definition"></a></dt>
+<dd><p>Collect available outputs if pipeline fails.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.MlflowArtifacts.inputs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput" title="mlopus.kedro.hooks.mlflow_artifacts.input.PipelineInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PipelineInput</span></code></a><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.MlflowArtifacts.inputs" title="Permalink to this definition"></a></dt>
+<dd><p>Configure inputs.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.MlflowArtifacts.outputs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">outputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput" title="mlopus.kedro.hooks.mlflow_artifacts.output.PipelineOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PipelineOutput</span></code></a><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.kedro.MlflowArtifacts.outputs" title="Permalink to this definition"></a></dt>
+<dd><p>Configure outputs.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.MlflowArtifacts.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.MlflowArtifacts.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.MlflowArtifacts.run_manager">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MlflowRunManager</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"> <span class="pre">[Required]</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'mlflow')</span></em><a class="headerlink" href="#mlopus.kedro.MlflowArtifacts.run_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Instance or dict to be parsed into instance of <a class="reference internal" href="../../mlflow/traits.html#mlopus.mlflow.MlflowRunManager" title="mlopus.mlflow.MlflowRunManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowRunManager</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.hooks.mlflow_artifacts.</span></span><span class="sig-name descname"><span class="pre">PipelineInput</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/hooks/mlflow_artifacts/input.html#PipelineInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../artschema/specs.html#mlopus.artschema.LoadArtifactSpec" title="mlopus.artschema.specs.LoadArtifactSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadArtifactSpec</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">EmptyStrAsMissing</span></code></p>
+<p>Specification of an artifact to be fetched from MLFlow and placed before a pipeline runs.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.place_run_artifact" title="mlopus.mlflow.BaseMlflowApi.place_run_artifact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.mlflow.BaseMlflowApi.place_run_artifact()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.place_model_artifact" title="mlopus.mlflow.BaseMlflowApi.place_model_artifact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.mlflow.BaseMlflowApi.place_model_artifact()</span></code></a></p></li>
+</ul>
+</div>
+<ul class="simple">
+<li><p>If <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.schema_" title="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.schema_"><code class="xref py py-attr docutils literal notranslate"><span class="pre">schema_</span></code></a> is specified, it is used to verify the artifact after placing it.</p></li>
+<li><p><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.subject" title="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.subject"><code class="xref py py-attr docutils literal notranslate"><span class="pre">subject</span></code></a> and <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.skip_reqs_check" title="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.skip_reqs_check"><code class="xref py py-attr docutils literal notranslate"><span class="pre">skip_reqs_check</span></code></a> are used if <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.schema_" title="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.schema_"><code class="xref py py-attr docutils literal notranslate"><span class="pre">schema_</span></code></a> is an alias.</p></li>
+</ul>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.path">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.path" title="Permalink to this definition"></a></dt>
+<dd><p>Local path to place the artifact file or dir.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.link">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">link</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.link" title="Permalink to this definition"></a></dt>
+<dd><p>Place artifact file or dir as a symbolic link to the artifacts cache. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, make a copy instead.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.enabled">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.enabled" title="Permalink to this definition"></a></dt>
+<dd><p>Enable this input.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.overwrite">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">overwrite</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.overwrite" title="Permalink to this definition"></a></dt>
+<dd><p>Overwrite <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.path" title="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code></a> if exists.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.log_lineage">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_lineage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.log_lineage" title="Permalink to this definition"></a></dt>
+<dd><p>Log lineage info in MLFlow run. See also <a class="reference internal" href="../../lineage.html#mlopus.lineage.Lineage" title="mlopus.lineage.Lineage"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlopus.lineage.Lineage</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.pipelines">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pipelines</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.pipelines" title="Permalink to this definition"></a></dt>
+<dd><p>If specified, enable input for these pipelines only.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.schema_">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Schema[A,</span> <span class="pre">D,</span> <span class="pre">L]</span> <span class="pre">|</span> <span class="pre">Type[Schema[A,</span> <span class="pre">D,</span> <span class="pre">L]]</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"> <span class="pre">[Optional]</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'schema')</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.schema_" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.load_artifact.params.schema" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.loader_conf">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loader_conf</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict[str,</span> <span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.loader_conf" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Schema.get_loader.params.loader" title="mlopus.artschema.Schema.get_loader"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">loader</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.skip_reqs_check">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">skip_reqs_check</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.skip_reqs_check" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.load_artifact.params.skip_reqs_check" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">skip_reqs_check</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.subject">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subject</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ArtifactSubject[T,</span> <span class="pre">LA]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.subject" title="Permalink to this definition"></a></dt>
+<dd><p>Instance (or <cite>dict</cite> to be parsed into instance) of <a class="reference internal" href="../../artschema/specs.html#mlopus.artschema.RunArtifact" title="mlopus.artschema.RunArtifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunArtifact</span></code></a> or <a class="reference internal" href="../../artschema/specs.html#mlopus.artschema.ModelVersionArtifact" title="mlopus.artschema.ModelVersionArtifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionArtifact</span></code></a>. See also: <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.load_artifact.params.subject" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">subject</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.mlflow_api">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mlflow_api</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseMlflowApi</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.mlflow_api" title="Permalink to this definition"></a></dt>
+<dd><p>Instance of <a class="reference internal" href="../../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a> or a <cite>dict</cite> of keyword arguments for <a class="reference internal" href="../../mlflow/utils.html#mlopus.mlflow.get_api" title="mlopus.mlflow.get_api"><code class="xref py py-func docutils literal notranslate"><span class="pre">mlopus.mlflow.get_api()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.hooks.mlflow_artifacts.</span></span><span class="sig-name descname"><span class="pre">PipelineOutput</span></span><a class="reference internal" href="../../../_modules/mlopus/kedro/hooks/mlflow_artifacts/output.html#PipelineOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../artschema/specs.html#mlopus.artschema.LogArtifactSpec" title="mlopus.artschema.specs.LogArtifactSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogArtifactSpec</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">EmptyStrAsMissing</span></code></p>
+<p>Specification of an artifact to be collected and published to MLFlow after a pipeline runs.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.mlflow.BaseMlflowApi.log_run_artifact()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_model_version" title="mlopus.mlflow.BaseMlflowApi.log_model_version"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.mlflow.BaseMlflowApi.log_model_version()</span></code></a></p></li>
+</ul>
+</div>
+<ul class="simple">
+<li><p>If <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.schema_" title="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.schema_"><code class="xref py py-attr docutils literal notranslate"><span class="pre">schema_</span></code></a> is specified, it is used to verify the artifact before collecting it.</p></li>
+<li><p><a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.subject" title="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.subject"><code class="xref py py-attr docutils literal notranslate"><span class="pre">subject</span></code></a> and <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.skip_reqs_check" title="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.skip_reqs_check"><code class="xref py py-attr docutils literal notranslate"><span class="pre">skip_reqs_check</span></code></a> are used if <a class="reference internal" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.schema_" title="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.schema_"><code class="xref py py-attr docutils literal notranslate"><span class="pre">schema_</span></code></a> is an alias.</p></li>
+</ul>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.path">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to collect the artifact file or dir from.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.enabled">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.enabled" title="Permalink to this definition"></a></dt>
+<dd><p>Enable this output.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.log_lineage">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_lineage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.log_lineage" title="Permalink to this definition"></a></dt>
+<dd><p>Log lineage info in MLFlow run. See also <a class="reference internal" href="../../lineage.html#mlopus.lineage.Lineage" title="mlopus.lineage.Lineage"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlopus.lineage.Lineage</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.pipelines">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pipelines</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.pipelines" title="Permalink to this definition"></a></dt>
+<dd><p>If specified, enable output for these pipelines only.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.schema_">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Schema[A,</span> <span class="pre">D,</span> <span class="pre">L]</span> <span class="pre">|</span> <span class="pre">Type[Schema[A,</span> <span class="pre">D,</span> <span class="pre">L]]</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"> <span class="pre">[Optional]</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'schema')</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.schema_" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.load_artifact.params.schema" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.dumper_conf">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dumper_conf</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict[str,</span> <span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.dumper_conf" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/framework.html#mlopus.artschema.Schema.get_dumper.params.dumper" title="mlopus.artschema.Schema.get_dumper"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">dumper</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.skip_reqs_check">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">skip_reqs_check</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.skip_reqs_check" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.load_artifact.params.skip_reqs_check" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">skip_reqs_check</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.auto_register">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">auto_register</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.auto_register" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.log_run_artifact.params.auto_register" title="mlopus.artschema.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mlopus.artschema.log_run_artifact.auto_register</span></code></a> and <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.log_model_version.params.auto_register" title="mlopus.artschema.log_model_version"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mlopus.artschema.log_model_version.auto_register</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.keep_the_source">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">keep_the_source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.keep_the_source" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.keep_the_source" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">keep_the_source</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.allow_duplication">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">allow_duplication</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.allow_duplication" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.allow_duplication" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">allow_duplication</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.use_cache">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">use_cache</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.use_cache" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference internal" href="../../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.use_cache" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">use_cache</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.subject">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subject</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ArtifactSubject[T,</span> <span class="pre">LA]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.subject" title="Permalink to this definition"></a></dt>
+<dd><p>Instance (or <cite>dict</cite> to be parsed into instance) of <code class="xref py py-class docutils literal notranslate"><span class="pre">RunArtifact</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionArtifact</span></code>. See also: <a class="reference internal" href="../../artschema/helpers.html#mlopus.artschema.load_artifact.params.subject" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">subject</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.mlflow_api">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mlflow_api</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseMlflowApi</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineOutput.mlflow_api" title="Permalink to this definition"></a></dt>
+<dd><p>Instance of <a class="reference internal" href="../../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a> or a <cite>dict</cite> of keyword arguments for <a class="reference internal" href="../../mlflow/utils.html#mlopus.mlflow.get_api" title="mlopus.mlflow.get_api"><code class="xref py py-func docutils literal notranslate"><span class="pre">mlopus.mlflow.get_api()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tracker.html" class="btn btn-neutral float-left" title="MlflowTracker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../lineage.html" class="btn btn-neutral float-right" title="Lineage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schema &mdash; MLOpus 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Utilities" href="utils.html" />
+    <link rel="prev" title="MLflow" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">MLflow</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.mlflow.schema.RunStatus"><code class="docutils literal notranslate"><span class="pre">RunStatus</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.RunStatus.FAILED"><code class="docutils literal notranslate"><span class="pre">RunStatus.FAILED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.RunStatus.RUNNING"><code class="docutils literal notranslate"><span class="pre">RunStatus.RUNNING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.RunStatus.FINISHED"><code class="docutils literal notranslate"><span class="pre">RunStatus.FINISHED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.RunStatus.SCHEDULED"><code class="docutils literal notranslate"><span class="pre">RunStatus.SCHEDULED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.mlflow.schema.Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Experiment.id"><code class="docutils literal notranslate"><span class="pre">Experiment.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Experiment.name"><code class="docutils literal notranslate"><span class="pre">Experiment.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Experiment.Config"><code class="docutils literal notranslate"><span class="pre">Experiment.Config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Experiment.tags"><code class="docutils literal notranslate"><span class="pre">Experiment.tags</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.mlflow.schema.Run"><code class="docutils literal notranslate"><span class="pre">Run</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.id"><code class="docutils literal notranslate"><span class="pre">Run.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.name"><code class="docutils literal notranslate"><span class="pre">Run.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.exp"><code class="docutils literal notranslate"><span class="pre">Run.exp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.repo"><code class="docutils literal notranslate"><span class="pre">Run.repo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.params"><code class="docutils literal notranslate"><span class="pre">Run.params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.metrics"><code class="docutils literal notranslate"><span class="pre">Run.metrics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.status"><code class="docutils literal notranslate"><span class="pre">Run.status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.end_time"><code class="docutils literal notranslate"><span class="pre">Run.end_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.start_time"><code class="docutils literal notranslate"><span class="pre">Run.start_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.repo_url"><code class="docutils literal notranslate"><span class="pre">Run.repo_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.Config"><code class="docutils literal notranslate"><span class="pre">Run.Config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Run.tags"><code class="docutils literal notranslate"><span class="pre">Run.tags</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.mlflow.schema.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Model.name"><code class="docutils literal notranslate"><span class="pre">Model.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Model.Config"><code class="docutils literal notranslate"><span class="pre">Model.Config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.Model.tags"><code class="docutils literal notranslate"><span class="pre">Model.tags</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.mlflow.schema.ModelVersion"><code class="docutils literal notranslate"><span class="pre">ModelVersion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.ModelVersion.version"><code class="docutils literal notranslate"><span class="pre">ModelVersion.version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.ModelVersion.model"><code class="docutils literal notranslate"><span class="pre">ModelVersion.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.ModelVersion.run"><code class="docutils literal notranslate"><span class="pre">ModelVersion.run</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.ModelVersion.path_in_run"><code class="docutils literal notranslate"><span class="pre">ModelVersion.path_in_run</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.ModelVersion.Config"><code class="docutils literal notranslate"><span class="pre">ModelVersion.Config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.schema.ModelVersion.tags"><code class="docutils literal notranslate"><span class="pre">ModelVersion.tags</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apis/index.html">APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="providers/index.html">Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="traits.html">Traits</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../kedro/index.html">Kedro Extensions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">MLflow</a></li>
+      <li class="breadcrumb-item active">Schema</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/rst/mlflow/schema.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="schema">
+<h1>Schema<a class="headerlink" href="#schema" title="Permalink to this heading"></a></h1>
+<dl class="py class enum">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.RunStatus">
+<em class="property"><span class="pre">enum</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">RunStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.mlflow.schema.RunStatus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Run status values.</p>
+<p>Valid values are as follows:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.RunStatus.FAILED">
+<span class="sig-name descname"><span class="pre">FAILED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;RunStatus.FAILED:</span> <span class="pre">'FAILED'&gt;</span></em><a class="headerlink" href="#mlopus.mlflow.schema.RunStatus.FAILED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.RunStatus.RUNNING">
+<span class="sig-name descname"><span class="pre">RUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;RunStatus.RUNNING:</span> <span class="pre">'RUNNING'&gt;</span></em><a class="headerlink" href="#mlopus.mlflow.schema.RunStatus.RUNNING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.RunStatus.FINISHED">
+<span class="sig-name descname"><span class="pre">FINISHED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;RunStatus.FINISHED:</span> <span class="pre">'FINISHED'&gt;</span></em><a class="headerlink" href="#mlopus.mlflow.schema.RunStatus.FINISHED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.RunStatus.SCHEDULED">
+<span class="sig-name descname"><span class="pre">SCHEDULED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;RunStatus.SCHEDULED:</span> <span class="pre">'SCHEDULED'&gt;</span></em><a class="headerlink" href="#mlopus.mlflow.schema.RunStatus.SCHEDULED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Experiment">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><a class="headerlink" href="#mlopus.mlflow.schema.Experiment" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEntity</span></code></p>
+<p>Type of Experiment used by MLOpus in generic MLflow-compliant APIs.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Experiment.id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Experiment.id" title="Permalink to this definition"></a></dt>
+<dd><p>Experiment ID in the pattern <cite>[w-]+</cite></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Experiment.name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Experiment.name" title="Permalink to this definition"></a></dt>
+<dd><p>Experiment Name.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Experiment.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.mlflow.schema.Experiment.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Experiment.tags">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Experiment.tags" title="Permalink to this definition"></a></dt>
+<dd><p>Nested tags dict with JSON-serializable leaf-values and keys in the pattern: <cite>[w-/]+</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">Run</span></span><a class="headerlink" href="#mlopus.mlflow.schema.Run" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEntity</span></code></p>
+<p>Type of Run used by MLOpus in generic MLflow-compliant APIs.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.id" title="Permalink to this definition"></a></dt>
+<dd><p>Run ID in the pattern <cite>[w-]+</cite></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.name" title="Permalink to this definition"></a></dt>
+<dd><p>Run name.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.exp">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.mlflow.schema.Experiment" title="mlopus.mlflow.api.common.schema.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.exp" title="Permalink to this definition"></a></dt>
+<dd><p>Parent experiment.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.repo">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">repo</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.repo" title="Permalink to this definition"></a></dt>
+<dd><p>Artifacts repo URL.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.params">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.params" title="Permalink to this definition"></a></dt>
+<dd><p>Nested params dict with JSON-serializable leaf-values.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.metrics">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metrics</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.metrics" title="Permalink to this definition"></a></dt>
+<dd><p>Nested metrics dict with float leaf-values.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.status">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><a class="reference internal" href="#mlopus.mlflow.schema.RunStatus" title="mlopus.mlflow.api.common.schema.RunStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunStatus</span></code></a><span class="pre">]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.status" title="Permalink to this definition"></a></dt>
+<dd><p>Run status.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.end_time">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.end_time" title="Permalink to this definition"></a></dt>
+<dd><p>Start time in local timezone.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.start_time">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.start_time" title="Permalink to this definition"></a></dt>
+<dd><p>End time in local timezone.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.repo_url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">repo_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Url</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.repo_url" title="Permalink to this definition"></a></dt>
+<dd><p>Artifacts repo URL.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.mlflow.schema.Run.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Run.tags">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Run.tags" title="Permalink to this definition"></a></dt>
+<dd><p>Nested tags dict with JSON-serializable leaf-values and keys in the pattern: <cite>[w-/]+</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Model">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><a class="headerlink" href="#mlopus.mlflow.schema.Model" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEntity</span></code></p>
+<p>Type of registered Model used by MLOpus in generic MLflow-compliant APIs.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Model.name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Model.name" title="Permalink to this definition"></a></dt>
+<dd><p>Model vame in the pattern <cite>[w-./]+</cite></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Model.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.mlflow.schema.Model.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.Model.tags">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.Model.tags" title="Permalink to this definition"></a></dt>
+<dd><p>Nested tags dict with JSON-serializable leaf-values and keys in the pattern: <cite>[w-/]+</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.ModelVersion">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.schema.</span></span><span class="sig-name descname"><span class="pre">ModelVersion</span></span><a class="headerlink" href="#mlopus.mlflow.schema.ModelVersion" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEntity</span></code></p>
+<p>Type of ModelVersion used by MLOpus in generic MLflow-compliant APIs.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.ModelVersion.version">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.ModelVersion.version" title="Permalink to this definition"></a></dt>
+<dd><p>Model version in the pattern <cite>[w-.]+</cite></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.ModelVersion.model">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.mlflow.schema.Model" title="mlopus.mlflow.api.common.schema.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.ModelVersion.model" title="Permalink to this definition"></a></dt>
+<dd><p>Parent model.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.ModelVersion.run">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.mlflow.schema.Run" title="mlopus.mlflow.api.common.schema.Run"><code class="xref py py-class docutils literal notranslate"><span class="pre">Run</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.ModelVersion.run" title="Permalink to this definition"></a></dt>
+<dd><p>Parent run.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.ModelVersion.path_in_run">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_in_run</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.ModelVersion.path_in_run" title="Permalink to this definition"></a></dt>
+<dd><p>Path inside run artifacts.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.ModelVersion.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#mlopus.mlflow.schema.ModelVersion.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pydantic class config.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.schema.ModelVersion.tags">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict[str,</span> <span class="pre">Any]</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#mlopus.mlflow.schema.ModelVersion.tags" title="Permalink to this definition"></a></dt>
+<dd><p>Nested tags dict with JSON-serializable leaf-values and keys in the pattern: <cite>[w-/]+</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="MLflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="utils.html" class="btn btn-neutral float-right" title="Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

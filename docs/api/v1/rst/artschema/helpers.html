@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Helpers &mdash; MLOpus 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Specs &amp; Catalog" href="specs.html" />
+    <link rel="prev" title="Tags" href="tags.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Artifact Schemas</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="framework.html">Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tags.html">Tags</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.get_schemas"><code class="docutils literal notranslate"><span class="pre">get_schemas()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.get_schema"><code class="docutils literal notranslate"><span class="pre">get_schema()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.load_artifact"><code class="docutils literal notranslate"><span class="pre">load_artifact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.log_run_artifact"><code class="docutils literal notranslate"><span class="pre">log_run_artifact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.log_model_version"><code class="docutils literal notranslate"><span class="pre">log_model_version()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="specs.html">Specs &amp; Catalog</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../kedro/index.html">Kedro Extensions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Artifact Schemas</a></li>
+      <li class="breadcrumb-item active">Helpers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/rst/artschema/helpers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mlopus.artschema.helpers">
+<span id="helpers"></span><h1>Helpers<a class="headerlink" href="#module-mlopus.artschema.helpers" title="Permalink to this heading"></a></h1>
+<p>Utility functions for working with artifact schemas.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mlopus.artschema.get_schemas">
+<span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">get_schemas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/helpers.html#get_schemas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.get_schemas" title="Permalink to this definition"></a></dt>
+<dd><p>Parse artifact schema tags from <a class="reference internal" href="#mlopus.artschema.get_schemas.params.subject" title="mlopus.artschema.get_schemas"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">subject</span></code></a>.</p>
+<p>See also: <a class="reference internal" href="tags.html#mlopus.artschema.Tags.parse_subject" title="mlopus.artschema.Tags.parse_subject"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.artschema.Tags.parse_subject()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="mlopus.artschema.get_schemas.params.subject"></span><a class="paramname reference internal" href="#mlopus.artschema.get_schemas.params.subject"><strong>subject</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.get_schemas.params.subject">¶</a> (<a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.Experiment" title="mlopus.mlflow.api.common.schema.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a> | <a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.Run" title="mlopus.mlflow.api.common.schema.Run"><code class="xref py py-class docutils literal notranslate"><span class="pre">Run</span></code></a> | <a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.Model" title="mlopus.mlflow.api.common.schema.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> | <a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.ModelVersion" title="mlopus.mlflow.api.common.schema.ModelVersion"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersion</span></code></a>) – <div class="line-block">
+<div class="line">Experiment, run, model or model version.</div>
+</div>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="tags.html#mlopus.artschema.Tags" title="mlopus.artschema.tags.Tags"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tags</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mlopus.artschema.get_schema">
+<span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">get_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/helpers.html#get_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.get_schema" title="Permalink to this definition"></a></dt>
+<dd><p>Get artifact schema class specification from <a class="reference internal" href="#mlopus.artschema.get_schema.params.subject" title="mlopus.artschema.get_schema"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">subject</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.artschema.get_schema.params.subject"></span><a class="paramname reference internal" href="#mlopus.artschema.get_schema.params.subject"><strong>subject</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.get_schema.params.subject">¶</a> (<a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.Experiment" title="mlopus.mlflow.api.common.schema.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a> | <a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.Run" title="mlopus.mlflow.api.common.schema.Run"><code class="xref py py-class docutils literal notranslate"><span class="pre">Run</span></code></a> | <a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.Model" title="mlopus.mlflow.api.common.schema.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> | <a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.ModelVersion" title="mlopus.mlflow.api.common.schema.ModelVersion"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersion</span></code></a>) – <div class="line-block">
+<div class="line">Experiment, run, model or model version.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.get_schema.params.alias"></span><a class="paramname reference internal" href="#mlopus.artschema.get_schema.params.alias"><strong>alias</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.get_schema.params.alias">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – <div class="line-block">
+<div class="line">Alias of a previously registered schema for this <a class="reference internal" href="#mlopus.artschema.get_schema.params.subject" title="mlopus.artschema.get_schema"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">subject</span></code></a>.</div>
+<div class="line">Defaults to <cite>default</cite>.</div>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="tags.html#mlopus.artschema.ClassSpec" title="mlopus.artschema.tags.ClassSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassSpec</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mlopus.artschema.load_artifact">
+<span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">load_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader_conf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_reqs_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/helpers.html#load_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.load_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Load artifact of run or model version using schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.artschema.load_artifact.params.subject"></span><a class="paramname reference internal" href="#mlopus.artschema.load_artifact.params.subject"><strong>subject</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.load_artifact.params.subject">¶</a> (<a class="reference internal" href="../mlflow/apis/run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a> | <a class="reference internal" href="../mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a>) – <div class="line-block">
+<div class="line">Run or model version with API handle.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.load_artifact.params.path_in_run"></span><a class="paramname reference internal" href="#mlopus.artschema.load_artifact.params.path_in_run"><strong>path_in_run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.load_artifact.params.path_in_run">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.load_run_artifact.params.path_in_run" title="mlopus.mlflow.BaseMlflowApi.load_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mlopus.mlflow.BaseMlflowApi.load_run_artifact.path_in_run</span></code></a></div>
+<div class="line">If <a class="reference internal" href="#mlopus.artschema.load_artifact.params.subject" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">subject</span></code></a> is a model version, defaults to model name.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.load_artifact.params.schema"></span><a class="paramname reference internal" href="#mlopus.artschema.load_artifact.params.schema"><strong>schema</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.load_artifact.params.schema">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.framework.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.framework.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – <ul>
+<li><p>Type or instance of <a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a></p></li>
+<li><p>Fully qualified name of a <a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a> class (e.g.: <cite>package.module:Class</cite>)</p></li>
+<li><p>Alias of a schema previously registered for this run/model version or its parent experiment/model
+(see <a class="reference internal" href="tags.html#mlopus.artschema.Tags" title="mlopus.artschema.Tags"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlopus.artschema.Tags</span></code></a>).</p></li>
+</ul>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.load_artifact.params.loader_conf"></span><a class="paramname reference internal" href="#mlopus.artschema.load_artifact.params.loader_conf"><strong>loader_conf</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.load_artifact.params.loader_conf">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">L</span></code>, bound= <a class="reference internal" href="framework.html#mlopus.artschema.Loader" title="mlopus.artschema.framework.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a>), <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="framework.html#mlopus.artschema.Schema.get_loader.params.loader" title="mlopus.artschema.Schema.get_loader"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Schema.get_loader.loader</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.load_artifact.params.skip_reqs_check"></span><a class="paramname reference internal" href="#mlopus.artschema.load_artifact.params.skip_reqs_check"><strong>skip_reqs_check</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.load_artifact.params.skip_reqs_check">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – <div class="line-block">
+<div class="line">If <a class="reference internal" href="#mlopus.artschema.load_artifact.params.schema" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema</span></code></a> is specified by alias, ignore the registered package requirement.</div>
+<div class="line">See <a class="reference internal" href="tags.html#mlopus.artschema.ClassSpec.load" title="mlopus.artschema.ClassSpec.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.artschema.ClassSpec.load()</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.load_artifact.params.dry_run"></span><a class="paramname reference internal" href="#mlopus.artschema.load_artifact.params.dry_run"><strong>dry_run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.load_artifact.params.dry_run">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="framework.html#mlopus.artschema.Loader.load.params.dry_run" title="mlopus.artschema.Loader.load"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">dry_run</span></code></a></div>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>, bound= <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p>If <a class="reference internal" href="#mlopus.artschema.load_artifact.params.dry_run" title="mlopus.artschema.load_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">dry_run</span></code></a> is <cite>True</cite>: A <cite>Path</cite> to the cached artifact, after being verified.</p></li>
+<li><p>Otherwise: An instance of <a class="reference internal" href="framework.html#mlopus.artschema.Schema.Artifact" title="mlopus.artschema.Schema.Artifact"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Artifact</span></code></a></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mlopus.artschema.log_run_artifact">
+<span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">log_run_artifact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dumper_conf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_reqs_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_register</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_the_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplication</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/helpers.html#log_run_artifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.log_run_artifact" title="Permalink to this definition"></a></dt>
+<dd><p>Publish run artifact using schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.artifact"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.artifact"><strong>artifact</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.artifact">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>, bound= <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="framework.html#mlopus.artschema.Schema.get_dumper.params.artifact" title="mlopus.artschema.Schema.get_dumper"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Schema.get_dumper.artifact</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.run"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.run"><strong>run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.run">¶</a> (<a class="reference internal" href="../mlflow/apis/run.html#mlopus.mlflow.RunApi" title="mlopus.mlflow.api.run.RunApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunApi</span></code></a>) – <div class="line-block">
+<div class="line">Run API object.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.path_in_run"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.path_in_run"><strong>path_in_run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.path_in_run">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.path_in_run" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mlopus.mlflow.BaseMlflowApi.log_run_artifact.path_in_run</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.schema"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.schema"><strong>schema</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.schema">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.framework.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.framework.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – <ul>
+<li><p>Type or instance of <a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a></p></li>
+<li><p>Fully qualified name of a <a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a> class (e.g.: <cite>package.module:Class</cite>)</p></li>
+<li><p>Alias of a schema previously registered for this run or its parent experiment
+(see <a class="reference internal" href="tags.html#mlopus.artschema.Tags" title="mlopus.artschema.Tags"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlopus.artschema.Tags</span></code></a>).</p></li>
+</ul>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.dumper_conf"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.dumper_conf"><strong>dumper_conf</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.dumper_conf">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">D</span></code>, bound= <a class="reference internal" href="framework.html#mlopus.artschema.Dumper" title="mlopus.artschema.framework.Dumper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dumper</span></code></a>), <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="framework.html#mlopus.artschema.Schema.get_dumper.params.dumper" title="mlopus.artschema.Schema.get_dumper"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Schema.get_dumper.dumper</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.skip_reqs_check"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.skip_reqs_check"><strong>skip_reqs_check</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.skip_reqs_check">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – <div class="line-block">
+<div class="line">If <a class="reference internal" href="#mlopus.artschema.log_run_artifact.params.schema" title="mlopus.artschema.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema</span></code></a> is specified by alias, ignore the registered package requirement.</div>
+<div class="line">See <a class="reference internal" href="tags.html#mlopus.artschema.ClassSpec.load" title="mlopus.artschema.ClassSpec.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.artschema.ClassSpec.load()</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.auto_register"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.auto_register"><strong>auto_register</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.auto_register">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – <div class="line-block">
+<div class="line">After a successful <a class="reference internal" href="#mlopus.artschema.log_run_artifact.params.artifact" title="mlopus.artschema.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">artifact</span></code></a> publish, register the used <a class="reference internal" href="#mlopus.artschema.log_run_artifact.params.schema" title="mlopus.artschema.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema</span></code></a> in the <a class="reference internal" href="#mlopus.artschema.log_run_artifact.params.run" title="mlopus.artschema.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">run</span></code></a> tags.</div>
+<div class="line">If a non-empty <cite>dict</cite> is passed, it is used as keyword arguments for <a class="reference internal" href="tags.html#mlopus.artschema.Tags.using" title="mlopus.artschema.Tags.using"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Tags.using()</span></code></a>.</div>
+<div class="line">If the <a class="reference internal" href="#mlopus.artschema.log_run_artifact.params.schema" title="mlopus.artschema.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema</span></code></a> was specified by alias, that alias is used by default.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.keep_the_source"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.keep_the_source"><strong>keep_the_source</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.keep_the_source">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.keep_the_source" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">keep_the_source</span></code></a></div>
+</div>
+<p>(the <cite>source</cite> in this case is a callback, unless <a class="reference internal" href="#mlopus.artschema.log_run_artifact.params.artifact" title="mlopus.artschema.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">artifact</span></code></a> is a <cite>Path</cite>)</p>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.allow_duplication"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.allow_duplication"><strong>allow_duplication</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.allow_duplication">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.allow_duplication" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">allow_duplication</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_run_artifact.params.use_cache"></span><a class="paramname reference internal" href="#mlopus.artschema.log_run_artifact.params.use_cache"><strong>use_cache</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_run_artifact.params.use_cache">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.use_cache" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">use_cache</span></code></a></div>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mlopus.artschema.log_model_version">
+<span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">log_model_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_in_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dumper_conf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_reqs_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_register</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_the_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplication</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/helpers.html#log_model_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.log_model_version" title="Permalink to this definition"></a></dt>
+<dd><p>Log artifact as model version using schema.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mlflow</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">get_api</span><span class="p">()</span>
+
+<span class="n">version</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">artschema</span><span class="o">.</span><span class="n">log_model_version</span><span class="p">(</span>
+    <span class="n">my_artifact</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="n">MySchema</span><span class="p">,</span>
+    <span class="n">run</span><span class="o">=</span><span class="n">mlflow</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">mlflow</span><span class="o">.</span><span class="n">get_or_create_model</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+    <span class="n">auto_register</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;aliased_as&quot;</span><span class="p">:</span> <span class="s2">&quot;foobar&quot;</span><span class="p">}</span>  <span class="c1"># register `MySchema` as `foobar`</span>
+<span class="p">)</span>
+
+<span class="n">mlopus</span><span class="o">.</span><span class="n">artschema</span><span class="o">.</span><span class="n">load_artifact</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;foobar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.artifact"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.artifact"><strong>artifact</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.artifact">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">A</span></code>, bound= <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="framework.html#mlopus.artschema.Schema.get_dumper.params.artifact" title="mlopus.artschema.Schema.get_dumper"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Schema.get_dumper.artifact</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.model"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.model"><strong>model</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.model">¶</a> (<a class="reference internal" href="../mlflow/apis/model.html#mlopus.mlflow.ModelApi" title="mlopus.mlflow.api.model.ModelApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelApi</span></code></a>) – <div class="line-block">
+<div class="line">Model API object.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.run"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.run"><strong>run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.run">¶</a> (<a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.Run" title="mlopus.mlflow.api.common.schema.Run"><code class="xref py py-class docutils literal notranslate"><span class="pre">Run</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – <div class="line-block">
+<div class="line">Run API object.</div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.path_in_run"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.path_in_run"><strong>path_in_run</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.path_in_run">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_model_version.params.path_in_run" title="mlopus.mlflow.BaseMlflowApi.log_model_version"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mlopus.mlflow.BaseMlflowApi.log_model_version.path_in_run</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.schema"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.schema"><strong>schema</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.schema">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.framework.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.framework.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – <ul>
+<li><p>Type or instance of <a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a></p></li>
+<li><p>Fully qualified name of a <a class="reference internal" href="framework.html#mlopus.artschema.Schema" title="mlopus.artschema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a> class (e.g.: <cite>package.module:Class</cite>)</p></li>
+<li><p>Alias of a schema previously registered for this run or its parent experiment
+(see <a class="reference internal" href="tags.html#mlopus.artschema.Tags" title="mlopus.artschema.Tags"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlopus.artschema.Tags</span></code></a>).</p></li>
+</ul>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.dumper_conf"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.dumper_conf"><strong>dumper_conf</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.dumper_conf">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">D</span></code>, bound= <a class="reference internal" href="framework.html#mlopus.artschema.Dumper" title="mlopus.artschema.framework.Dumper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dumper</span></code></a>), <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="framework.html#mlopus.artschema.Schema.get_dumper.params.dumper" title="mlopus.artschema.Schema.get_dumper"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Schema.get_dumper.dumper</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.skip_reqs_check"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.skip_reqs_check"><strong>skip_reqs_check</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.skip_reqs_check">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – <div class="line-block">
+<div class="line">If <a class="reference internal" href="#mlopus.artschema.log_model_version.params.schema" title="mlopus.artschema.log_model_version"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema</span></code></a> is specified by alias, ignore the registered package requirement.</div>
+<div class="line">See <a class="reference internal" href="tags.html#mlopus.artschema.ClassSpec.load" title="mlopus.artschema.ClassSpec.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.artschema.ClassSpec.load()</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.auto_register"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.auto_register"><strong>auto_register</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.auto_register">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – <div class="line-block">
+<div class="line">After a successful <a class="reference internal" href="#mlopus.artschema.log_model_version.params.artifact" title="mlopus.artschema.log_model_version"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">artifact</span></code></a> publish, register the used <a class="reference internal" href="#mlopus.artschema.log_model_version.params.schema" title="mlopus.artschema.log_model_version"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">schema</span></code></a> in the new model version tags.</div>
+<div class="line">See also <a class="reference internal" href="#mlopus.artschema.log_run_artifact.params.auto_register" title="mlopus.artschema.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">log_run_artifact.auto_register</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.keep_the_source"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.keep_the_source"><strong>keep_the_source</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.keep_the_source">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.keep_the_source" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">keep_the_source</span></code></a></div>
+</div>
+<p>(the <cite>source</cite> in this case is a callback, unless <a class="reference internal" href="#mlopus.artschema.log_model_version.params.artifact" title="mlopus.artschema.log_model_version"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">artifact</span></code></a> is a <cite>Path</cite>)</p>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.allow_duplication"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.allow_duplication"><strong>allow_duplication</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.allow_duplication">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.allow_duplication" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">allow_duplication</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.use_cache"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.use_cache"><strong>use_cache</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.use_cache">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_run_artifact.params.use_cache" title="mlopus.mlflow.BaseMlflowApi.log_run_artifact"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">use_cache</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.version"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.version"><strong>version</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.version">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_model_version.params.version" title="mlopus.mlflow.BaseMlflowApi.log_model_version"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mlopus.mlflow.BaseMlflowApi.log_model_version.version</span></code></a></div>
+</div>
+</p></li>
+<li><p><span class="target" id="mlopus.artschema.log_model_version.params.tags"></span><a class="paramname reference internal" href="#mlopus.artschema.log_model_version.params.tags"><strong>tags</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.log_model_version.params.tags">¶</a> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>]) – <div class="line-block">
+<div class="line">See <a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi.log_model_version.params.version" title="mlopus.mlflow.BaseMlflowApi.log_model_version"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">mlopus.mlflow.BaseMlflowApi.log_model_version.version</span></code></a></div>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi" title="mlopus.mlflow.api.mv.ModelVersionApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionApi</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tags.html" class="btn btn-neutral float-left" title="Tags" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="specs.html" class="btn btn-neutral float-right" title="Specs &amp; Catalog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

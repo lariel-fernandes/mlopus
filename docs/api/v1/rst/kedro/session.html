@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session &mdash; MLOpus 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/my_theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Config Loader" href="config_loader.html" />
+    <link rel="prev" title="Kedro Extensions" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MLOpus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../mlflow/index.html">MLflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../artschema/index.html">Artifact Schemas</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Kedro Extensions</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Session</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.kedro.MlopusKedroSession"><code class="docutils literal notranslate"><span class="pre">MlopusKedroSession</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config_loader.html">Config Loader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets/index.html">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hooks/index.html">Hooks</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lineage.html">Lineage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLOpus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Kedro Extensions</a></li>
+      <li class="breadcrumb-item active">Session</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/rst/kedro/session.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mlopus.kedro.session">
+<span id="session"></span><h1>Session<a class="headerlink" href="#module-mlopus.kedro.session" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlopus.kedro.MlopusKedroSession">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.kedro.</span></span><span class="sig-name descname"><span class="pre">MlopusKedroSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_on_close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/kedro/session.html#MlopusKedroSession"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.kedro.MlopusKedroSession" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">KedroSession</span></code></p>
+<p>Patch of KedroSession.</p>
+<section id="enabling-the-patch">
+<h2>Enabling the patch<a class="headerlink" href="#enabling-the-patch" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &lt;your_package&gt;/settings.py</span>
+<span class="kn">from</span> <span class="nn">mlopus.kedro</span> <span class="kn">import</span> <span class="n">MlopusKedroSession</span>
+<span class="kn">from</span> <span class="nn">kedro.framework.session</span> <span class="kn">import</span> <span class="n">KedroSession</span>
+
+<span class="n">KedroSession</span><span class="o">.</span><span class="n">create</span> <span class="o">=</span> <span class="n">MlopusKedroSession</span><span class="o">.</span><span class="n">create</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="resolving-env-vars-and-session-store-details-in-config-files">
+<h2>Resolving env vars and session store details in config files<a class="headerlink" href="#resolving-env-vars-and-session-store-details-in-config-files" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># conf/&lt;env&gt;/parameters.yml</span>
+<span class="nt">my_env_var</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${env:MY_ENV_VAR,default}&quot;</span><span class="w">  </span><span class="c1"># resolve env var</span>
+<span class="nt">package_version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${session:pkg.version}&quot;</span><span class="w">  </span><span class="c1"># resolve session store details</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="lazy-evaluated-pipelines-with-direct-config-access">
+<h2>Lazy-evaluated pipelines with direct config access<a class="headerlink" href="#lazy-evaluated-pipelines-with-direct-config-access" title="Permalink to this heading"></a></h2>
+<p>In the following example, the function <cite>prepare_images</cite> will be called to build the
+pipeline from the config <strong>only</strong> when the respective pipeline is chosen for execution.</p>
+<p>If the node function <cite>SetImageContrast</cite> is a Pydantic BaseModel or has any other form of
+schema validation, the mapped configuration will be validated <strong>before</strong> the pipeline runs.</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &lt;your_package&gt;/pipeline_registry.py</span>
+<span class="kn">from</span> <span class="nn">mlopus.kedro</span> <span class="kn">import</span> <span class="n">pipeline_factory</span>
+
+<span class="k">def</span> <span class="nf">register_pipelines</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;e2e&quot;</span><span class="p">:</span> <span class="n">prepare_images</span><span class="p">}</span>
+
+<span class="nd">@pipeline_factory</span>
+<span class="k">def</span> <span class="nf">prepare_images</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Pipeline</span><span class="p">([</span>
+        <span class="n">node</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;set_contrast&quot;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="s2">&quot;original_images&quot;</span><span class="p">,</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;modified_images&quot;</span><span class="p">,</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">SetImageContrast</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span><span class="s2">&quot;contrast&quot;</span><span class="p">]),</span>
+        <span class="p">),</span>
+    <span class="p">])</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="lazy-evaluated-hooks-with-direct-config-access">
+<h2>Lazy-evaluated hooks with direct config access<a class="headerlink" href="#lazy-evaluated-hooks-with-direct-config-access" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &lt;your_package&gt;/settings.py</span>
+<span class="kn">from</span> <span class="nn">mlopus.kedro</span> <span class="kn">import</span> <span class="n">hook_factory</span>
+
+<span class="nd">@hook_factory</span>
+<span class="k">def</span> <span class="nf">upload_logs</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">UploadLogs</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;globals&quot;</span><span class="p">][</span><span class="s2">&quot;logs_bucket&quot;</span><span class="p">])</span>
+
+<span class="n">HOOKS</span> <span class="o">=</span> <span class="p">[</span><span class="n">upload_logs</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Kedro Extensions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="config_loader.html" class="btn btn-neutral float-right" title="Config Loader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
