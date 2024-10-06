@@ -114,11 +114,19 @@ class ExcludeEmptyMixin(_BaseModel):
 
     def model_dump(self, **kwargs) -> dict:
         """Ignores empty fields when serializing to dict."""
-        kwargs["exclude"] = kwargs.get("exclude") or {}
+        exclude = kwargs.get("exclude") or set()
+
         for field in self.model_fields:
             if common.is_empty(getattr(self, field)):
-                kwargs["exclude"][field] = True
-        return super().model_dump(**kwargs)
+                if isinstance(exclude, dict):
+                    exclude[field] = True
+                else:
+                    exclude.add(field)
+
+        if isinstance(exclude, dict):
+            exclude = set(k for k, v in exclude.items() if v)
+
+        return super().model_dump(**kwargs | {"exclude": exclude})
 
 
 class HashableMixin:
