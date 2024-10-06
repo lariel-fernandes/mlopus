@@ -27,7 +27,7 @@ def test_example_1(temp_mlflow):
             _edit_cell(notebook, 2, lambda x: re.sub(rf'"{key}": .*', f'"{key}": "{val}",', x))
 
         # In cell 5 (Env setup in Part-2) replace `pip install` with `sys append`, so we don't need a notebook restart
-        _edit_cell(notebook, 4, lambda x: re.sub(r"%.*pip.* +install.* +(.*)", "import sys; sys.path.append('\\1')", x))
+        _edit_cell(notebook, 4, lambda x: re.sub(r"!.*pip.* +install.* +(.*)", "import sys; sys.path.append('\\1')", x))
 
         ExecutePreprocessor(timeout=60).preprocess(notebook, resources={"metadata": {"path": root}})
 
