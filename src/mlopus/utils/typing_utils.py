@@ -31,11 +31,11 @@ def assert_issubclass(subject: Any, type_: type):
 def as_type(subject: Any, of: Type[T] | None = None, strict: bool = False) -> Type[T] | type | None:
     """Coerce subject to type."""
 
-    if origin := typing.get_origin(subject):
-        subject = origin
-
-    elif isinstance(subject, TypeVar) and (bound := subject.__bound__):
+    if isinstance(subject, TypeVar) and (bound := subject.__bound__):
         subject = bound
+
+    if origin := get_origin(subject):
+        subject = origin
 
     if not isinstance(subject, type):
         if strict:
