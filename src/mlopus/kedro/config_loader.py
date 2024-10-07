@@ -86,7 +86,7 @@ class MlopusConfigLoader(OmegaConfigLoader):
         # Register extra scopes as config resolvers
         for scope in self.config_patterns:
             if scope not in ("globals", "catalog", "parameters", "credentials"):
-                DictResolver(self, prefix=scope).register(scope)
+                DictResolver(self, prefix=[scope]).register(scope)
 
         # Enforce that runtime params (overrides) specify one of the available config scopes
         for scope in self.runtime_params:

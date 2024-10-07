@@ -178,12 +178,12 @@ class ArtifactSchemaDataset(
         description="See :paramref:`~mlopus.artschema.load_artifact.schema`",
     )
 
-    dumper: dict | D | None = pydantic.Field(
+    dumper: dict | None = pydantic.Field(
         default=None,
         description="See :paramref:`~mlopus.artschema.Schema.get_dumper.dumper`",
     )
 
-    loader: dict | L | None = pydantic.Field(
+    loader: dict | None = pydantic.Field(
         default=None,
         description="See :paramref:`~mlopus.artschema.Schema.get_loader.loader`",
     )
