@@ -1,3 +1,10 @@
+## 1.0.1 (2024-10-07)
+
+### Fix
+
+- **typing_utils**: fix typevar and typing alias coercion to type (used in artschema type param inference)
+- **kedro**: fix registering extra scopes as config resolvers, fix artschema dataset config parsing in pydantic v2
+
 ## 1.0.0 (2024-10-06)
 
 ### Refactor
