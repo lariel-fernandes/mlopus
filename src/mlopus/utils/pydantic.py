@@ -58,6 +58,7 @@ class BaseModel(_BaseModel):
     class Config:
         """Pydantic class config."""
 
+        coerce_numbers_to_str = True  # Fixes ValidationError when `str` is expected and `int` is passed
         repr_empty: bool = True  # If `False`, skip fields with empty values in representation
         arbitrary_types_allowed = True  # Fixes: RuntimeError: no validator found for <class '...'>
         ignored_types = (functools.cached_property,)  # Fixes: TypeError: cannot pickle '_thread.RLock' object
