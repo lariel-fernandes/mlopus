@@ -148,7 +148,7 @@ class RunArtifact(ArtifactSubject[RunApi, _RunLineageArg]):
 
 
 @pydantic.validate_arguments
-def _parse_subject(subj: ModelVersionArtifact | RunArtifact | dict) -> ArtifactSubject:
+def _parse_subject(subj: ModelVersionArtifact | RunArtifact) -> ArtifactSubject:
     """Parse settings dict into instance of `RunArtifact` or `ModelVersionArtifact`."""
     return subj
 

@@ -86,15 +86,17 @@ class Dumper(pydantic.BaseModel, pydantic.BaseParamsMixin, ABC, Generic[A]):
         :raises FileExistsError: If :paramref:`strict` is `True` and a dumper
                                  conf file already exists in :paramref:`path`.
         """
+        conf = self.dict()
+
         if path.is_file():
-            if self.dict():  # Do not warn if there's no conf to be saved
+            if conf:  # Do not warn if there's no conf to be saved
                 logger.warning("Artifact dump is not a directory, dumper conf file will not be saved.")
         elif path.is_dir():
             if (conf_path := path / self.Config.dumper_conf_file).exists():
                 if strict:
                     raise FileExistsError(conf_path)
-            else:
-                self._save_conf_to(conf_path)
+            elif conf:  # Do not save if there's no conf to be saved
+                conf_path.write_text(json_utils.dumps(conf))
         else:
             raise FileNotFoundError(path)
 
@@ -105,12 +107,6 @@ class Dumper(pydantic.BaseModel, pydantic.BaseParamsMixin, ABC, Generic[A]):
         if isinstance(artifact, dict) and (model := pydantic.as_model_cls(self.Artifact)):
             artifact = model.model_validate(artifact)
         return artifact
-
-    def _save_conf_to(self, path: Path):
-        path.write_text(self._serialize_conf())
-
-    def _serialize_conf(self) -> str:
-        return json_utils.dumps(self.dict())
 
     # =======================================================================================================
     # === Type param inference ==============================================================================
