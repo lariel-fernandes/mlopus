@@ -51,7 +51,7 @@ class PipelineInput(mlopus.artschema.LoadArtifactSpec, pydantic.EmptyStrAsMissin
             mode="link" if self.link else "copy",
         )
 
-        if self.path.is_dir() and not self.link:
-            paths.rchmod(self.path, paths.Mode.rwx)
+        if not self.link:
+            paths.chmod(self.path, paths.Mode.rwx)
 
         return lineage_arg

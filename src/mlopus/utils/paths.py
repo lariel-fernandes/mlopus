@@ -116,6 +116,14 @@ def place_path(src: PathLike, tgt: PathLike, mode: PathOperation, overwrite: boo
         raise NotImplementedError(f"mode='{mode}'")
 
 
+def chmod(path: PathLike, mode: int):
+    """Apply chmod to file or directory."""
+    if (path := Path(path)).is_dir():
+        rchmod(path, mode)
+    else:
+        path.chmod(mode)
+
+
 def rchmod(path: PathLike, mode: int):
     """Apply recursive chmod to directory."""
     if not (path := Path(path)).is_dir():
