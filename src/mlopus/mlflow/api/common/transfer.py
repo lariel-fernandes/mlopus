@@ -1,3 +1,4 @@
+import inspect
 from datetime import datetime
 from pathlib import Path
 from typing import List, Any, Iterable
@@ -26,6 +27,7 @@ class FileTransfer(pydantic.BaseModel):
 
     prog_bar: bool = True
     tool: Any = "rclone_python.rclone"
+    extra_args: dict[str, list[str]] = {"sync": ["--copy-links"]}
 
     @pydantic.root_validator
     def _find_tool(self):
@@ -67,4 +69,13 @@ class FileTransfer(pydantic.BaseModel):
         )
 
     def _tool(self, func: str, *args, **kwargs):
-        return getattr(self.tool, func)(*args, **kwargs)
+        call = getattr(self.tool, func)
+
+        if self.prog_bar and "show_progress" in inspect.signature(call).parameters:
+            kwargs["show_progress"] = True
+
+        return call(
+            *args,
+            **kwargs,
+            args=self.extra_args.get(func) or None,
+        )
