@@ -1,3 +1,12 @@
+## 1.0.2 (2024-10-11)
+
+### Fix
+
+- **mlflow.api.transfer**: apply prog bar flag, allow extra args, copy links by default
+- **kedro.hooks.artifacts**: fix file permissions after input setup
+- **artschema**: skip saving dumper conf if empty, adjust spec parser for pydantic v2
+- **utils.pydantic**: coerce int to str
+
 ## 1.0.1 (2024-10-07)
 
 ### Fix
