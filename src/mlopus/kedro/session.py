@@ -103,7 +103,10 @@ class MlopusKedroSession(KedroSession):
         if self._package_name is None:  # resolve package name from project metadata if not specified
             self._package_name = toml.load(self._project_path / "pyproject.toml")["tool"]["kedro"]["package_name"]
 
-        self._store["pkg"] = {"name": self._package_name, "version": packaging.get_dist(self._package_name).version}
+        self._store["pkg"] = {
+            "name": self._package_name,
+            "version": packaging.get_dist(self._package_name.split(".")[0]).version,
+        }
 
         self._store["uuid"] = self.uuid = str(uuid.uuid4())  # generate UUID (not datetime-bound like the session ID)
 
