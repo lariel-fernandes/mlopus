@@ -1,3 +1,10 @@
+## 1.0.3 (2024-10-21)
+
+### Fix
+
+- **utils.dicts**: preserve empty dict leaf vals in deep merge (used in kedro conf merge)
+- **kedro.session**: use only root package name for determining version
+
 ## 1.0.2 (2024-10-11)
 
 ### Fix
