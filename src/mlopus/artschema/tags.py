@@ -51,7 +51,7 @@ class PkgSpec(pydantic.BaseModel, pydantic.MappingMixin):
 
     def check_requirement(self):
         """Validate this package requirement against the current Python environment."""
-        if not packaging.check_dist(self.dist, self.version, self.constraint):
+        if not packaging.check_dist(self.dist, specifier=self.constraint + self.version):
             raise RuntimeError(f"Python requirement not matched: {self.name}{self.constraint}{self.version}")
 
     def check_extras(self):
@@ -196,7 +196,7 @@ class Tags(pydantic.BaseModel, pydantic.MappingMixin):
 
         :param subject: | Experiment, run, model or model version with API handle.
         """
-        logger.info("Registering artifact schemas for %s\n%s", subject, self.json(indent=4))
+        logger.info("Registering artifact schemas for %s\n%s", subject, self.model_dump_json(indent=4))
         subject.set_tags(self)
 
     def get_schema(self, alias: str | None = None) -> ClassSpec:
