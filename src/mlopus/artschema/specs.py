@@ -48,6 +48,15 @@ class ArtifactSubject(MlflowApiMixin, pydantic.EmptyStrAsMissing, ABC, Generic[T
     def log(self, **kwargs) -> Tuple[LA, T]:
         """Log artifact."""
 
+    @abstractmethod
+    def _get_entity_api(self) -> T:
+        """Get entity metadata with MLFlow API handle."""
+
+    @property
+    def entity_api(self) -> T:
+        """Entity metadata with MLFlow API handle."""
+        return self._get_entity_api()
+
     def apply_defaults(self, **defaults):
         """Adjust missing or incomplete params of artifact subject based on provided defaults."""
 
@@ -78,6 +87,10 @@ class ModelVersionArtifact(ArtifactSubject[ModelVersionApi, _ModelLineageArg]):
     @property
     def _version_api(self) -> ModelVersionApi:
         return self.mlflow_api.get_model(self.model_name).get_version(self.model_version)
+
+    def _get_entity_api(self) -> T:
+        """Get entity metadata with MLFlow API handle."""
+        return self._version_api
 
     def cache(self) -> Path:
         """Cache subject metadata and artifact."""
@@ -117,6 +130,10 @@ class RunArtifact(ArtifactSubject[RunApi, _RunLineageArg]):
     @property
     def _run_api(self) -> RunApi:
         return self.mlflow_api.get_run(self.run_id)
+
+    def _get_entity_api(self) -> T:
+        """Get entity metadata with MLFlow API handle."""
+        return self._run_api
 
     def cache(self) -> Path:
         """Cache subject metadata and artifact."""
@@ -296,6 +313,11 @@ class LogArtifactSpec(MlflowApiMixin, Generic[T, LA]):
     )
 
     _parse_subject = pydantic.validator("subject", pre=True, allow_reuse=True)(_parse_subject)
+
+    @property
+    def entity_api(self) -> T:
+        """Entity metadata with MLFlow API handle."""
+        return self.subject.using(self.mlflow_api).entity_api
 
     def log(self, artifact: A | dict | Path, schema: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = None) -> T:
         """Log artifact.
