@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.artschema.tags &mdash; MLOpus 1.0.3 documentation</title>
+  <title>mlopus.artschema.tags &mdash; MLOpus 1.0.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -132,7 +132,7 @@
 
     <span class="k">def</span> <span class="nf">check_requirement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate this package requirement against the current Python environment.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">packaging</span><span class="o">.</span><span class="n">check_dist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">packaging</span><span class="o">.</span><span class="n">check_dist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">,</span> <span class="n">specifier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Python requirement not matched: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">check_extras</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -277,7 +277,7 @@
 
 <span class="sd">        :param subject: | Experiment, run, model or model version with API handle.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering artifact schemas for </span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering artifact schemas for </span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
         <span class="n">subject</span><span class="o">.</span><span class="n">set_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">get_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassSpec</span><span class="p">:</span>
