@@ -1,3 +1,10 @@
+## 1.0.4 (2024-10-23)
+
+### Fix
+
+- **artschema.tags**: fix detection of installed extras and pkg spec verification
+- **artschema.spec**: expose entity api in LoadArtifactSpec
+
 ## 1.0.3 (2024-10-21)
 
 ### Fix

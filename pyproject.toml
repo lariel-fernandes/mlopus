@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mlOpus"
-version = "1.0.3"
+version = "1.0.4"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 description = "MLOps tools for research and development."
@@ -73,7 +73,7 @@ dev-dependencies = [
 # === Commitizen ==================================================================================
 
 [tool.commitizen]
-version = "1.0.3"
+version = "1.0.4"
 tag_format = "$version"
 version_scheme = "semver"
 version_files = [
