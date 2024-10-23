@@ -199,6 +199,11 @@ class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
 
     _parse_subject = pydantic.validator("subject", pre=True, allow_reuse=True)(_parse_subject)
 
+    @property
+    def entity_api(self) -> T:
+        """Entity metadata with MLFlow API handle."""
+        return self.subject.using(self.mlflow_api).entity_api
+
     def download(self) -> Path:
         """Cache subject metadata and artifact.
 
@@ -313,11 +318,6 @@ class LogArtifactSpec(MlflowApiMixin, Generic[T, LA]):
     )
 
     _parse_subject = pydantic.validator("subject", pre=True, allow_reuse=True)(_parse_subject)
-
-    @property
-    def entity_api(self) -> T:
-        """Entity metadata with MLFlow API handle."""
-        return self.subject.using(self.mlflow_api).entity_api
 
     def log(self, artifact: A | dict | Path, schema: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = None) -> T:
         """Log artifact.
