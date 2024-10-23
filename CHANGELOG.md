@@ -1,3 +1,9 @@
+## 1.0.5 (2024-10-23)
+
+### Fix
+
+- **artschema.spec**: fix entity api property in LoadArtifactSpec
+
 ## 1.0.4 (2024-10-23)
 
 ### Fix
