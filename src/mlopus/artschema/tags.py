@@ -56,7 +56,7 @@ class PkgSpec(pydantic.BaseModel, pydantic.MappingMixin):
 
     def check_extras(self):
         """Validate that this package is installed with the required extras."""
-        if self.extras and (missing := self.extras.difference(packaging.get_installed_dist_extras(self.dist))):
+        if missing := packaging.get_missing_extras(self.dist, self.extras):
             raise RuntimeError(f"Missing the following extras for package '{self.name}': {missing}")
 
     def __iter__(self):

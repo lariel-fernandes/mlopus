@@ -2,7 +2,7 @@ import importlib
 import inspect
 import re
 from pathlib import Path
-from typing import Type, Any, Set, Literal, Dict, Tuple
+from typing import Type, Any, Set, Literal, Dict, Tuple, Sequence
 
 import importlib_metadata
 from packaging.specifiers import SpecifierSet
@@ -16,9 +16,14 @@ VersionConstraint = Literal["==", "~=", "^", ">="]
 
 
 class Patterns:
-    """Patterns used in packaging inspection."""
+    """Patterns used in packaging inspection.
 
-    EXTRA_REQ = re.compile(r'^(?P<pkg>[\w.-]+)(?P<specifier>.*); extra == "(?P<extra>\w+)"$')
+    EXTRA_REQ: Matches strings in the formats:
+        - boto3>=1.2.3; extra == "aws"
+        - mlopus[kedro,search]~=1.0.5; extra == "pipelines"
+    """
+
+    EXTRA_REQ = re.compile(r'^(?P<pkg>[\w.-]+)(\[(?P<extras>.*)])?(?P<specifier>.*); extra == "(?P<extra>\w+)"$')
 
 
 def get_dist(name: str, strict: bool = True) -> Dist | None:
@@ -36,16 +41,16 @@ def is_editable_dist(dist: Dist) -> bool:
     return (origin := dist.origin) and (dir_info := getattr(origin, "dir_info", None)) and dir_info.editable  # noqa
 
 
-def get_available_dist_extras(dist: Dist) -> Dict[str, Tuple[str, str]]:
+def get_available_dist_extras(dist: Dist) -> Dict[str, Tuple[str, str, str | None]]:
     """Get mapping of optional extras that can be installed for the given package distribution.
 
-    Output format: {extra: [(pkg, specifier), ...]}
+    Output format: {extra: [(pkg, version_specifier, required_pkg_extras), ...]}
     """
     extras = {}
 
     for req in dist.requires:
         if match := Patterns.EXTRA_REQ.fullmatch(req):
-            spec = match.group("pkg"), match.group("specifier")
+            spec = match.group("pkg"), match.group("specifier"), match.group("extras")
             extras.setdefault(match.group("extra"), []).append(spec)
 
     return extras
@@ -56,13 +61,24 @@ def get_installed_dist_extras(dist: Dist) -> Set[str]:
     installed = set()
 
     for extra, reqs in get_available_dist_extras(dist).items():
-        for pkg, specifier in reqs:
-            if not (dist := get_dist(pkg, strict=False)) or not check_dist(dist, specifier):
+        for pkg, specifier, extras in reqs:
+            if (
+                not (dist := get_dist(pkg, strict=False))
+                or not check_dist(dist, specifier)
+                or (extras and get_missing_extras(dist, extras.split(",")))
+            ):
                 break
         else:
             installed.add(extra)
 
     return installed
+
+
+def get_missing_extras(dist: Dist, required: Sequence[str] | None) -> Set[str]:
+    """Get list of optional extras for this distribution that are required but not installed."""
+    if not required:
+        return set()
+    return set(required).difference(get_installed_dist_extras(dist))
 
 
 def check_dist(dist: Dist, specifier: str) -> bool:
