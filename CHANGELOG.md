@@ -1,3 +1,9 @@
+## 1.0.6 (2024-10-24)
+
+### Fix
+
+- **artschema.tags**: account for recursive extras when checking requirements of artschema
+
 ## 1.0.5 (2024-10-23)
 
 ### Fix
