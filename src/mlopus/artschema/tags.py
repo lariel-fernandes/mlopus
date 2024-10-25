@@ -44,6 +44,18 @@ class PkgSpec(pydantic.BaseModel, pydantic.MappingMixin):
     extras: Set[str] | None = None
     constraint: packaging.VersionConstraint
 
+    @pydantic.model_validator(mode="after")
+    def _validate_version(self):
+        if "+" in self.version and self.constraint != "==":
+            warnings.warn(
+                UserWarning(
+                    "Semantic version with build metadata suffix cannot be used with range constraint "
+                    f"'{self.constraint}', replacing with a pinned constraint: =={self.version}"
+                )
+            )
+            self.constraint = "=="
+        return self
+
     @property
     def dist(self) -> packaging.Dist:
         """Get currently installed distribution of this package requirement."""
