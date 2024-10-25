@@ -1,3 +1,10 @@
+## 1.0.7 (2024-10-25)
+
+### Fix
+
+- **kedro.hooks.mlflow-artifacts**: allow pipeline inptus/outputs to be a mapping
+- **artschema.tags**: forbid range constraint on required pkg version if there's build metadata (e.g.: 1.2.3+hash)
+
 ## 1.0.6 (2024-10-24)
 
 ### Fix
