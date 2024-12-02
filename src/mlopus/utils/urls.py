@@ -14,8 +14,7 @@ def parse_url(url: UrlLike, default_scheme: str = "file", resolve_if_local: bool
     if not url.scheme:
         url = urllib3.util.parse_url(f"{default_scheme}://{url}")
     if resolve_if_local and is_local(url):
-        prefix = "~" if url.host == "~" else ""
-        url = parse_url(Path(prefix + url.path).expanduser().resolve())
+        url = parse_url(Path((url.host or "") + (url.path or "")).expanduser().resolve())
     return url
 
 

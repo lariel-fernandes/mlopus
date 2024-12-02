@@ -6,11 +6,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, TypeVar, Callable, Tuple, List, Literal, Mapping, Iterable, Set, Iterator, ContextManager
 
-import requests
 from mlflow import MlflowClient as _NativeMlflowClient, entities as native
 from mlflow.entities import model_registry as native_model_registry
 from mlflow.store.entities import PagedList
 from mlflow.tracking import artifact_utils as mlflow_artifact_utils
+from mlflow.utils import rest_utils as mlflow_rest_utils
 
 from mlopus.mlflow.api.base import BaseMlflowApi
 from mlopus.mlflow.api.common import schema, patterns
@@ -42,7 +42,9 @@ class MlflowClient(_NativeMlflowClient):
     def healthcheck(self):
         """Check if service is available."""
         if (url := urls.parse_url(self.tracking_uri)).scheme in ("http", "https"):
-            assert requests.get(str(url) + "/health").status_code == 200, f"Healthcheck failed for URI '{url}'"
+            creds = self._tracking_client.store.get_host_creds()
+            response = mlflow_rest_utils.http_request(creds, "/health", "GET")
+            assert response.status_code == 200, f"Healthcheck failed for URI '{url}'"
         elif not urls.is_local(url):
             raise NotImplementedError(f"No healthcheck for URI '{url}'")
 
@@ -188,7 +190,7 @@ class MlflowDataTranslation(pydantic.BaseModel):
         """JSON encode user-tag."""
         if not self.keep_untouched(key_parts, scope="tags"):
             val = string_utils.escape_sql_single_quote(json_utils.dumps(val))
-        if len(val) > self.max_length.tag:
+        if len(str(val)) > self.max_length.tag:
             val = None
             logger.warning("Ignoring tag above max length of %s: %s", self.max_length.tag, key_parts)
         return val
@@ -203,7 +205,7 @@ class MlflowDataTranslation(pydantic.BaseModel):
         """JSON encode param."""
         if not self.keep_untouched(key_parts, scope="params"):
             val = string_utils.escape_sql_single_quote(json_utils.dumps(val))
-        if len(val) > self.max_length.param:
+        if len(str(val)) > self.max_length.param:
             val = None
             logger.warning("Ignoring param above max length of %s: %s", self.max_length.param, key_parts)
         return val
