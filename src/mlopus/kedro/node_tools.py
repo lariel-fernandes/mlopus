@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+import asyncio
+from abc import ABC
 from typing import Iterable, Mapping, Any
 
 from kedro.pipeline.node import Node, node
@@ -38,9 +39,13 @@ class NodeFunc(pydantic.BaseModel, ABC):
             }
     """
 
-    @abstractmethod
-    def __call__(self, **__):
+    def __call__(self, *args, **kwargs):
         """Node function implementation."""
+        return asyncio.get_event_loop().run_until_complete(self.__acall__(*args, **kwargs))
+
+    async def __acall__(self, *_, **__):
+        """Async node function implementation."""
+        raise NotImplementedError(f"`{self.__class__.__name__}` must override either `__call__` or `__acall__`")
 
     @classmethod
     def _default_func_name(cls) -> str:

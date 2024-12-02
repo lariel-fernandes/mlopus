@@ -41,7 +41,7 @@ class EvalModel(node_tools.NodeFunc):
     """Evaluate model in terms of distances at K."""
     k_values: list[int]
 
-    def __call__(self, model: AnnModel) -> dict:
+    async def __acall__(self, model: AnnModel) -> dict:
         metrics = {}
 
         _, dist = model.get_ann_by_labels(model.labels, max_neighbours=max(self.k_values))
