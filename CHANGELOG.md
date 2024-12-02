@@ -1,3 +1,10 @@
+## 1.0.8 (2024-12-02)
+
+### Fix
+
+- **kedro.NodeFunc**: let users implement either __call__ or async __acall__
+- **providers/mlflow**: use http client settings in healthcheck, stringify tags/params before max length check, fix parsing local urls
+
 ## 1.0.7 (2024-10-25)
 
 ### Fix
