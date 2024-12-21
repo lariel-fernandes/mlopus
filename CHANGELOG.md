@@ -1,3 +1,13 @@
+## 1.1.0 (2024-12-21)
+
+### Feat
+
+- pull artifacts in offline mode (if at least metadata is cached)
+
+### Fix
+
+- enum json encoding
+
 ## 1.0.8 (2024-12-02)
 
 ### Fix
