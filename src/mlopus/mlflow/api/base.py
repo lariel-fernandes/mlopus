@@ -53,9 +53,19 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
     offline_mode: bool = pydantic.Field(
         default=False,
         description=(
-            "If True, block all operations that attempt communication "
-            "with the MLflow server or artifacts repositories "
-            "(i.e.: work with local cache only)."
+            "If `True`, block all operations that attempt communication "
+            "with the MLflow server (i.e.: only use cached metadata). "
+            "Artifacts are still accessible if they are cached or if "
+            ":attr:`pull_artifacts_in_offline_mode` is `True`."
+        ),
+    )
+
+    pull_artifacts_in_offline_mode: bool = pydantic.Field(
+        default=False,
+        description=(
+            "If `True`, allow pulling artifacts from storage to cache in offline mode. "
+            "Useful if caching metadata only and pulling artifacts on demand "
+            "(the artifact's URL must be known beforehand, e.g. by caching the metadata of its parent entity). "
         ),
     )
 
@@ -364,7 +374,7 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
     def _list_run_artifacts(self, run: RunIdentifier, path_in_run: str = "") -> transfer.LsResult:
         path_in_run = self._valid_path_in_run(path_in_run, allow_empty=True)
 
-        if self.offline_mode:
+        if self.offline_mode and not self.pull_artifacts_in_offline_mode:
             logger.warning("Listing run artifacts in offline mode may yield incomplete or stale results.")
             subject = self._get_run_artifact_cache_path(run, path_in_run)
         elif urls.is_local(subject := urls.urljoin(self._coerce_run(run).repo, path_in_run)):
@@ -372,9 +382,11 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
 
         return self.file_transfer.ls(subject)
 
-    @decorators.online
     def _pull_run_artifact(self, run: RunIdentifier, path_in_run: str) -> Path:
         """Pull artifact from run repo to local cache, unless repo is already local."""
+        if self.offline_mode and not self.pull_artifacts_in_offline_mode:
+            raise RuntimeError("Artifact pull is disabled.")
+
         path_in_run = self._valid_path_in_run(path_in_run, allow_empty=True)
 
         with self._lock_run_artifact((run := self._coerce_run(run)).id, path_in_run) as target:
@@ -396,7 +408,9 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         path_in_run = self._valid_path_in_run(path_in_run, allow_empty=True)
         cache = self._get_run_artifact_cache_path(run, path_in_run)
 
-        if not self.offline_mode and (not cache.exists() or self.always_pull_artifacts):
+        if (not self.offline_mode or self.pull_artifacts_in_offline_mode) and (
+            not cache.exists() or self.always_pull_artifacts
+        ):
             return self._pull_run_artifact(run, path_in_run)
 
         if not cache.exists():

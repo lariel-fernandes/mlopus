@@ -26,23 +26,29 @@ class GenericMlflowApi(BaseMlflowApi):
 
     **Default cache dir:** `None` (no fall back, must be provided)
 
-    Example:
+    Example 1: Using cached metadata and artifacts
 
     .. code-block:: python
 
-        # Export one or more model versions or run artifacts using any other MLflow API
-        exported_cache = Path("/assets/mlflow-cache")
+        # At build time
+        api = mlopus.mlflow.get_api(plugin="mlflow", ...)
+        api.get_model(...).get_version(...).export("build/mlflow-cache")  # Export metadata and artifacts
 
-        for version in mlopus.mlflow.get_api(plugin="mlflow", ...).get_model(...).find_versions(...):
-            version.export(target=exported_cache)
+        # At runtime (no internet access required)
+        api = mlopus.mlflow.get_api(plugin="generic", conf={"cache_dir": "build/mlflow-cache"})
+        api.get_model(...).get_version(...).load(...)
 
-        # Load model versions or run artifacts with the generic API in offline mode
-        versions = mlopus.mlflow \\
-            .get_api(plugin="generic", conf={"cache_dir": exported_cache}) \\
-            .get_model(...).find_versions(...)
+    Example 2: Using cached metadata and pulling artifacts at runtime
 
-        for version in versions:
-            version.load(...)
+    .. code-block:: python
+
+        # At build time
+        api = mlopus.mlflow.get_api(plugin="mlflow", ...)
+        api.get_model(...).get_version(...).export_meta("build/mlflow-cache")  # Export metadata only
+
+        # At runtime (no access to MLFlow server required)
+        api = mlopus.mlflow.get_api(plugin="generic", conf={"cache_dir": "build/mlflow-cache", "pull_artifacts_in_offline_mode": True})
+        api.get_model(...).get_version(...).load(...)  # Triggers artifact pull
     """
 
     cache_dir: Path
