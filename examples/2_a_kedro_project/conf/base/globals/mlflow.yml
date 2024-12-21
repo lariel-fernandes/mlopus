@@ -4,4 +4,4 @@
 mlflow:
   exp: {name: mlopus_kedro_example}
   run: {name: "", tags: {kedro: {active_session: {uuid: "${session:uuid}"}}}}
-  api: {conf: {tracking_uri: "${env:MLFLOW_TRACKING_URI,'~/.cache/mlflow'}"}}
+  api: {conf: {tracking_uri: "${env:MLFLOW_TRACKING_URI,'~/.cache/mlflow'}", file_transfer: {use_scheme: "mlflow_sandbox"}}}
