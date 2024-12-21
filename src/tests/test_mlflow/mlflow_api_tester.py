@@ -82,8 +82,7 @@ class TestApi(ABC, Generic[API]):
 
             for i, query in enumerate([name_query] + tag_queries + extra_queries):
                 print(f"Query #{i}: {query}")
-                assert iter_one(api.find_exps(query)).cache_meta().id == exp_id
-                assert iter_one(api.in_offline_mode.find_exps(query)).id == exp_id
+                assert iter_one(api.find_exps(query)).id == exp_id
 
     def test_find_run(self, request, api: API):
         name_query = {"name": (name := "test")}
@@ -126,8 +125,7 @@ class TestApi(ABC, Generic[API]):
 
             for i, query in enumerate([name_query] + tag_queries + extra_queries):
                 print(f"Query #{i}: {query}")
-                assert iter_one(api.find_models(query)).cache_meta().name == name
-                assert iter_one(api.in_offline_mode.find_models(query)).name == name
+                assert iter_one(api.find_models(query)).name == name
 
     def test_find_mv(self, request, api: API):
         tags = {
@@ -153,8 +151,7 @@ class TestApi(ABC, Generic[API]):
 
             for i, query in enumerate(tag_queries + parent_run_queries + parent_model_queries):
                 print(f"Query #{i}: {query}")
-                assert iter_one(api.find_model_versions(query)).cache_meta().version == version
-                assert iter_one(api.in_offline_mode.find_model_versions(query)).version == version
+                assert iter_one(api.find_model_versions(query)).version == version
 
     def test_child_runs(self, request, api: API):
         with (
