@@ -1,6 +1,7 @@
 import json
 from dataclasses import is_dataclass, asdict
 from datetime import datetime, date
+from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict
 
@@ -28,6 +29,8 @@ def fallback(obj: Any) -> Dict[str, Any] | list | str | None:
             return time_utils.safe_repr(obj)
         case date():
             return obj.isoformat()
+        case Enum():
+            return obj.value
 
 
 def dumps(obj: Any, fallback_: Callable[[Any], Dict[str, Any] | str | None] = fallback, **kwargs) -> str:
