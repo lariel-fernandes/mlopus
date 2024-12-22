@@ -1,3 +1,10 @@
+## 1.2.1 (2024-12-22)
+
+### Fix
+
+- **mlflow.api.common.transfer**: fix scheme translation
+- **mlflow.api.mv**: fix list_artifacts
+
 ## 1.2.0 (2024-12-21)
 
 ### Feat
