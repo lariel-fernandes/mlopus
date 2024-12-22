@@ -74,8 +74,9 @@ class FileTransfer(pydantic.BaseModel):
         if self.use_scheme:
             scheme = self.use_scheme
         elif self.map_scheme:
-            for pattern, scheme in self.map_scheme.items():
+            for pattern, new_scheme in self.map_scheme.items():
                 if pattern.match(str(url)):
+                    scheme = new_scheme
                     break
 
         return urls.parse_url(url)._replace(scheme=scheme) if scheme else url  # noqa
