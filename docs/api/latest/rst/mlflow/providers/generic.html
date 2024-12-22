@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generic (no server) &mdash; MLOpus 1.0.4 documentation</title>
+  <title>Generic (no server) &mdash; MLOpus 1.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -107,20 +107,24 @@
 <p><strong>Plugin name:</strong> <cite>generic</cite></p>
 <p><strong>Requires extras:</strong> <cite>None</cite></p>
 <p><strong>Default cache dir:</strong> <cite>None</cite> (no fall back, must be provided)</p>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Export one or more model versions or run artifacts using any other MLflow API</span>
-<span class="n">exported_cache</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/assets/mlflow-cache&quot;</span><span class="p">)</span>
+<p>Example 1: Using cached metadata and artifacts</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># At build time</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">get_api</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;mlflow&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;build/mlflow-cache&quot;</span><span class="p">)</span>  <span class="c1"># Export metadata and artifacts</span>
 
-<span class="k">for</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">get_api</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;mlflow&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">find_versions</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
-    <span class="n">version</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">exported_cache</span><span class="p">)</span>
+<span class="c1"># At runtime (no internet access required)</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">get_api</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;generic&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cache_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;build/mlflow-cache&quot;</span><span class="p">})</span>
+<span class="n">api</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example 2: Using cached metadata and pulling artifacts at runtime</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># At build time</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">get_api</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;mlflow&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">export_meta</span><span class="p">(</span><span class="s2">&quot;build/mlflow-cache&quot;</span><span class="p">)</span>  <span class="c1"># Export metadata only</span>
 
-<span class="c1"># Load model versions or run artifacts with the generic API in offline mode</span>
-<span class="n">versions</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span> \
-    <span class="o">.</span><span class="n">get_api</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;generic&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cache_dir&quot;</span><span class="p">:</span> <span class="n">exported_cache</span><span class="p">})</span> \
-    <span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">find_versions</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">:</span>
-    <span class="n">version</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="c1"># At runtime (no access to MLFlow server required)</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">mlopus</span><span class="o">.</span><span class="n">mlflow</span><span class="o">.</span><span class="n">get_api</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;generic&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cache_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;build/mlflow-cache&quot;</span><span class="p">,</span> <span class="s2">&quot;pull_artifacts_in_offline_mode&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">api</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># Triggers artifact pull</span>
 </pre></div>
 </div>
 <dl class="py attribute pydantic_field">

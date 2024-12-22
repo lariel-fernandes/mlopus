@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Base MLflow API &mdash; MLOpus 1.0.4 documentation</title>
+  <title>Base MLflow API &mdash; MLOpus 1.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -55,6 +55,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">APIs</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Base MLflow API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.BaseMlflowApi"><code class="docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.mlflow.api.common.transfer.FileTransfer"><code class="docutils literal notranslate"><span class="pre">FileTransfer</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="exp.html">Experiment API</a></li>
@@ -138,14 +139,20 @@ so multiple API instances can coexist in the same program if necessary.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.file_transfer">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_transfer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">FileTransfer</span></code></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.file_transfer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_transfer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.mlflow.api.common.transfer.FileTransfer" title="mlopus.mlflow.api.common.transfer.FileTransfer"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileTransfer</span></code></a></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.file_transfer" title="Permalink to this definition"></a></dt>
 <dd><p>Utility for uploading/downloading artifact files or dirs. Also used for listing files. Based on RClone by default. Users may replace this with a different implementation when subclassing the API.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.offline_mode">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">offline_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.offline_mode" title="Permalink to this definition"></a></dt>
-<dd><p>If True, block all operations that attempt communication with the MLflow server or artifacts repositories (i.e.: work with local cache only).</p>
+<dd><p>If <cite>True</cite>, block all operations that attempt communication with the MLflow server (i.e.: only use cached metadata). Artifacts are still accessible if they are cached or if <a class="reference internal" href="#mlopus.mlflow.BaseMlflowApi.pull_artifacts_in_offline_mode" title="mlopus.mlflow.BaseMlflowApi.pull_artifacts_in_offline_mode"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pull_artifacts_in_offline_mode</span></code></a> is <cite>True</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.pull_artifacts_in_offline_mode">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pull_artifacts_in_offline_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.pull_artifacts_in_offline_mode" title="Permalink to this definition"></a></dt>
+<dd><p>If <cite>True</cite>, allow pulling artifacts from storage to cache in offline mode. Useful if caching metadata only and pulling artifacts on demand (the artifact’s URL must be known beforehand, e.g. by caching the metadata of its parent entity).</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1050,6 +1057,43 @@ sense to (possibly as a symbolic link) and avoid duplicated disk usage when poss
 <dt class="sig sig-object py" id="mlopus.mlflow.BaseMlflowApi.in_offline_mode">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">in_offline_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><span class="pre">BaseMlflowApi</span></a></em><a class="headerlink" href="#mlopus.mlflow.BaseMlflowApi.in_offline_mode" title="Permalink to this definition"></a></dt>
 <dd><p>Get an offline copy of this API.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="mlopus.mlflow.api.common.transfer.FileTransfer">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.mlflow.api.common.transfer.</span></span><span class="sig-name descname"><span class="pre">FileTransfer</span></span><a class="reference internal" href="../../../_modules/mlopus/mlflow/api/common/transfer.html#FileTransfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.mlflow.api.common.transfer.FileTransfer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>File transfer wrapper for MLflow API.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.api.common.transfer.FileTransfer.prog_bar">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prog_bar</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlopus.mlflow.api.common.transfer.FileTransfer.prog_bar" title="Permalink to this definition"></a></dt>
+<dd><p>Show progress bar when transfering files.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.api.common.transfer.FileTransfer.tool">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rclone_python.rclone'</span></em><a class="headerlink" href="#mlopus.mlflow.api.common.transfer.FileTransfer.tool" title="Permalink to this definition"></a></dt>
+<dd><p>Fully qualified path of module, class or object that exposes the methods/functions <cite>ls</cite>, <cite>copyto</cite> and <cite>sync</cite>, with signatures compatible with the ones exposed in <a class="reference external" href="https://pypi.org/project/rclone-python">rclone_python.rclone</a>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.api.common.transfer.FileTransfer.extra_args">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extra_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'sync':</span> <span class="pre">['--copy-links']}</span></em><a class="headerlink" href="#mlopus.mlflow.api.common.transfer.FileTransfer.extra_args" title="Permalink to this definition"></a></dt>
+<dd><p>Dict of extra arguments to pass to each of the functions exposed by the <a class="reference internal" href="#mlopus.mlflow.api.common.transfer.FileTransfer.tool" title="mlopus.mlflow.api.common.transfer.FileTransfer.tool"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tool</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.api.common.transfer.FileTransfer.use_scheme">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">use_scheme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.mlflow.api.common.transfer.FileTransfer.use_scheme" title="Permalink to this definition"></a></dt>
+<dd><p>Replace remote URL schemes with this one. Incompatible with <a class="reference internal" href="#mlopus.mlflow.api.common.transfer.FileTransfer.map_scheme" title="mlopus.mlflow.api.common.transfer.FileTransfer.map_scheme"><code class="xref py py-attr docutils literal notranslate"><span class="pre">map_scheme</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.mlflow.api.common.transfer.FileTransfer.map_scheme">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">map_scheme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">Pattern</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.mlflow.api.common.transfer.FileTransfer.map_scheme" title="Permalink to this definition"></a></dt>
+<dd><p>Replace remote URL schemes with the first value in this mapping whose key (regexp) matches the URL. Incompatible with <a class="reference internal" href="#mlopus.mlflow.api.common.transfer.FileTransfer.use_scheme" title="mlopus.mlflow.api.common.transfer.FileTransfer.use_scheme"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_scheme</span></code></a>.</p>
 </dd></dl>
 
 </dd></dl>

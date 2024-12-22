@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.artschema.tags &mdash; MLOpus 1.0.4 documentation</title>
+  <title>mlopus.artschema.tags &mdash; MLOpus 1.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -125,6 +125,18 @@
     <span class="n">extras</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">constraint</span><span class="p">:</span> <span class="n">packaging</span><span class="o">.</span><span class="n">VersionConstraint</span>
 
+    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_validate_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;+&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span> <span class="o">!=</span> <span class="s2">&quot;==&quot;</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="ne">UserWarning</span><span class="p">(</span>
+                    <span class="s2">&quot;Semantic version with build metadata suffix cannot be used with range constraint &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="si">}</span><span class="s2">&#39;, replacing with a pinned constraint: ==</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="s2">&quot;==&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">packaging</span><span class="o">.</span><span class="n">Dist</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get currently installed distribution of this package requirement.&quot;&quot;&quot;</span>
@@ -137,7 +149,7 @@
 
     <span class="k">def</span> <span class="nf">check_extras</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that this package is installed with the required extras.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extras</span> <span class="ow">and</span> <span class="p">(</span><span class="n">missing</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">packaging</span><span class="o">.</span><span class="n">get_installed_dist_extras</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">))):</span>
+        <span class="k">if</span> <span class="n">missing</span> <span class="o">:=</span> <span class="n">packaging</span><span class="o">.</span><span class="n">get_missing_extras</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extras</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing the following extras for package &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

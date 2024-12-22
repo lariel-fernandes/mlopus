@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.mlflow.providers.generic &mdash; MLOpus 1.0.4 documentation</title>
+  <title>mlopus.mlflow.providers.generic &mdash; MLOpus 1.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -107,23 +107,29 @@
 
 <span class="sd">    **Default cache dir:** `None` (no fall back, must be provided)</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Example 1: Using cached metadata and artifacts</span>
 
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        # Export one or more model versions or run artifacts using any other MLflow API</span>
-<span class="sd">        exported_cache = Path(&quot;/assets/mlflow-cache&quot;)</span>
+<span class="sd">        # At build time</span>
+<span class="sd">        api = mlopus.mlflow.get_api(plugin=&quot;mlflow&quot;, ...)</span>
+<span class="sd">        api.get_model(...).get_version(...).export(&quot;build/mlflow-cache&quot;)  # Export metadata and artifacts</span>
 
-<span class="sd">        for version in mlopus.mlflow.get_api(plugin=&quot;mlflow&quot;, ...).get_model(...).find_versions(...):</span>
-<span class="sd">            version.export(target=exported_cache)</span>
+<span class="sd">        # At runtime (no internet access required)</span>
+<span class="sd">        api = mlopus.mlflow.get_api(plugin=&quot;generic&quot;, conf={&quot;cache_dir&quot;: &quot;build/mlflow-cache&quot;})</span>
+<span class="sd">        api.get_model(...).get_version(...).load(...)</span>
 
-<span class="sd">        # Load model versions or run artifacts with the generic API in offline mode</span>
-<span class="sd">        versions = mlopus.mlflow \\</span>
-<span class="sd">            .get_api(plugin=&quot;generic&quot;, conf={&quot;cache_dir&quot;: exported_cache}) \\</span>
-<span class="sd">            .get_model(...).find_versions(...)</span>
+<span class="sd">    Example 2: Using cached metadata and pulling artifacts at runtime</span>
 
-<span class="sd">        for version in versions:</span>
-<span class="sd">            version.load(...)</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        # At build time</span>
+<span class="sd">        api = mlopus.mlflow.get_api(plugin=&quot;mlflow&quot;, ...)</span>
+<span class="sd">        api.get_model(...).get_version(...).export_meta(&quot;build/mlflow-cache&quot;)  # Export metadata only</span>
+
+<span class="sd">        # At runtime (no access to MLFlow server required)</span>
+<span class="sd">        api = mlopus.mlflow.get_api(plugin=&quot;generic&quot;, conf={&quot;cache_dir&quot;: &quot;build/mlflow-cache&quot;, &quot;pull_artifacts_in_offline_mode&quot;: True})</span>
+<span class="sd">        api.get_model(...).get_version(...).load(...)  # Triggers artifact pull</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">Path</span>

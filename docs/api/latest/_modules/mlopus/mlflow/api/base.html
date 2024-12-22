@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.mlflow.api.base &mdash; MLOpus 1.0.4 documentation</title>
+  <title>mlopus.mlflow.api.base &mdash; MLOpus 1.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -134,9 +134,19 @@
     <span class="n">offline_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;If True, block all operations that attempt communication &quot;</span>
-            <span class="s2">&quot;with the MLflow server or artifacts repositories &quot;</span>
-            <span class="s2">&quot;(i.e.: work with local cache only).&quot;</span>
+            <span class="s2">&quot;If `True`, block all operations that attempt communication &quot;</span>
+            <span class="s2">&quot;with the MLflow server (i.e.: only use cached metadata). &quot;</span>
+            <span class="s2">&quot;Artifacts are still accessible if they are cached or if &quot;</span>
+            <span class="s2">&quot;:attr:`pull_artifacts_in_offline_mode` is `True`.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">pull_artifacts_in_offline_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;If `True`, allow pulling artifacts from storage to cache in offline mode. &quot;</span>
+            <span class="s2">&quot;Useful if caching metadata only and pulling artifacts on demand &quot;</span>
+            <span class="s2">&quot;(the artifact&#39;s URL must be known beforehand, e.g. by caching the metadata of its parent entity). &quot;</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
@@ -445,7 +455,7 @@
     <span class="k">def</span> <span class="nf">_list_run_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">transfer</span><span class="o">.</span><span class="n">LsResult</span><span class="p">:</span>
         <span class="n">path_in_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_path_in_run</span><span class="p">(</span><span class="n">path_in_run</span><span class="p">,</span> <span class="n">allow_empty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offline_mode</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offline_mode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pull_artifacts_in_offline_mode</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Listing run artifacts in offline mode may yield incomplete or stale results.&quot;</span><span class="p">)</span>
             <span class="n">subject</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_artifact_cache_path</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">urls</span><span class="o">.</span><span class="n">is_local</span><span class="p">(</span><span class="n">subject</span> <span class="o">:=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run</span><span class="p">(</span><span class="n">run</span><span class="p">)</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)):</span>
@@ -453,9 +463,11 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_transfer</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
 
-    <span class="nd">@decorators</span><span class="o">.</span><span class="n">online</span>
     <span class="k">def</span> <span class="nf">_pull_run_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="n">RunIdentifier</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Pull artifact from run repo to local cache, unless repo is already local.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offline_mode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pull_artifacts_in_offline_mode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Artifact pull is disabled.&quot;</span><span class="p">)</span>
+
         <span class="n">path_in_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_path_in_run</span><span class="p">(</span><span class="n">path_in_run</span><span class="p">,</span> <span class="n">allow_empty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock_run_artifact</span><span class="p">((</span><span class="n">run</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coerce_run</span><span class="p">(</span><span class="n">run</span><span class="p">))</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
@@ -477,7 +489,9 @@
         <span class="n">path_in_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_path_in_run</span><span class="p">(</span><span class="n">path_in_run</span><span class="p">,</span> <span class="n">allow_empty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_artifact_cache_path</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">offline_mode</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cache</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">always_pull_artifacts</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">offline_mode</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pull_artifacts_in_offline_mode</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">cache</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">always_pull_artifacts</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pull_run_artifact</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">path_in_run</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">cache</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
