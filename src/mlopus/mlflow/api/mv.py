@@ -94,7 +94,7 @@ class ModelVersionApi(schema.ModelVersion, entity.EntityApi):
 
         :param path_suffix: Plain relative path inside model artifact dir (e.g.: `a/b/c`).
         """
-        return self.api.list_model_artifact(self.run, path_suffix)
+        return self.api.list_model_artifact(self, path_suffix)
 
     def get_artifact(self) -> Path:
         """Get local path to model artifact.
