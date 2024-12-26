@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Specs &amp; Catalog &mdash; MLOpus 1.2.1 documentation</title>
+  <title>Specs &amp; Catalog &mdash; MLOpus 1.2.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -56,6 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="helpers.html">Helpers</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Specs &amp; Catalog</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.RunArtifact"><code class="docutils literal notranslate"><span class="pre">RunArtifact</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.RunArtifact.optional"><code class="docutils literal notranslate"><span class="pre">RunArtifact.optional</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.RunArtifact.path_in_run"><code class="docutils literal notranslate"><span class="pre">RunArtifact.path_in_run</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.RunArtifact.run_id"><code class="docutils literal notranslate"><span class="pre">RunArtifact.run_id</span></code></a></li>
 </ul>
@@ -145,6 +146,12 @@ the code when an artifact specification is changed.</p>
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">RunArtifact</span></span><a class="reference internal" href="../../_modules/mlopus/artschema/specs.html#RunArtifact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.RunArtifact" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ArtifactSubject[RunApi,</span> <span class="pre">_RunLineageArg]</span></code></p>
 <p>Specification of a run artifact.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.artschema.RunArtifact.optional">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">optional</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.artschema.RunArtifact.optional" title="Permalink to this definition"></a></dt>
+<dd><p>Skip silently if artifact is missing.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.artschema.RunArtifact.path_in_run">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_in_run</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.artschema.RunArtifact.path_in_run" title="Permalink to this definition"></a></dt>
