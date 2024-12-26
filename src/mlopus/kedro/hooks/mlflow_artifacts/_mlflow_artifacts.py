@@ -52,7 +52,7 @@ class MlflowArtifacts(mlopus.mlflow.MlflowRunMixin, HookWithFactory):
             if i.enabled and i.used_by(pipeline_name):
                 logger.info("Setting up input '%s'", name)
                 lineage_arg = i.using(self.run_manager.mlflow_api).setup(default_run_id=self.run_manager.run.id)
-                if i.log_lineage:
+                if i.log_lineage and lineage_arg is not None:
                     mlopus.lineage.of(self.run_manager.run).with_input(lineage_arg).register()
 
     def _collect_outputs(self, pipeline_name: str):

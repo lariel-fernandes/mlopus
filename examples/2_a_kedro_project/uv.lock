@@ -3,7 +3,9 @@ requires-python = ">=3.10, <4"
 resolution-markers = [
     "python_full_version < '3.11'",
     "python_full_version == '3.11.*'",
-    "python_full_version < '3.13'",
+    "python_full_version < '3.11'",
+    "python_full_version == '3.11.*'",
+    "python_full_version == '3.12.*'",
     "python_full_version >= '3.13'",
 ]
 
@@ -21,12 +23,12 @@ name = "aiohttp"
 version = "3.10.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "aiohappyeyeballs" },
-    { name = "aiosignal" },
-    { name = "attrs" },
-    { name = "frozenlist" },
-    { name = "multidict" },
-    { name = "yarl" },
+    { name = "aiohappyeyeballs", marker = "python_full_version == '3.12.*'" },
+    { name = "aiosignal", marker = "python_full_version == '3.12.*'" },
+    { name = "attrs", marker = "python_full_version == '3.12.*'" },
+    { name = "frozenlist", marker = "python_full_version == '3.12.*'" },
+    { name = "multidict", marker = "python_full_version == '3.12.*'" },
+    { name = "yarl", marker = "python_full_version == '3.12.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/80/5e/42678cd8af232a01441b375b963a6c79943718a0cb9da90ab7e5ff14f1d3/aiohttp-3.10.4.tar.gz", hash = "sha256:23a5f97e7dd22e181967fb6cb6c3b11653b0fdbbc4bb7739d9b6052890ccab96", size = 7524267 }
 wheels = [
@@ -82,7 +84,7 @@ name = "aiosignal"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "frozenlist" },
+    { name = "frozenlist", marker = "python_full_version == '3.12.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ae/67/0952ed97a9793b4958e5736f6d2b346b414a2cd63e82d05940032f45b32f/aiosignal-1.3.1.tar.gz", hash = "sha256:54cd96e15e1649b75d6c87526a6ff0b6c1b0dd3459f43d9ca11d48c339b68cfc", size = 19422 }
 wheels = [
@@ -597,7 +599,7 @@ wheels = [
 
 [package.optional-dependencies]
 toml = [
-    { name = "tomli", marker = "python_full_version == '3.11'" },
+    { name = "tomli", marker = "python_full_version <= '3.11'" },
 ]
 
 [[package]]
@@ -1570,7 +1572,7 @@ wheels = [
 
 [[package]]
 name = "mlopus"
-version = "0.3.3"
+version = "1.2.1"
 source = { editable = "../../" }
 dependencies = [
     { name = "dacite" },
@@ -1633,7 +1635,7 @@ dev = [
 [[package]]
 name = "mlopus-kedro-example"
 version = "0.0.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "annoy" },
     { name = "numpy" },
@@ -1996,7 +1998,7 @@ name = "papermill"
 version = "2.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "aiohttp", marker = "python_full_version < '3.13'" },
+    { name = "aiohttp", marker = "python_full_version == '3.12.*'" },
     { name = "ansicolors" },
     { name = "click" },
     { name = "entrypoints" },
@@ -2173,8 +2175,6 @@ version = "6.0.0"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/18/c7/8c6872f7372eb6a6b2e4708b88419fb46b857f7a2e1892966b851cc79fc9/psutil-6.0.0.tar.gz", hash = "sha256:8faae4f310b6d969fa26ca0545338b21f73c6b15db7c4a8d934a5482faa818f2", size = 508067 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c5/66/78c9c3020f573c58101dc43a44f6855d01bbbd747e24da2f0c4491200ea3/psutil-6.0.0-cp27-none-win32.whl", hash = "sha256:02b69001f44cc73c1c5279d02b30a817e339ceb258ad75997325e0e6169d8b35", size = 249766 },
-    { url = "https://files.pythonhosted.org/packages/e1/3f/2403aa9558bea4d3854b0e5e567bc3dd8e9fbc1fc4453c0aa9aafeb75467/psutil-6.0.0-cp27-none-win_amd64.whl", hash = "sha256:21f1fb635deccd510f69f485b87433460a603919b45e2a324ad65b0cc74f8fb1", size = 253024 },
     { url = "https://files.pythonhosted.org/packages/0b/37/f8da2fbd29690b3557cca414c1949f92162981920699cd62095a984983bf/psutil-6.0.0-cp36-abi3-macosx_10_9_x86_64.whl", hash = "sha256:c588a7e9b1173b6e866756dde596fd4cad94f9399daf99ad8c3258b3cb2b47a0", size = 250961 },
     { url = "https://files.pythonhosted.org/packages/35/56/72f86175e81c656a01c4401cd3b1c923f891b31fbcebe98985894176d7c9/psutil-6.0.0-cp36-abi3-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6ed2440ada7ef7d0d608f20ad89a04ec47d2d3ab7190896cd62ca5fc4fe08bf0", size = 287478 },
     { url = "https://files.pythonhosted.org/packages/19/74/f59e7e0d392bc1070e9a70e2f9190d652487ac115bb16e2eff6b22ad1d24/psutil-6.0.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5fd9a97c8e94059b0ef54a7d4baf13b405011176c3b6ff257c247cae0d560ecd", size = 290455 },
@@ -3173,8 +3173,8 @@ name = "yarl"
 version = "1.9.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "idna" },
-    { name = "multidict" },
+    { name = "idna", marker = "python_full_version == '3.12.*'" },
+    { name = "multidict", marker = "python_full_version == '3.12.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e0/ad/bedcdccbcbf91363fd425a948994f3340924145c2bc8ccb296f4a1e52c28/yarl-1.9.4.tar.gz", hash = "sha256:566db86717cf8080b99b58b083b773a908ae40f06681e87e589a976faf8246bf", size = 141869 }
 wheels = [

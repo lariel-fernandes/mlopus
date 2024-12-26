@@ -40,9 +40,12 @@ class PipelineInput(mlopus.artschema.LoadArtifactSpec, pydantic.EmptyStrAsMissin
         """Check if this input is configured for the specified pipeline."""
         return self.pipelines is None or pipeline_name in self.pipelines
 
-    def setup(self, default_run_id: str) -> _LineageArg:
+    def setup(self, default_run_id: str) -> _LineageArg | None:
         """Download, verify and place the artifact."""
         lineage_arg, cached_artifact = self.with_defaults(run_id=default_run_id)._load(dry_run=True)
+
+        if cached_artifact is None:
+            return None
 
         paths.place_path(
             tgt=self.path,

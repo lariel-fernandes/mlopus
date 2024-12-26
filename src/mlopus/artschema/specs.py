@@ -126,6 +126,7 @@ class RunArtifact(ArtifactSubject[RunApi, _RunLineageArg]):
 
     run_id: str = None
     path_in_run: str = None
+    optional: bool = pydantic.Field(default=False, description="Skip silently if artifact is missing.")
 
     @property
     def _run_api(self) -> RunApi:
@@ -146,7 +147,12 @@ class RunArtifact(ArtifactSubject[RunApi, _RunLineageArg]):
     def load(self, **kwargs) -> Tuple[_RunLineageArg, Any]:
         """Load artifact."""
         lineage_arg = _RunLineageArg(self.run_id, self.path_in_run)
-        return lineage_arg, load_artifact(self._run_api, path_in_run=self.path_in_run, **kwargs)
+        try:
+            return lineage_arg, load_artifact(self._run_api, path_in_run=self.path_in_run, **kwargs)
+        except FileNotFoundError as exc:
+            if self.optional:
+                return lineage_arg, None
+            raise exc
 
     def log(self, **kwargs) -> Tuple[_RunLineageArg, RunApi]:
         """Log artifact."""
