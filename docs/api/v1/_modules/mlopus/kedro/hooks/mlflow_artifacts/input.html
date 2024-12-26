@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.kedro.hooks.mlflow_artifacts.input &mdash; MLOpus 1.2.1 documentation</title>
+  <title>mlopus.kedro.hooks.mlflow_artifacts.input &mdash; MLOpus 1.2.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
@@ -121,9 +121,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if this input is configured for the specified pipeline.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipelines</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pipeline_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipelines</span>
 
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LineageArg</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LineageArg</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Download, verify and place the artifact.&quot;&quot;&quot;</span>
         <span class="n">lineage_arg</span><span class="p">,</span> <span class="n">cached_artifact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_defaults</span><span class="p">(</span><span class="n">run_id</span><span class="o">=</span><span class="n">default_run_id</span><span class="p">)</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cached_artifact</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">paths</span><span class="o">.</span><span class="n">place_path</span><span class="p">(</span>
             <span class="n">tgt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
