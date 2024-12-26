@@ -428,7 +428,15 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
     ):
         """Place local run artifact on target path, may trigger a cache pull."""
         mode = typing.cast(paths.PathOperation, "link" if link else "copy")
-        paths.place_path(self._get_run_artifact(run, path_in_run), target, mode, overwrite)
+        if (src := self._get_run_artifact(run, path_in_run)).is_dir() and link:
+            paths.ensure_only_parents(target, force=overwrite)
+
+            for dirpath, _, filenames in os.walk(src):
+                relpath = Path(dirpath).relative_to(src)
+                for filename in filenames:
+                    paths.place_path(Path(dirpath) / filename, target / relpath / filename, mode, overwrite)
+        else:
+            paths.place_path(src, target, mode, overwrite)
 
     # =======================================================================================================
     # === Arguments pre-processing ==========================================================================

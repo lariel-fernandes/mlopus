@@ -203,6 +203,12 @@ class TestApi(ABC, Generic[API]):
                 exported_api.place_run_artifact(run_id, copy := tmp / "copy", path_in_run, link=True)
 
                 assert loader(copy) == artifact
-                assert copy.resolve().relative_to(export)
+
+                for dirpath, dirnames, filenames in os.walk(copy):
+                    for dirname in dirnames:
+                        assert not (Path(dirpath) / dirname).is_symlink()
+                    for filename in filenames:
+                        assert (filepath := Path(dirpath) / filename).is_symlink()
+                        assert filepath.resolve().relative_to(export)
 
             api.clean_all_cache()
