@@ -1,3 +1,10 @@
+## 1.2.2 (2024-12-26)
+
+### Fix
+
+- **BaseMlflowApi**: use file links when placing artifact dirs
+- **artschema.specs**: let run artifact be optional
+
 ## 1.2.1 (2024-12-22)
 
 ### Fix
