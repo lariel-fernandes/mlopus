@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.kedro.hooks.mlflow_artifacts.input &mdash; MLOpus 1.2.2 documentation</title>
+  <title>mlopus.kedro.hooks.mlflow_artifacts.input &mdash; MLOpus 1.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
@@ -84,7 +84,7 @@
 
 <span class="kn">import</span> <span class="nn">mlopus</span>
 <span class="kn">from</span> <span class="nn">mlopus.lineage</span> <span class="kn">import</span> <span class="n">_LineageArg</span>
-<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">paths</span>
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span>
 
 
 <div class="viewcode-block" id="PipelineInput"><a class="viewcode-back" href="../../../../../rst/kedro/hooks/artifacts.html#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput">[docs]</a><span class="k">class</span> <span class="nc">PipelineInput</span><span class="p">(</span><span class="n">mlopus</span><span class="o">.</span><span class="n">artschema</span><span class="o">.</span><span class="n">LoadArtifactSpec</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">EmptyStrAsMissing</span><span class="p">):</span>
@@ -123,22 +123,9 @@
 
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LineageArg</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Download, verify and place the artifact.&quot;&quot;&quot;</span>
-        <span class="n">lineage_arg</span><span class="p">,</span> <span class="n">cached_artifact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_defaults</span><span class="p">(</span><span class="n">run_id</span><span class="o">=</span><span class="n">default_run_id</span><span class="p">)</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">cached_artifact</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-
-        <span class="n">paths</span><span class="o">.</span><span class="n">place_path</span><span class="p">(</span>
-            <span class="n">tgt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">cached_artifact</span><span class="p">,</span>
-            <span class="n">overwrite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">overwrite</span><span class="p">,</span>
-            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;link&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">link</span> <span class="k">else</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">link</span><span class="p">:</span>
-            <span class="n">paths</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">paths</span><span class="o">.</span><span class="n">Mode</span><span class="o">.</span><span class="n">rwx</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">lineage_arg</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_defaults</span><span class="p">(</span><span class="n">run_id</span><span class="o">=</span><span class="n">default_run_id</span><span class="p">)</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">link</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">link</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">get_lineage_arg_for_input</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 </pre></div>
 
            </div>
