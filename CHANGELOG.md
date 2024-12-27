@@ -1,3 +1,14 @@
+## 1.3.0 (2024-12-27)
+
+### Feat
+
+- **artschema/specs**: add `place` method, extend behavior of `optional` flag for loaded run artifacts
+
+### Fix
+
+- **mlflow/api/base**: fix dir permissions after artifact place by copy
+- **mlflow/api/mv**: return api copy after `place_artifact`
+
 ## 1.2.2 (2024-12-26)
 
 ### Fix
