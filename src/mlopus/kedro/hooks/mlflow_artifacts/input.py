@@ -3,7 +3,7 @@ from typing import List
 
 import mlopus
 from mlopus.lineage import _LineageArg
-from mlopus.utils import pydantic, paths
+from mlopus.utils import pydantic
 
 
 class PipelineInput(mlopus.artschema.LoadArtifactSpec, pydantic.EmptyStrAsMissing):
@@ -42,19 +42,6 @@ class PipelineInput(mlopus.artschema.LoadArtifactSpec, pydantic.EmptyStrAsMissin
 
     def setup(self, default_run_id: str) -> _LineageArg | None:
         """Download, verify and place the artifact."""
-        lineage_arg, cached_artifact = self.with_defaults(run_id=default_run_id)._load(dry_run=True)
-
-        if cached_artifact is None:
-            return None
-
-        paths.place_path(
-            tgt=self.path,
-            src=cached_artifact,
-            overwrite=self.overwrite,
-            mode="link" if self.link else "copy",
-        )
-
-        if not self.link:
-            paths.chmod(self.path, paths.Mode.rwx)
-
-        return lineage_arg
+        if self.with_defaults(run_id=default_run_id).place(self.path, overwrite=self.overwrite, link=self.link):
+            return self.subject.get_lineage_arg_for_input()
+        return None

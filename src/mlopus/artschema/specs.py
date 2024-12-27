@@ -8,6 +8,7 @@ be fully encoded in the configuration and there's no need to change
 the code when an artifact specification is changed.
 """
 
+import functools
 import logging
 from abc import abstractmethod, ABC
 from pathlib import Path
@@ -33,6 +34,14 @@ class ArtifactSubject(MlflowApiMixin, pydantic.EmptyStrAsMissing, ABC, Generic[T
     """Specification of an artifact subject."""
 
     @abstractmethod
+    def place(self, target: Path, **kwargs) -> T:
+        """Place artifact on target path."""
+
+    @abstractmethod
+    def get_lineage_arg_for_input(self) -> LA:
+        """Get argument for registering the lineage when this artifact is used as an input."""
+
+    @abstractmethod
     def cache(self) -> Path:
         """Cache subject metadata and artifact."""
 
@@ -41,7 +50,7 @@ class ArtifactSubject(MlflowApiMixin, pydantic.EmptyStrAsMissing, ABC, Generic[T
         """Export subject metadata and artifact cache."""
 
     @abstractmethod
-    def load(self, **kwargs) -> Tuple[LA, Any]:
+    def load(self, **kwargs) -> Any:
         """Load artifact."""
 
     @abstractmethod
@@ -92,6 +101,14 @@ class ModelVersionArtifact(ArtifactSubject[ModelVersionApi, _ModelLineageArg]):
         """Get entity metadata with MLFlow API handle."""
         return self._version_api
 
+    def place(self, target: Path, **kwargs) -> T:
+        """Place artifact on target path."""
+        return self._version_api.place_artifact(target, **kwargs)
+
+    def get_lineage_arg_for_input(self) -> LA:
+        """Get argument for registering the lineage when this artifact is used as an input."""
+        return _ModelLineageArg(self.model_name, self.model_version)
+
     def cache(self) -> Path:
         """Cache subject metadata and artifact."""
         return self._version_api.cache_meta().cache_artifact()
@@ -100,9 +117,9 @@ class ModelVersionArtifact(ArtifactSubject[ModelVersionApi, _ModelLineageArg]):
         """Export subject metadata and artifact cache."""
         return self._version_api.export_meta(target).export_artifact(target)
 
-    def load(self, **kwargs) -> Tuple[_ModelLineageArg, Any]:
+    def load(self, **kwargs) -> Any:
         """Load artifact."""
-        return _ModelLineageArg(self.model_name, self.model_version), load_artifact(self._version_api, **kwargs)
+        return load_artifact(self._version_api, **kwargs)
 
     def log(self, **kwargs) -> Tuple[_ModelLineageArg, ModelVersionApi]:
         """Log artifact."""
@@ -121,12 +138,30 @@ class ModelVersionArtifact(ArtifactSubject[ModelVersionApi, _ModelLineageArg]):
         self.run_id = self.run_id or run_id
 
 
+def _optional(func):
+    """Decorator for `RunArtifact` methods to ignore `FileNotFoundError` if artifact is optional."""
+
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except FileNotFoundError as exc:
+            if self.optional:
+                return None
+            raise exc
+
+    return wrapper
+
+
 class RunArtifact(ArtifactSubject[RunApi, _RunLineageArg]):
     """Specification of a run artifact."""
 
     run_id: str = None
     path_in_run: str = None
-    optional: bool = pydantic.Field(default=False, description="Skip silently if artifact is missing.")
+    optional: bool = pydantic.Field(
+        default=False,
+        description="Skip silently if run artifact is missing at load time.\n\n.. versionadded:: 1.3.0",
+    )
 
     @property
     def _run_api(self) -> RunApi:
@@ -136,23 +171,29 @@ class RunArtifact(ArtifactSubject[RunApi, _RunLineageArg]):
         """Get entity metadata with MLFlow API handle."""
         return self._run_api
 
+    @_optional
+    def place(self, target: Path, **kwargs) -> T:
+        """Place artifact on target path."""
+        return self._run_api.place_artifact(target, path_in_run=self.path_in_run, **kwargs)
+
+    def get_lineage_arg_for_input(self) -> LA:
+        """Get argument for registering the lineage when this artifact is used as an input."""
+        return _RunLineageArg(self.run_id, self.path_in_run)
+
+    @_optional
     def cache(self) -> Path:
         """Cache subject metadata and artifact."""
         return self._run_api.cache_meta().cache_artifact(self.path_in_run)
 
+    @_optional
     def export(self, target: Path) -> Path:
         """Export subject metadata and artifact cache."""
         return self._run_api.export_meta(target).export_artifact(target, self.path_in_run)
 
-    def load(self, **kwargs) -> Tuple[_RunLineageArg, Any]:
+    @_optional
+    def load(self, **kwargs) -> Any:
         """Load artifact."""
-        lineage_arg = _RunLineageArg(self.run_id, self.path_in_run)
-        try:
-            return lineage_arg, load_artifact(self._run_api, path_in_run=self.path_in_run, **kwargs)
-        except FileNotFoundError as exc:
-            if self.optional:
-                return lineage_arg, None
-            raise exc
+        return load_artifact(self._run_api, path_in_run=self.path_in_run, **kwargs)
 
     def log(self, **kwargs) -> Tuple[_RunLineageArg, RunApi]:
         """Log artifact."""
@@ -210,6 +251,17 @@ class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
         """Entity metadata with MLFlow API handle."""
         return self.subject.using(self.mlflow_api).entity_api
 
+    def place(self, target: Path, **kwargs):
+        """Place artifact on target path.
+
+        .. versionadded:: 1.3.0
+
+        See also:
+            - :meth:`mlopus.mlflow.RunApi.place_artifact`
+            - :meth:`mlopus.mlflow.ModelVersionApi.place_artifact`
+        """
+        return self.subject.using(self.mlflow_api).place(target, **kwargs)
+
     def download(self) -> Path:
         """Cache subject metadata and artifact.
 
@@ -249,11 +301,9 @@ class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
             - If :paramref:`dry_run` is `True`: A `Path` to the cached artifact.
             - Otherwise: An instance of :attr:`Schema.Artifact`
         """
-        return self._load(schema, dry_run)[1]
+        return self._load(schema, dry_run)
 
-    def _load(
-        self, schema: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = None, dry_run: bool = False
-    ) -> Tuple[LA, A]:
+    def _load(self, schema: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = None, dry_run: bool = False) -> A:
         """Load artifact."""
         return self.subject.using(self.mlflow_api).load(
             dry_run=dry_run,
