@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MlflowArtifacts &mdash; MLOpus 1.2.2 documentation</title>
+  <title>MlflowArtifacts &mdash; MLOpus 1.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -203,6 +203,22 @@ a fully commented example covering all settings that can be customized in this h
 <dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.entity_api">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entity_api</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.entity_api" title="Permalink to this definition"></a></dt>
 <dd><p>Entity metadata with MLFlow API handle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.place">
+<span class="sig-name descname"><span class="pre">place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlopus.kedro.hooks.mlflow_artifacts.PipelineInput.place" title="Permalink to this definition"></a></dt>
+<dd><p>Place artifact on target path.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.0.</span></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../mlflow/apis/run.html#mlopus.mlflow.RunApi.place_artifact" title="mlopus.mlflow.RunApi.place_artifact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.mlflow.RunApi.place_artifact()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../mlflow/apis/mv.html#mlopus.mlflow.ModelVersionApi.place_artifact" title="mlopus.mlflow.ModelVersionApi.place_artifact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mlopus.mlflow.ModelVersionApi.place_artifact()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
