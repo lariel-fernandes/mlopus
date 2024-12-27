@@ -105,7 +105,7 @@ class ModelVersionApi(schema.ModelVersion, entity.EntityApi):
         return self.api.get_model_artifact(self)
 
     @pydantic.validate_arguments
-    def place_artifact(self, target: Path, overwrite: bool = False, link: bool = True):
+    def place_artifact(self, target: Path, overwrite: bool = False, link: bool = True) -> "ModelVersionApi":
         """Place model version artifact on target path.
 
         See also:
@@ -116,6 +116,7 @@ class ModelVersionApi(schema.ModelVersion, entity.EntityApi):
         :param link: Use symbolic link instead of copy.
         """
         self.api.place_model_artifact(self, target, overwrite, link)
+        return self
 
     @pydantic.validate_arguments
     def load_artifact(self, loader: Callable[[Path], A]) -> A:
