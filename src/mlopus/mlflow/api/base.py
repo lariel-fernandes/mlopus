@@ -426,17 +426,28 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         link: bool,
         overwrite: bool,
     ):
-        """Place local run artifact on target path, may trigger a cache pull."""
+        """Place local run artifact on target path, may trigger a cache pull.
+
+        The resulting files are always write-protected, but directories are not.
+        """
         mode = typing.cast(paths.PathOperation, "link" if link else "copy")
+
         if (src := self._get_run_artifact(run, path_in_run)).is_dir() and link:
             paths.ensure_only_parents(target, force=overwrite)
 
-            for dirpath, _, filenames in os.walk(src):
+            for dirpath, _, filenames in os.walk(src):  # Recursively create symbolic links for files
                 relpath = Path(dirpath).relative_to(src)
                 for filename in filenames:
                     paths.place_path(Path(dirpath) / filename, target / relpath / filename, mode, overwrite)
         else:
             paths.place_path(src, target, mode, overwrite)
+
+        if target.is_dir() and not link:  # Recursively fix permissions of copied directories
+            target.chmod(paths.Mode.rwx)
+
+            for dirpath, dirnames, _ in os.walk(target):
+                for dirname in dirnames:
+                    Path(dirpath, dirname).chmod(paths.Mode.rwx)
 
     # =======================================================================================================
     # === Arguments pre-processing ==========================================================================
@@ -833,6 +844,7 @@ class BaseMlflowApi(contract.MlflowApiContract, ABC, frozen=True):
         """Place run artifact on target path.
 
         Triggers a cache pull on a cache miss or if :attr:`always_pull_artifacts`.
+        The resulting files are always write-protected, but directories are not.
 
         :param run: Run ID or object.
         :param target: Target path.
