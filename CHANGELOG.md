@@ -1,3 +1,9 @@
+## 1.3.2 (2024-12-28)
+
+### Fix
+
+- **artschema**: bugfix in pkg reqs check with markers
+
 ## 1.3.1 (2024-12-28)
 
 ### Fix
