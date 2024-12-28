@@ -7,7 +7,7 @@ artifacts associated to those entities can be saved/loaded/verified
 just by providing the alias of a registered schema.
 """
 
-from .catalog import ArtifactsCatalog
+from .catalog import ArtifactsCatalog, ArtifactsCatalogWithMetadata, LoadedArtifact
 from .framework import Dumper, Loader, Schema
 from .helpers import load_artifact, get_schema, log_model_version, log_run_artifact, get_schemas
 from .specs import (
@@ -39,4 +39,6 @@ __all__ = [
     "parse_logart_specs",
     "RunArtifact",
     "ModelVersionArtifact",
+    "LoadedArtifact",
+    "ArtifactsCatalogWithMetadata",
 ]
