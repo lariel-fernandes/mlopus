@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.artschema.catalog &mdash; MLOpus 1.3.0 documentation</title>
+  <title>mlopus.artschema.catalog &mdash; MLOpus 1.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -81,16 +81,19 @@
   <h1>Source code for mlopus.artschema.catalog</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">mlopus.mlflow.api.base</span> <span class="kn">import</span> <span class="n">BaseMlflowApi</span>
-<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span>
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">typing_utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">helpers</span><span class="p">,</span> <span class="n">framework</span>
 <span class="kn">from</span> <span class="nn">.specs</span> <span class="kn">import</span> <span class="n">LoadArtifactSpec</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>  <span class="c1"># Type of artifact</span>
 
-<div class="viewcode-block" id="ArtifactsCatalog"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog">[docs]</a><span class="k">class</span> <span class="nc">ArtifactsCatalog</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ArtifactsCatalog"><a class="viewcode-back" href="../../../rst/artschema/catalog.html#mlopus.artschema.ArtifactsCatalog">[docs]</a><span class="k">class</span> <span class="nc">ArtifactsCatalog</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for artifact catalogs.</span>
 
 <span class="sd">    Useful for type-safe loading/downloading/exporting</span>
@@ -137,7 +140,7 @@
 <span class="sd">    :class:`~mlopus.artschema.RunArtifact` and :class:`~mlopus.artschema.ModelVersionArtifact`, respectively.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ArtifactsCatalog.load"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.load">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ArtifactsCatalog.load"><a class="viewcode-back" href="../../../rst/artschema/catalog.html#mlopus.artschema.ArtifactsCatalog.load">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -154,7 +157,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">mlflow_api</span><span class="p">,</span> <span class="n">artifact_specs</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="ArtifactsCatalog.download"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.download">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ArtifactsCatalog.download"><a class="viewcode-back" href="../../../rst/artschema/catalog.html#mlopus.artschema.ArtifactsCatalog.download">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -181,7 +184,7 @@
 
         <span class="k">return</span> <span class="n">paths</span></div>
 
-<div class="viewcode-block" id="ArtifactsCatalog.export"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.ArtifactsCatalog.export">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ArtifactsCatalog.export"><a class="viewcode-back" href="../../../rst/artschema/catalog.html#mlopus.artschema.ArtifactsCatalog.export">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
     <span class="k">def</span> <span class="nf">export</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -189,7 +192,7 @@
         <span class="n">artifact_specs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LoadArtifactSpec</span><span class="p">],</span>
         <span class="n">target</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">verify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Export artifacts and metadata caches while preserving cache structure.</span>
 
 <span class="sd">        See also:</span>
@@ -201,17 +204,59 @@
 <span class="sd">        :param verify: | Use schemas for verification after export.</span>
 <span class="sd">                       | See :meth:`~mlopus.artschema.Dumper.verify`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_iter_specs</span><span class="p">(</span><span class="n">artifact_specs</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Exporting artifact &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-            <span class="n">paths</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">spec</span> <span class="o">:=</span> <span class="n">artifact_specs</span><span class="p">[</span><span class="n">name</span><span class="p">])</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="n">mlflow_api</span><span class="p">)</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">spec</span> <span class="o">:=</span> <span class="n">artifact_specs</span><span class="p">[</span><span class="n">key</span><span class="p">])</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="n">mlflow_api</span><span class="p">)</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
 
-            <span class="k">if</span> <span class="n">verify</span><span class="p">:</span>
-                <span class="n">target_api</span> <span class="o">=</span> <span class="n">mlflow_api</span><span class="o">.</span><span class="n">in_offline_mode</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cache_dir&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span>
-                <span class="n">spec</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="n">target_api</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">verify</span><span class="p">:</span>
+                    <span class="n">target_api</span> <span class="o">=</span> <span class="n">mlflow_api</span><span class="o">.</span><span class="n">in_offline_mode</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cache_dir&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span>
+                    <span class="n">spec</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="n">target_api</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Failed to export artifact files and/or associated metadata for field &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; of catalog &#39;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span></div>
 
-        <span class="k">return</span> <span class="n">paths</span></div>
+<div class="viewcode-block" id="ArtifactsCatalog.verify"><a class="viewcode-back" href="../../../rst/artschema/catalog.html#mlopus.artschema.ArtifactsCatalog.verify">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">mlflow_api</span><span class="p">:</span> <span class="n">BaseMlflowApi</span><span class="p">,</span>
+        <span class="n">artifact_specs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LoadArtifactSpec</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the artifact specs against this catalog and Python environment.</span>
+
+<span class="sd">        .. versionadded:: 1.4</span>
+
+<span class="sd">        - Assert that the Python package requirements are met for each artifact schema in the specs.</span>
+<span class="sd">        - Assert that the return type of each artifact schema matches the expected type in the catalog.</span>
+
+<span class="sd">        :param mlflow_api:</span>
+<span class="sd">        :param artifact_specs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">spec</span> <span class="o">=</span> <span class="n">artifact_specs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="n">mlflow_api</span><span class="p">)</span>
+                <span class="n">schema</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">helpers</span><span class="o">.</span><span class="n">resolve_schema_and_alias</span><span class="p">(</span>
+                    <span class="n">schema</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">schema_</span><span class="p">,</span>
+                    <span class="n">skip_reqs_check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">subject</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">entity_api</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to resolve artifact schema for field &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; of catalog &#39;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span>
+                <span class="n">actual</span> <span class="o">:=</span> <span class="n">Path</span> <span class="k">if</span> <span class="n">schema</span> <span class="o">==</span> <span class="n">framework</span><span class="o">.</span><span class="n">_DummySchema</span><span class="p">()</span> <span class="k">else</span> <span class="n">schema</span><span class="o">.</span><span class="n">Artifact</span><span class="p">,</span>  <span class="c1"># noqa</span>
+                <span class="n">expected</span> <span class="o">:=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_field_type</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Artifact type mismatch for key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; of catalog &#39;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;(expected_by_catalog=</span><span class="si">{</span><span class="n">expected</span><span class="si">}</span><span class="s2">, returned_by_schema=</span><span class="si">{</span><span class="n">actual</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_field_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get artifact type of field.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">annotation</span>
 
     <span class="nd">@classmethod</span>
     <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validate_arguments</span>
@@ -231,7 +276,80 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_iter_specs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">artifact_specs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LoadArtifactSpec</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LoadArtifactSpec</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">artifact_specs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__fields__</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">artifact_specs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LoadedArtifact"><a class="viewcode-back" href="../../../rst/artschema/catalog.html#mlopus.artschema.LoadedArtifact">[docs]</a><span class="k">class</span> <span class="nc">LoadedArtifact</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loaded artifact with metadata.</span>
+
+<span class="sd">    .. versionadded:: 1.4</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="n">T</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">LoadArtifactSpec</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_artifact_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the type of the loaded artifact value.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">type_params</span> <span class="o">:=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_generic_metadata__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;args&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">type_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ArtifactsCatalogWithMetadata"><a class="viewcode-back" href="../../../rst/artschema/catalog.html#mlopus.artschema.ArtifactsCatalogWithMetadata">[docs]</a><span class="k">class</span> <span class="nc">ArtifactsCatalogWithMetadata</span><span class="p">(</span><span class="n">ArtifactsCatalog</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Variant of :class:`ArtifactsCatalog` with added metadata to each field.</span>
+
+<span class="sd">    A condition for usage is that every field must be typed as :class:`LoadedArtifact[T]`,</span>
+<span class="sd">    were `T` is the actual artifact type returned by the configured artifact schema.</span>
+
+<span class="sd">    .. versionadded:: 1.4</span>
+
+<span class="sd">    Example usage:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        # Declare an artifact catalog</span>
+<span class="sd">        class ArtifactsCatalog(mlopus.artschema.ArtifactsCatalogWithMetadata):</span>
+<span class="sd">            foo: LoadedArtifact[Foo]</span>
+<span class="sd">            bar: LoadedArtifact[Bar]</span>
+
+<span class="sd">        # Load all artifacts using the specified schemas</span>
+<span class="sd">        artifacts_catalog = ArtifactsCatalog.load(mlflow_api, artifact_specs)</span>
+
+<span class="sd">        artifacts_catalog.foo.value  # `Foo(...)` instance</span>
+<span class="sd">        artifacts_catalog.foo.meta.run.params  # Params of the artifact&#39;s source run on MLFlow</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__pydantic_init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that each field is typed as a `LoadedArtifact[A]`.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_info</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_get_field_type</span><span class="p">(</span><span class="n">field_name</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_field_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get artifact type of field.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">typing_utils</span><span class="o">.</span><span class="n">safe_issubclass</span><span class="p">(</span><span class="n">field_type</span> <span class="o">:=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="n">LoadedArtifact</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">artifact_type</span> <span class="o">:=</span> <span class="n">field_type</span><span class="o">.</span><span class="n">get_artifact_type</span><span class="p">()</span>  <span class="c1"># noqa</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="n">artifact_type</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field &#39;</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&#39; of catalog &#39;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&#39; must typed as </span><span class="si">{</span><span class="n">LoadedArtifact</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2">].&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">mlflow_api</span><span class="p">:</span> <span class="n">BaseMlflowApi</span><span class="p">,</span>
+        <span class="n">artifact_specs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LoadArtifactSpec</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ArtifactsCatalogWithMetadata&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifacts catalog from specs using MLFlow API.&quot;&quot;&quot;</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">field_name</span><span class="p">:</span> <span class="n">LoadedArtifact</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">_get_field_type</span><span class="p">(</span><span class="n">field_name</span><span class="p">)](</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">field_value</span><span class="p">,</span>
+                <span class="n">meta</span><span class="o">=</span><span class="n">artifact_specs</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="n">mlflow_api</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span> <span class="ow">in</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">mlflow_api</span><span class="p">,</span> <span class="n">artifact_specs</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

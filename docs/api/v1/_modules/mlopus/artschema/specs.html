@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlopus.artschema.specs &mdash; MLOpus 1.3.0 documentation</title>
+  <title>mlopus.artschema.specs &mdash; MLOpus 1.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -90,18 +90,19 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">ABC</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">from</span> <span class="nn">mlopus.lineage</span> <span class="kn">import</span> <span class="n">_LineageArg</span><span class="p">,</span> <span class="n">_ModelLineageArg</span><span class="p">,</span> <span class="n">_RunLineageArg</span>
+<span class="kn">from</span> <span class="nn">mlopus.mlflow.api.common.schema</span> <span class="kn">import</span> <span class="n">Run</span>
 <span class="kn">from</span> <span class="nn">mlopus.mlflow.api.entity</span> <span class="kn">import</span> <span class="n">EntityApi</span>
 <span class="kn">from</span> <span class="nn">mlopus.mlflow.api.mv</span> <span class="kn">import</span> <span class="n">ModelVersionApi</span>
 <span class="kn">from</span> <span class="nn">mlopus.mlflow.api.run</span> <span class="kn">import</span> <span class="n">RunApi</span>
 <span class="kn">from</span> <span class="nn">mlopus.mlflow.traits</span> <span class="kn">import</span> <span class="n">MlflowApiMixin</span>
-<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span>
+<span class="kn">from</span> <span class="nn">mlopus.utils</span> <span class="kn">import</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">paths</span>
 <span class="kn">from</span> <span class="nn">.framework</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">_DummySchema</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span>
 <span class="kn">from</span> <span class="nn">.helpers</span> <span class="kn">import</span> <span class="n">load_artifact</span><span class="p">,</span> <span class="n">log_model_version</span><span class="p">,</span> <span class="n">log_run_artifact</span>
 
@@ -109,6 +110,21 @@
 <span class="n">LA</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;LA&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">_LineageArg</span><span class="p">)</span>  <span class="c1"># Type of lineage argument</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ExportOptions"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.ExportOptions">[docs]</a><span class="k">class</span> <span class="nc">ExportOptions</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for exporting artifact cache.</span>
+
+<span class="sd">    .. versionadded:: 1.4</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">metadata_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Export metadata only, not the actual artifact file(s).&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">ignore_globs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Export only the artifact files that do not match these glob patterns.&quot;</span>
+    <span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">ArtifactSubject</span><span class="p">(</span><span class="n">MlflowApiMixin</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">EmptyStrAsMissing</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">LA</span><span class="p">]):</span>
@@ -325,6 +341,11 @@
         <span class="p">)</span>
     <span class="p">)</span>
 
+    <span class="n">export_opts</span><span class="p">:</span> <span class="n">ExportOptions</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">ExportOptions</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">ExportOptions</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">_parse_subject</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">validator</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">_parse_subject</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -332,10 +353,21 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Entity metadata with MLFlow API handle.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="p">)</span><span class="o">.</span><span class="n">entity_api</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Run</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get source run metadata.</span>
+
+<span class="sd">        .. versionadded:: 1.4</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">api</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_api</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">ModelVersionApi</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">api</span><span class="o">.</span><span class="n">run</span>
+        <span class="k">return</span> <span class="n">api</span>
+
 <div class="viewcode-block" id="LoadArtifactSpec.place"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.LoadArtifactSpec.place">[docs]</a>    <span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Place artifact on target path.</span>
 
-<span class="sd">        .. versionadded:: 1.3.0</span>
+<span class="sd">        .. versionadded:: 1.3</span>
 
 <span class="sd">        See also:</span>
 <span class="sd">            - :meth:`mlopus.mlflow.RunApi.place_artifact`</span>
@@ -356,7 +388,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="p">)</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="LoadArtifactSpec.export"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.LoadArtifactSpec.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<div class="viewcode-block" id="LoadArtifactSpec.export"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.LoadArtifactSpec.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Export subject metadata and artifact cache.</span>
 
 <span class="sd">        See also:</span>
@@ -367,7 +399,15 @@
 
 <span class="sd">        :param target: Target cache export `Path`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="p">)</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">target</span><span class="p">)</span></div>
+        <span class="n">subject</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mlflow_api</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_opts</span><span class="o">.</span><span class="n">metadata_only</span><span class="p">:</span>
+            <span class="n">subject</span><span class="o">.</span><span class="n">entity_api</span><span class="o">.</span><span class="n">export_meta</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exported</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ignore_glob</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_opts</span><span class="o">.</span><span class="n">ignore_globs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">exported</span> <span class="o">/</span> <span class="n">ignore_glob</span><span class="p">)):</span>
+                    <span class="n">paths</span><span class="o">.</span><span class="n">ensure_non_existing</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">match</span><span class="p">),</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LoadArtifactSpec.load"><a class="viewcode-back" href="../../../rst/artschema/specs.html#mlopus.artschema.LoadArtifactSpec.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="n">Schema</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">L</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load artifact.</span>
