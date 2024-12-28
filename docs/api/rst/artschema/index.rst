@@ -12,3 +12,4 @@ Artifact Schemas
    tags
    helpers
    specs
+   catalog
