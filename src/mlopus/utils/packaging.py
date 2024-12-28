@@ -23,7 +23,7 @@ class Patterns:
         - mlopus[kedro,search]~=1.0.5; extra == "pipelines"
     """
 
-    EXTRA_REQ = re.compile(r'^(?P<pkg>[\w.-]+)(\[(?P<extras>.*)])?(?P<specifier>.*); extra == "(?P<extra>\w+)"$')
+    EXTRA_REQ = re.compile(r'^(?P<pkg>[\w.-]+)(\[(?P<extras>.*)])?(?P<specifier>.*); extra == "(?P<extra>\S+)"$')
 
 
 def get_dist(name: str, strict: bool = True) -> Dist | None:
