@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Specs &amp; Catalog &mdash; MLOpus 1.3.0 documentation</title>
+  <title>Artifact Specs &mdash; MLOpus 1.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -24,7 +24,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Kedro Extensions" href="../kedro/index.html" />
+    <link rel="next" title="Artifacts Catalog" href="catalog.html" />
     <link rel="prev" title="Helpers" href="helpers.html" /> 
 </head>
 
@@ -54,7 +54,7 @@
 <li class="toctree-l2"><a class="reference internal" href="framework.html">Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tags.html">Tags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="helpers.html">Helpers</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Specs &amp; Catalog</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Artifact Specs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.RunArtifact"><code class="docutils literal notranslate"><span class="pre">RunArtifact</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.RunArtifact.optional"><code class="docutils literal notranslate"><span class="pre">RunArtifact.optional</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.RunArtifact.path_in_run"><code class="docutils literal notranslate"><span class="pre">RunArtifact.path_in_run</span></code></a></li>
@@ -82,6 +82,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec"><code class="docutils literal notranslate"><span class="pre">LoadArtifactSpec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.export_opts"><code class="docutils literal notranslate"><span class="pre">LoadArtifactSpec.export_opts</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.loader_conf"><code class="docutils literal notranslate"><span class="pre">LoadArtifactSpec.loader_conf</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.schema_"><code class="docutils literal notranslate"><span class="pre">LoadArtifactSpec.schema_</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.skip_reqs_check"><code class="docutils literal notranslate"><span class="pre">LoadArtifactSpec.skip_reqs_check</span></code></a></li>
@@ -91,16 +92,17 @@
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.load"><code class="docutils literal notranslate"><span class="pre">LoadArtifactSpec.load()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.place"><code class="docutils literal notranslate"><span class="pre">LoadArtifactSpec.place()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.entity_api"><code class="docutils literal notranslate"><span class="pre">LoadArtifactSpec.entity_api</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.run"><code class="docutils literal notranslate"><span class="pre">LoadArtifactSpec.run</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.ArtifactsCatalog"><code class="docutils literal notranslate"><span class="pre">ArtifactsCatalog</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.ArtifactsCatalog.download"><code class="docutils literal notranslate"><span class="pre">ArtifactsCatalog.download()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.ArtifactsCatalog.export"><code class="docutils literal notranslate"><span class="pre">ArtifactsCatalog.export()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.ArtifactsCatalog.load"><code class="docutils literal notranslate"><span class="pre">ArtifactsCatalog.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mlopus.artschema.specs.ExportOptions"><code class="docutils literal notranslate"><span class="pre">ExportOptions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.specs.ExportOptions.ignore_globs"><code class="docutils literal notranslate"><span class="pre">ExportOptions.ignore_globs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mlopus.artschema.specs.ExportOptions.metadata_only"><code class="docutils literal notranslate"><span class="pre">ExportOptions.metadata_only</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="catalog.html">Artifacts Catalog</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../kedro/index.html">Kedro Extensions</a></li>
@@ -124,7 +126,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Artifact Schemas</a></li>
-      <li class="breadcrumb-item active">Specs &amp; Catalog</li>
+      <li class="breadcrumb-item active">Artifact Specs</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/rst/artschema/specs.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -135,7 +137,7 @@
            <div itemprop="articleBody">
              
   <section id="module-mlopus.artschema.specs">
-<span id="specs-catalog"></span><h1>Specs &amp; Catalog<a class="headerlink" href="#module-mlopus.artschema.specs" title="Permalink to this heading"></a></h1>
+<span id="artifact-specs"></span><h1>Artifact Specs<a class="headerlink" href="#module-mlopus.artschema.specs" title="Permalink to this heading"></a></h1>
 <p>Pydantic models for specifying the save/load rules of an artifact,
 like where it comes from, which schema is to be used, etc.</p>
 <p>Mostly meant for applications that are based on configuration files,
@@ -296,6 +298,15 @@ the code when an artifact specification is changed.</p>
 <dd><p>Bases: <a class="reference internal" href="../mlflow/traits.html#mlopus.mlflow.MlflowApiMixin" title="mlopus.mlflow.traits.MlflowApiMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MlflowApiMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">LA</span></code>]</p>
 <p>Specification for loading an artifact.</p>
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.artschema.LoadArtifactSpec.export_opts">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export_opts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mlopus.artschema.specs.ExportOptions" title="mlopus.artschema.specs.ExportOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportOptions</span></code></a></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.artschema.LoadArtifactSpec.export_opts" title="Permalink to this definition"></a></dt>
+<dd><p>Options for exporting artifact cache.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="mlopus.artschema.LoadArtifactSpec.loader_conf">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loader_conf</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlopus.artschema.LoadArtifactSpec.loader_conf" title="Permalink to this definition"></a></dt>
 <dd><p>See <a class="reference internal" href="framework.html#mlopus.artschema.Schema.get_loader.params.loader" title="mlopus.artschema.Schema.get_loader"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">loader</span></code></a></p>
@@ -360,7 +371,7 @@ the code when an artifact specification is changed.</p>
 <dd class="field-odd"><p><span class="target" id="mlopus.artschema.LoadArtifactSpec.export.params.target"></span><a class="paramname reference internal" href="#mlopus.artschema.LoadArtifactSpec.export.params.target"><strong>target</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.LoadArtifactSpec.export.params.target">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – Target cache export <cite>Path</cite>.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -407,7 +418,7 @@ the code when an artifact specification is changed.</p>
 <span class="sig-name descname"><span class="pre">place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/specs.html#LoadArtifactSpec.place"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.LoadArtifactSpec.place" title="Permalink to this definition"></a></dt>
 <dd><p>Place artifact on target path.</p>
 <div class="versionadded">
-<p><span class="versionmodified added">New in version 1.3.0.</span></p>
+<p><span class="versionmodified added">New in version 1.3.</span></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -424,125 +435,35 @@ the code when an artifact specification is changed.</p>
 <dd><p>Entity metadata with MLFlow API handle.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="mlopus.artschema.LoadArtifactSpec.run">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../mlflow/schema.html#mlopus.mlflow.schema.Run" title="mlopus.mlflow.api.common.schema.Run"><span class="pre">Run</span></a></em><a class="headerlink" href="#mlopus.artschema.LoadArtifactSpec.run" title="Permalink to this definition"></a></dt>
+<dd><p>Get source run metadata.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.4.</span></p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class pydantic_model">
-<dt class="sig sig-object py" id="mlopus.artschema.ArtifactsCatalog">
-<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.</span></span><span class="sig-name descname"><span class="pre">ArtifactsCatalog</span></span><a class="reference internal" href="../../_modules/mlopus/artschema/catalog.html#ArtifactsCatalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.ArtifactsCatalog" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="mlopus.artschema.specs.ExportOptions">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlopus.artschema.specs.</span></span><span class="sig-name descname"><span class="pre">ExportOptions</span></span><a class="reference internal" href="../../_modules/mlopus/artschema/specs.html#ExportOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.specs.ExportOptions" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Base class for artifact catalogs.</p>
-<p>Useful for type-safe loading/downloading/exporting
-artifacts based on parsed application settings.</p>
-<p>Example settings:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">foo</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">package.module:Schema</span><span class="w">  </span><span class="c1"># Schema specified explicitly by fully qualified class name</span>
-<span class="w">    </span><span class="nt">subject</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">run_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345678</span>
-<span class="w">        </span><span class="nt">path_in_run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo</span>
-<span class="nt">bar</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w">  </span><span class="c1"># Schema obtained by alias from model version tags or parent model tags</span>
-<span class="w">    </span><span class="nt">subject</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo</span>
-<span class="w">        </span><span class="nt">model_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
-</pre></div>
+<p>Options for exporting artifact cache.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.4.</span></p>
 </div>
-<p>Example usage:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the YAML settings above</span>
-<span class="n">artifact_specs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="o">...</span>
-
-<span class="c1"># Declare an artifact catalog</span>
-<span class="k">class</span> <span class="nc">ArtifactsCatalog</span><span class="p">(</span><span class="n">mlopus</span><span class="o">.</span><span class="n">artschema</span><span class="o">.</span><span class="n">ArtifactsCatalog</span><span class="p">):</span>
-    <span class="n">foo</span><span class="p">:</span> <span class="n">FooArtifact</span>
-    <span class="n">bar</span><span class="p">:</span> <span class="n">BarArtifact</span>
-
-<span class="c1"># Cache all artifacts and metadata and verify their files using the specified schemas</span>
-<span class="n">ArtifactsCatalog</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">mlflow_api</span><span class="p">,</span> <span class="n">artifact_specs</span><span class="p">)</span>
-
-<span class="c1"># Load all artifacts using the specified schemas</span>
-<span class="n">artifacts_catalog</span> <span class="o">=</span> <span class="n">ArtifactsCatalog</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">mlflow_api</span><span class="p">,</span> <span class="n">artifact_specs</span><span class="p">)</span>
-
-<span class="n">artifacts_catalog</span><span class="o">.</span><span class="n">foo</span>  <span class="c1"># `FooArtifact`</span>
-<span class="n">artifacts_catalog</span><span class="o">.</span><span class="n">bar</span>  <span class="c1"># `BarArtifact`</span>
-</pre></div>
-</div>
-<p>In the example above, <cite>artifact_specs</cite> is implicitly parsed into a mapping of <cite>str</cite> to <a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec" title="mlopus.artschema.LoadArtifactSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadArtifactSpec</span></code></a>,
-while the <a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.subject" title="mlopus.artschema.LoadArtifactSpec.subject"><code class="xref py py-attr docutils literal notranslate"><span class="pre">subject</span></code></a> values of <cite>foo</cite> and <cite>bar</cite> are parsed into
-<a class="reference internal" href="#mlopus.artschema.RunArtifact" title="mlopus.artschema.RunArtifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunArtifact</span></code></a> and <a class="reference internal" href="#mlopus.artschema.ModelVersionArtifact" title="mlopus.artschema.ModelVersionArtifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelVersionArtifact</span></code></a>, respectively.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.artschema.ArtifactsCatalog.download">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_api</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact_specs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/catalog.html#ArtifactsCatalog.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.ArtifactsCatalog.download" title="Permalink to this definition"></a></dt>
-<dd><p>Cache artifacts and metadata and verify the files against the schemas.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.download" title="mlopus.artschema.LoadArtifactSpec.download"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LoadArtifactSpec.download()</span></code></a></p></li>
-</ul>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="mlopus.artschema.ArtifactsCatalog.download.params.mlflow_api"></span><a class="paramname reference internal" href="#mlopus.artschema.ArtifactsCatalog.download.params.mlflow_api"><strong>mlflow_api</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.ArtifactsCatalog.download.params.mlflow_api">¶</a> (<a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>) – </p></li>
-<li><p><span class="target" id="mlopus.artschema.ArtifactsCatalog.download.params.artifact_specs"></span><a class="paramname reference internal" href="#mlopus.artschema.ArtifactsCatalog.download.params.artifact_specs"><strong>artifact_specs</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.ArtifactsCatalog.download.params.artifact_specs">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec" title="mlopus.artschema.specs.LoadArtifactSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadArtifactSpec</span></code></a>]) – </p></li>
-<li><p><span class="target" id="mlopus.artschema.ArtifactsCatalog.download.params.verify"></span><a class="paramname reference internal" href="#mlopus.artschema.ArtifactsCatalog.download.params.verify"><strong>verify</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.ArtifactsCatalog.download.params.verify">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – <div class="line-block">
-<div class="line">Use schemas for verification after download.</div>
-<div class="line">See <a class="reference internal" href="framework.html#mlopus.artschema.Dumper.verify" title="mlopus.artschema.Dumper.verify"><code class="xref py py-meth docutils literal notranslate"><span class="pre">verify()</span></code></a>.</div>
-</div>
-</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
-</dd>
-</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.artschema.specs.ExportOptions.ignore_globs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ignore_globs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#mlopus.artschema.specs.ExportOptions.ignore_globs" title="Permalink to this definition"></a></dt>
+<dd><p>Export only the artifact files that do not match these glob patterns.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.artschema.ArtifactsCatalog.export">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_api</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact_specs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/catalog.html#ArtifactsCatalog.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.ArtifactsCatalog.export" title="Permalink to this definition"></a></dt>
-<dd><p>Export artifacts and metadata caches while preserving cache structure.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.export" title="mlopus.artschema.LoadArtifactSpec.export"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LoadArtifactSpec.export()</span></code></a></p></li>
-</ul>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="mlopus.artschema.ArtifactsCatalog.export.params.mlflow_api"></span><a class="paramname reference internal" href="#mlopus.artschema.ArtifactsCatalog.export.params.mlflow_api"><strong>mlflow_api</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.ArtifactsCatalog.export.params.mlflow_api">¶</a> (<a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>) – </p></li>
-<li><p><span class="target" id="mlopus.artschema.ArtifactsCatalog.export.params.artifact_specs"></span><a class="paramname reference internal" href="#mlopus.artschema.ArtifactsCatalog.export.params.artifact_specs"><strong>artifact_specs</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.ArtifactsCatalog.export.params.artifact_specs">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec" title="mlopus.artschema.specs.LoadArtifactSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadArtifactSpec</span></code></a>]) – </p></li>
-<li><p><span class="target" id="mlopus.artschema.ArtifactsCatalog.export.params.target"></span><a class="paramname reference internal" href="#mlopus.artschema.ArtifactsCatalog.export.params.target"><strong>target</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.ArtifactsCatalog.export.params.target">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Cache export target path.</p></li>
-<li><p><span class="target" id="mlopus.artschema.ArtifactsCatalog.export.params.verify"></span><a class="paramname reference internal" href="#mlopus.artschema.ArtifactsCatalog.export.params.verify"><strong>verify</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.ArtifactsCatalog.export.params.verify">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – <div class="line-block">
-<div class="line">Use schemas for verification after export.</div>
-<div class="line">See <a class="reference internal" href="framework.html#mlopus.artschema.Dumper.verify" title="mlopus.artschema.Dumper.verify"><code class="xref py py-meth docutils literal notranslate"><span class="pre">verify()</span></code></a>.</div>
-</div>
-</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mlopus.artschema.ArtifactsCatalog.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlflow_api</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact_specs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mlopus/artschema/catalog.html#ArtifactsCatalog.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlopus.artschema.ArtifactsCatalog.load" title="Permalink to this definition"></a></dt>
-<dd><p>Load artifacts from specs using their respective schemas.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec.load" title="mlopus.artschema.LoadArtifactSpec.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LoadArtifactSpec.load()</span></code></a></p></li>
-</ul>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="mlopus.artschema.ArtifactsCatalog.load.params.mlflow_api"></span><a class="paramname reference internal" href="#mlopus.artschema.ArtifactsCatalog.load.params.mlflow_api"><strong>mlflow_api</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.ArtifactsCatalog.load.params.mlflow_api">¶</a> (<a class="reference internal" href="../mlflow/apis/base.html#mlopus.mlflow.BaseMlflowApi" title="mlopus.mlflow.api.base.BaseMlflowApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMlflowApi</span></code></a>) – </p></li>
-<li><p><span class="target" id="mlopus.artschema.ArtifactsCatalog.load.params.artifact_specs"></span><a class="paramname reference internal" href="#mlopus.artschema.ArtifactsCatalog.load.params.artifact_specs"><strong>artifact_specs</strong></a><a class="paramlink headerlink reference internal" href="#mlopus.artschema.ArtifactsCatalog.load.params.artifact_specs">¶</a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec" title="mlopus.artschema.specs.LoadArtifactSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadArtifactSpec</span></code></a>]) – </p></li>
-</ul>
-</dd>
-</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="mlopus.artschema.specs.ExportOptions.metadata_only">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metadata_only</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlopus.artschema.specs.ExportOptions.metadata_only" title="Permalink to this definition"></a></dt>
+<dd><p>Export metadata only, not the actual artifact file(s).</p>
 </dd></dl>
 
 </dd></dl>
@@ -554,7 +475,7 @@ while the <a class="reference internal" href="#mlopus.artschema.LoadArtifactSpec
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="helpers.html" class="btn btn-neutral float-left" title="Helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../kedro/index.html" class="btn btn-neutral float-right" title="Kedro Extensions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="catalog.html" class="btn btn-neutral float-right" title="Artifacts Catalog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

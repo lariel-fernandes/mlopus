@@ -1,6 +1,6 @@
 
-Specs & Catalog
-===============
+Artifact Specs
+==============
 
 .. automodule:: mlopus.artschema.specs
 
@@ -16,4 +16,4 @@ Specs & Catalog
 .. autopydantic_model:: mlopus.artschema.LoadArtifactSpec
    :exclude-members: with_defaults
 
-.. autopydantic_model:: mlopus.artschema.ArtifactsCatalog
+.. autopydantic_model:: mlopus.artschema.specs.ExportOptions
