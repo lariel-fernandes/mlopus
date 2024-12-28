@@ -1,3 +1,9 @@
+## 1.3.1 (2024-12-28)
+
+### Fix
+
+- **artschema**: bugfix in pkg requirements check
+
 ## 1.3.0 (2024-12-27)
 
 ### Feat
