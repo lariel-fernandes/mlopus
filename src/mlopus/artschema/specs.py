@@ -9,18 +9,19 @@ the code when an artifact specification is changed.
 """
 
 import functools
+import glob
 import logging
 from abc import abstractmethod, ABC
 from pathlib import Path
-from typing import Dict, Any, Generic, Type, Mapping, Tuple
-from typing import TypeVar
+from typing import Dict, Any, Generic, Type, Mapping, Tuple, List, TypeVar
 
 from mlopus.lineage import _LineageArg, _ModelLineageArg, _RunLineageArg
+from mlopus.mlflow.api.common.schema import Run
 from mlopus.mlflow.api.entity import EntityApi
 from mlopus.mlflow.api.mv import ModelVersionApi
 from mlopus.mlflow.api.run import RunApi
 from mlopus.mlflow.traits import MlflowApiMixin
-from mlopus.utils import pydantic
+from mlopus.utils import pydantic, paths
 from .framework import Schema, _DummySchema, A, D, L
 from .helpers import load_artifact, log_model_version, log_run_artifact
 
@@ -28,6 +29,21 @@ T = TypeVar("T", bound=EntityApi)  # Type of entity API
 LA = TypeVar("LA", bound=_LineageArg)  # Type of lineage argument
 
 logger = logging.getLogger(__name__)
+
+
+class ExportOptions(pydantic.BaseModel):
+    """Options for exporting artifact cache.
+
+    .. versionadded:: 1.4
+    """
+
+    metadata_only: bool = pydantic.Field(
+        default=False, description="Export metadata only, not the actual artifact file(s)."
+    )
+
+    ignore_globs: List[str] = pydantic.Field(
+        default_factory=list, description="Export only the artifact files that do not match these glob patterns."
+    )
 
 
 class ArtifactSubject(MlflowApiMixin, pydantic.EmptyStrAsMissing, ABC, Generic[T, LA]):
@@ -244,6 +260,11 @@ class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
         )
     )
 
+    export_opts: ExportOptions = pydantic.Field(
+        default_factory=ExportOptions,
+        description=ExportOptions.__doc__,
+    )
+
     _parse_subject = pydantic.validator("subject", pre=True, allow_reuse=True)(_parse_subject)
 
     @property
@@ -251,10 +272,21 @@ class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
         """Entity metadata with MLFlow API handle."""
         return self.subject.using(self.mlflow_api).entity_api
 
+    @property
+    def run(self) -> Run:
+        """Get source run metadata.
+
+        .. versionadded:: 1.4
+        """
+        api = self.entity_api
+        if isinstance(api, ModelVersionApi):
+            return api.run
+        return api
+
     def place(self, target: Path, **kwargs):
         """Place artifact on target path.
 
-        .. versionadded:: 1.3.0
+        .. versionadded:: 1.3
 
         See also:
             - :meth:`mlopus.mlflow.RunApi.place_artifact`
@@ -275,7 +307,7 @@ class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
         """
         return self.subject.using(self.mlflow_api).cache()
 
-    def export(self, target: Path) -> Path:
+    def export(self, target: Path) -> Path | None:
         """Export subject metadata and artifact cache.
 
         See also:
@@ -286,7 +318,15 @@ class LoadArtifactSpec(MlflowApiMixin, Generic[T, LA]):
 
         :param target: Target cache export `Path`.
         """
-        return self.subject.using(self.mlflow_api).export(target)
+        subject = self.subject.using(self.mlflow_api)
+        if self.export_opts.metadata_only:
+            subject.entity_api.export_meta(target)
+            return None
+        else:
+            exported = subject.export(target)
+            for ignore_glob in self.export_opts.ignore_globs:
+                for match in glob.glob(str(exported / ignore_glob)):
+                    paths.ensure_non_existing(Path(match), force=True)
 
     def load(self, schema: Schema[A, D, L] | Type[Schema[A, D, L]] | str | None = None, dry_run: bool = False) -> A:
         """Load artifact.
