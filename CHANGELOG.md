@@ -1,3 +1,10 @@
+## 1.4.0 (2024-12-28)
+
+### Feat
+
+- **artschema.catalog**: catalog with metadata, verify specs
+- **artschema/LoadArtifactSpec**: source run property, export options
+
 ## 1.3.2 (2024-12-28)
 
 ### Fix
