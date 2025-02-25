@@ -27,11 +27,15 @@ class PipelineOutput(mlopus.artschema.LogArtifactSpec, pydantic.EmptyStrAsMissin
         default=None,
         description="If specified, enable output for these pipelines only.",
     )
+    skip_if_missing: bool = pydantic.Field(default=False, description="Skip output if missing.")
 
     def used_by(self, pipeline_name: str) -> None:
         """Check if this output is configured for the specified pipeline."""
         return self.pipelines is None or pipeline_name in self.pipelines
 
-    def collect(self, default_run_id: str) -> _LineageArg:
+    def collect(self, default_run_id: str) -> _LineageArg | None:
         """Verify and publish the artifact."""
+        if self.skip_if_missing and not self.path.exists():
+            return None
+
         return self.with_defaults(run_id=default_run_id, path_in_run=self.path.name)._log(artifact=self.path)[0]

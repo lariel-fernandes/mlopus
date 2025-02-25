@@ -60,7 +60,9 @@ class MlflowArtifacts(mlopus.mlflow.MlflowRunMixin, HookWithFactory):
             if o.enabled and o.used_by(pipeline_name):
                 logger.info("Collecting output '%s'", name)
                 lineage_arg = o.using(self.run_manager.mlflow_api).collect(default_run_id=self.run_manager.run.id)
-                if o.log_lineage:
+                if lineage_arg is None:
+                    logger.info("Output '%s' is missing (skipped)", name)
+                elif o.log_lineage:
                     mlopus.lineage.of(self.run_manager.run).with_output(lineage_arg).register()
 
     # =======================================================================================================
