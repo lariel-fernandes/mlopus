@@ -1,3 +1,9 @@
+## 1.4.1 (2025-02-27)
+
+### Fix
+
+- **kedro/artifacts_hook**: add flag `skip_if_missing` for outputs
+
 ## 1.4.0 (2024-12-28)
 
 ### Feat
