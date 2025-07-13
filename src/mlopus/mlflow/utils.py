@@ -1,3 +1,4 @@
+import os
 from typing import Dict, Any, Type, TypeVar, List
 
 from mlopus.utils import import_utils, dicts
@@ -36,7 +37,7 @@ def get_api(
 
     :return: API instance.
     """
-    return _get_api_cls(plugin, cls).parse_obj(conf or {})
+    return _get_api_cls(plugin, cls).parse_obj(dicts.deep_merge(_get_env_conf(), conf or {}))
 
 
 def api_conf_schema(
@@ -64,3 +65,11 @@ def _get_api_cls(
         cls = import_utils.load_plugin(PLUGIN_GROUP, plugin or "mlflow", BaseMlflowApi)
 
     return cls
+
+
+def _get_env_conf() -> Dict[str, Any]:
+    conf = {}
+    for k, v in os.environ.items():
+        if v and k.startswith(prefix := "MLOPUS_MLFLOW_CONF_"):
+            dicts.set_nested(conf, k.removeprefix(prefix).lower().split("__"), v)
+    return conf
