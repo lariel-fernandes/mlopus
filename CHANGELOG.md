@@ -1,3 +1,9 @@
+## 1.4.2 (2025-07-13)
+
+### Fix
+
+- accept env vars in mlflow api conf
+
 ## 1.4.1 (2025-02-27)
 
 ### Fix
