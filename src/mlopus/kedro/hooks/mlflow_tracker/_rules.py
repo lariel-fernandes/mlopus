@@ -32,7 +32,7 @@ class BaseRule(pydantic.BaseModel, ABC, Generic[T]):
         if self.keys and subject in self.keys:
             return True
 
-        if self.expr and any(expr.match(subject) for expr in self.expr):
+        if self.expr and any(expr.match(subject) for expr in self.expr):  # noqa: SIM103
             return True
 
         return False

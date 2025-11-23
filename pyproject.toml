@@ -33,6 +33,7 @@ dependencies = [
     "packaging          >=22",
     "rclone-python      ~=0.1",
     "importlib-metadata >=6.8",
+    "jinja2>=3.1.4",
 ]
 
 [project.urls]
@@ -49,8 +50,8 @@ generic = "mlopus.mlflow.providers.generic:GenericMlflowApi"
 
 # === UV ==========================================================================================
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "annoy           ~=1.17",
     "numpy           ~=2.1",
     "pandas          ~=2.2",
