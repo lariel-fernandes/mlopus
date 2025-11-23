@@ -1,6 +1,12 @@
+import os
+from collections import defaultdict
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, Iterator, Tuple
 
+import jinja2
+import yaml
+
+from .dicts import deep_merge
 
 NamespacedConfigs = dict[str, dict[str, Any]]
 
@@ -28,9 +34,45 @@ def load_jinja_yaml_configs(
         `all`: Load the specified namespaces first, then the remaining in alphanumerical order. This is the default if no namespaces are specified.
     """
 
-    # TODO: iterate all .yml or .yaml files in `base_path` recursively assigning them to namespaces.
-    #       If the file is inside a dir, the namespace is the dir. Otherwise, it's the file name before a double underscore (e.g. my_namespace__suffix.yml)
+    namespace_files: dict[str, list[Path]] = defaultdict(list)
+    for namespace, file_path in _iter_files_with_namespaces(Path(base_path)):
+        namespace_files[namespace].append(file_path)
 
-    # TODO: determine the default of the load mode if necessary. Iterate the namespaces. For each namespace, concatenate the content of all files in memory then parse them as a jinja template, then load as yaml content, assert the result is a dict
-    #       when parsing a namespace, make the previously parsed namespaces available for jinja values injection
-    #       after parsing each namespace, if there are overrides for it, use deep_merge to combine it with its respective overrides
+    for files in namespace_files.values():
+        files.sort()
+
+    if load_mode is None:
+        load_mode = "explicit" if namespaces else "all"
+
+    namespaces_to_load = namespaces or []
+    if load_mode == "all":
+        namespaces_to_load += [ns for ns in sorted(namespace_files.keys()) if ns not in namespaces]
+
+    context = {
+        **(extra_namespaces or {}),
+        **({env_namespace: dict(os.environ)} if include_env else {}),
+    }
+    result: NamespacedConfigs = {}
+
+    for namespace in namespaces_to_load:
+        raw = "\n".join(file.read_text() for file in namespace_files[namespace])
+        rendered = jinja2.Template(raw).render(**context)
+        parsed = yaml.safe_load(rendered or "{}")
+        assert isinstance(parsed, dict), f"Namespace '{namespace}' must be a dict, got {type(parsed).__name__}"
+        result[namespace] = context[namespace] = (
+            deep_merge(parsed, overrides[namespace]) if overrides and namespace in overrides else parsed
+        )
+
+    return result
+
+
+def _iter_files_with_namespaces(base_path: Path) -> Iterator[Tuple[str, Path]]:
+    """Iterate (namespace, path) tuples for every YAML file in the specified path.
+
+    Namespaces are determined by the file's top dir or by its name before any double underscores.
+    Examples: <namespace>/subdir/file.yaml, <namespace>__suffix.yml, <namespace>.yaml, etc
+    """
+    for file_path in (x for x in base_path.rglob("*.y*ml") if x.suffix in (".yml", ".yaml")):
+        rel_path = file_path.relative_to(base_path)
+        namespace = rel_path.parts[0] if len(rel_path.parts) > 1 else file_path.stem.split("__")[0]
+        yield namespace, file_path
