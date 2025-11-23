@@ -1,6 +1,6 @@
 # This is a detailed, comprehensive configuration for `mlopus.kedro.hooks.MlflowArtifacts`
 # For a minimal version of it, have a look at:
-# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/base/parameters/hooks/mlflow_artifacts.yml
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/hooks/mlflow_artifacts.yml
 
 mlflow_artifacts:  # Arguments for `mlopus.kedro.hooks.MlflowArtifacts`
 

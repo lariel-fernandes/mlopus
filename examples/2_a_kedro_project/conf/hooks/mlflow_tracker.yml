@@ -1,9 +1,9 @@
 # This is a minimal configuration for `mlopus.kedro.hooks.MlflowTracker`
 # For a fully commented example covering all settings that can be customized in this hook, have a look at:
-# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/full/parameters/hooks/mlflow_tracker.yml
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf.reference/hooks/mlflow_tracker.yml
 
 mlflow_tracker:
-  mlflow: ${globals:mlflow}
+  mlflow: {{ mlflow }}
   metrics: {datasets: [distances_at_k]}  # save these datasets as MLflow metrics
   logs: {files: [logs/info.log, logs/error.log]}
 
@@ -18,10 +18,10 @@ mlflow_tracker:
   tags:
     report: true  # include these tags in session report
     values:  # set these tags in the MLflow run
-      chain_id: ${globals:chain_id}
-      kedro: {env: "${session:env}", cmd: "${session:cli.command_path,''}"}
+      chain_id: {{globals.chain_id: null}: null}
+      kedro: {cmd: "{{ session.cli.command_path }}"}
       mlflow:
-        user: ${session:username}
+        user: {{session:username: null}: null}
         source:
           name: https://github.com/lariel-fernandes/mlopus
-          git: {commit: "${session:git.commit_sha,${session:pkg.version}}"}
+          git: {commit: "{{ session.get.commit_sha | default(session.pkg.version) }}"}

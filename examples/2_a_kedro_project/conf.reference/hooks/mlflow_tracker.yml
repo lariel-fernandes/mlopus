@@ -1,6 +1,6 @@
 # This is a detailed, comprehensive configuration for `mlopus.kedro.hooks.MlflowTracker`
 # For a minimal version of it, have a look at:
-# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/base/parameters/hooks/mlflow_tracker.yml
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/hooks/mlflow_tracker.yml
 
 mlflow_tracker:  # Arguments for `mlopus.kedro.hooks.MlflowTracker`
 
