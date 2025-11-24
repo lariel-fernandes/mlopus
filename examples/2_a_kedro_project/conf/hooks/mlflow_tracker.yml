@@ -18,10 +18,10 @@ mlflow_tracker:
   tags:
     report: true  # include these tags in session report
     values:  # set these tags in the MLflow run
-      chain_id: {{globals.chain_id: null}: null}
-      kedro: {cmd: "{{ session.cli.command_path }}"}
+      chain_id: {{ globals.chain_id }}
+      kedro: {cmd: "{{ session.cli.command_path if session.cli is defined else 'null' }}"}
       mlflow:
-        user: {{session:username: null}: null}
+        user: {{ session.username }}
         source:
           name: https://github.com/lariel-fernandes/mlopus
           git: {commit: "{{ session.get.commit_sha | default(session.pkg.version) }}"}

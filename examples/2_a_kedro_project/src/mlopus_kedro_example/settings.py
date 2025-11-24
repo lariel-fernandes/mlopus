@@ -12,8 +12,9 @@ KedroSession.create = MlopusKedroSession.create
 # Patch the Kedro config loader
 CONFIG_LOADER_CLASS = JinjaYamlConfigLoader
 CONFIG_LOADER_ARGS = {
-    "namespaces": ["globals"],  # load this namespace first
+    "namespaces": ["globals", "mlflow"],  # load these namespaces first, in this order
     "load_mode": "all",  # then load all other namespaces
+    "expose_env": True,  # expose environment variables to jinja templating
     "namespace_mappings": {
         "catalog": "io",  # remap so kedro finds the data catalog configs
         "parameters": "nodes",  # remap so the node factories find the parameters

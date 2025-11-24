@@ -1,7 +1,7 @@
 # This is a minimal configuration for the class `mlopus.mlflow.traits.MlflowRunManager`
 # For a fully commented example covering all settings that can be customized in this object, have a look at:
 # https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf.reference/mlflow.yml
-mlflow:
-  exp: {name: mlopus_kedro_example}
-  run: {name: "", tags: {kedro: {active_session: {uuid: "{{ session.uuid }}"}}}}
-  api: {conf: {tracking_uri: "{{ env.MLFLOW_TRACKING_URI | default('~/.cache/mlflow') }}", file_transfer: {use_scheme: "mlflow_sandbox"}}}
+
+exp: {name: mlopus_kedro_example}
+run: {name: "", tags: {kedro: {active_session: {uuid: "{{ session.uuid }}"}}}}
+api: {conf: {tracking_uri: "{{ env.MLFLOW_TRACKING_URI | default('~/.cache/mlflow') }}", file_transfer: {use_scheme: "mlflow_sandbox"}}}

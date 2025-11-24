@@ -1637,7 +1637,7 @@ dev = [
 [[package]]
 name = "mlopus-kedro-example"
 version = "0.0.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "annoy" },
     { name = "numpy" },

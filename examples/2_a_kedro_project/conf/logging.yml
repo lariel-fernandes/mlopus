@@ -40,6 +40,8 @@ loggers:
     level: WARNING
   mlopus:
     level: INFO
+#  mlopus.utils.jinja_yaml:  # uncomment to debug the config loader
+#    level: DEBUG
   mlflow:
     level: INFO
   mlopus_kedro_example:
