@@ -2,11 +2,14 @@ import os
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Literal, Iterator, Tuple, Callable
-
+import logging
 import jinja2
 import yaml
 
 from .dicts import deep_merge
+from .import_utils import fq_name
+
+logger = logging.getLogger(__name__)
 
 NamespacedConfigs = dict[str, dict[str, Any]]
 
@@ -66,13 +69,26 @@ def load_jinja_yaml_configs(
     jinja_env.filters.update(custom_filters or {})
 
     for namespace in namespaces_to_load:
-        raw = "\n".join(file.read_text() for file in namespace_files[namespace])
-        rendered = jinja_env.from_string(raw).render(**context)
-        parsed = yaml.safe_load(rendered or "{}")
-        assert isinstance(parsed, dict), f"Namespace '{namespace}' must be a dict, got {type(parsed).__name__}"
-        result[namespace] = context[namespace] = (
-            deep_merge(parsed, overrides[namespace]) if overrides and namespace in overrides else parsed
-        )
+        result[namespace] = {}
+
+        for file in namespace_files[namespace]:
+            logger.debug(
+                "Loading config file. %s",
+                details := {"namespace": namespace, "filepath": str(file.relative_to(base_path))},
+            )
+            rendered = jinja_env.from_string(file.read_text()).render(**context)
+            parsed = yaml.safe_load(rendered or "{}")
+            assert isinstance(parsed, dict), "Config file parsing must result in a dict. %s" % {
+                **details,
+                "actual": fq_name(type(parsed)),
+            }
+
+            if ns_overrides := (overrides or {}).get(namespace):
+                parsed = deep_merge(parsed, ns_overrides)  # noqa
+
+            result[namespace] |= parsed
+
+        context[namespace] = result[namespace]
 
     return result
 

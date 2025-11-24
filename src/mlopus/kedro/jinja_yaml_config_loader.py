@@ -32,7 +32,6 @@ class JinjaYamlConfigLoader(AbstractConfigLoader):
         )
 
         self._namespace_mappings = namespace_mappings or {}
-        self._reverse_namespace_mappings = {v: k for k, v in self._namespace_mappings.items()}
 
         self._config = load_jinja_yaml_configs(
             base_path=conf_source,
@@ -44,6 +43,11 @@ class JinjaYamlConfigLoader(AbstractConfigLoader):
             env_namespace=env_namespace,
         )
 
+        # The following config namespaces are required by Kedro, so we give them a default if necessary.
+        for required_key in ["globals", "catalog", "parameters", "credentials"]:
+            if required_key not in self._namespace_mappings:
+                self._config.setdefault(required_key, {})
+
     def __getitem__(self, item: str) -> dict[str, Any]:
         return copy.deepcopy(self._config[self._namespace_mappings.get(item) or item])
 
@@ -51,7 +55,7 @@ class JinjaYamlConfigLoader(AbstractConfigLoader):
         raise RuntimeError(f"{self.__class__.__name__} is read-only")
 
     def keys(self) -> KeysView:
-        return KeysView([self._reverse_namespace_mappings.get(k) or k for k in self._config.keys()])  # noqa
+        return KeysView(list(self._config.keys()) + list(self._namespace_mappings.keys()))  # noqa
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({list(self.keys())})"
