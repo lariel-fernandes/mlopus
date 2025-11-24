@@ -31,7 +31,7 @@ def temp_mlflow_overrides(mocker, temp_dir, example_proj) -> dict:
         using(tmp.joinpath("cache")) as cache,
         using(tmp.joinpath("server-data")) as server,
         using({"cache_dir": cache, "tracking_uri": server}) as api_conf,
-        using({"globals": {"mlflow": {"api": {"conf": api_conf}}}}) as overrides,
+        using({"mlflow": {"api": {"conf": api_conf}}}) as overrides,
     ):
         yield overrides
 
@@ -49,4 +49,4 @@ def temp_kedro_conf(temp_session):
 
 @pytest.fixture(scope="function")
 def temp_run_manager(temp_kedro_conf) -> mlopus.mlflow.traits.MlflowRunManager:
-    yield mlopus.mlflow.traits.MlflowRunManager(**temp_kedro_conf["globals"]["mlflow"])
+    yield mlopus.mlflow.traits.MlflowRunManager(**temp_kedro_conf["mlflow"])

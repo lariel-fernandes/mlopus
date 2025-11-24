@@ -62,7 +62,7 @@ class TestArtifactSchemaDataset:
             temp_dir,
             schema="default",
             subject=subjects[subject],
-            mlflow=temp_kedro_conf["globals"]["mlflow"],
+            mlflow=temp_kedro_conf["mlflow"],
         )
 
     @classmethod

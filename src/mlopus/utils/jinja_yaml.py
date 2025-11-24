@@ -82,11 +82,10 @@ def load_jinja_yaml_configs(
                 **details,
                 "actual": fq_name(type(parsed)),
             }
-
-            if ns_overrides := (overrides or {}).get(namespace):
-                parsed = deep_merge(parsed, ns_overrides)  # noqa
-
             result[namespace] |= parsed
+
+        if ns_overrides := (overrides or {}).get(namespace):
+            result[namespace] = deep_merge(result[namespace], ns_overrides)  # noqa
 
         context[namespace] = result[namespace]
 
