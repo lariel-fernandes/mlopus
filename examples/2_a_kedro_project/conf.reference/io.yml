@@ -1,6 +1,6 @@
 # This is a detailed, comprehensive configuration for
 # For a minimal version of it, have a look at:
-# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/base/catalog.yml
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/io.yml
 model:
   type: mlopus.kedro.datasets.ArtifactSchemaDataset
   path: data/model  # Save/load data to/from this path

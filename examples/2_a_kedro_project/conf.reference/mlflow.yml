@@ -1,6 +1,6 @@
 # This is a detailed, comprehensive configuration for `mlopus.mlflow.traits.MlflowRunManager`
 # For a minimal version of it, have a look at:
-# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/base/globals/mlflow.yml
+# https://github.com/lariel-fernandes/mlopus/tree/main/examples/2_a_kedro_project/conf/mlflow.yml
 
 mlflow:  # Arguments for `mlopus.mlflow.traits.MlflowRunManager`
   # This object is responsible for resuming, finding or creating an MLflow run that will be shared among

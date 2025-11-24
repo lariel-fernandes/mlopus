@@ -1,10 +1,13 @@
 import contextlib
+import inspect
 import logging
 import os
 import uuid
+from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Any
 
+import pytz
 import toml
 from kedro.config import AbstractConfigLoader
 from kedro.framework.context import KedroContext
@@ -108,6 +111,11 @@ class MlopusKedroSession(KedroSession):
             "version": packaging.get_dist(self._package_name.split(".")[0]).version,
         }
 
+        self._store["timestamp"] = {
+            "iso": (session_datetime := datetime.now(pytz.utc)).isoformat(),
+            "unix": session_datetime.timestamp(),
+        }  # include session start datetime both as ISO UTC and UNIX timestamp
+
         self._store["uuid"] = self.uuid = str(uuid.uuid4())  # generate UUID (not datetime-bound like the session ID)
 
         self._hook_manager.trace.root.setwriter(None)  # fix to prevent data dumping on call to pluggy
@@ -115,6 +123,12 @@ class MlopusKedroSession(KedroSession):
         DictResolver(self._store).register("session")  # expose session info for interpolation in config keys
 
         DictResolver(os.environ).register("env")  # expose environment variables for interpolation in config keys
+
+        if "extra_namespaces" in inspect.signature(settings.CONFIG_LOADER_CLASS.__init__).parameters:
+            settings.CONFIG_LOADER_ARGS = settings.CONFIG_LOADER_ARGS or {}
+            settings.CONFIG_LOADER_ARGS["extra_namespaces"] = (
+                settings.CONFIG_LOADER_ARGS.get("extra_namespaces") or {}
+            ) | {"session": self._store}
 
         self._ctx = None  # lazy initialized cached context
 

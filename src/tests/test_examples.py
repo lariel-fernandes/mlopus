@@ -34,7 +34,7 @@ def test_example_1(temp_mlflow):
 
 def test_example_2(temp_dir, example_proj, temp_mlflow_overrides):
     overrides = temp_mlflow_overrides
-    overrides["globals"]["model"] = {"version": "1"}
+    overrides.setdefault("globals", {})["model"] = {"version": "1"}
 
     with temp_dir() as tmp:
         overrides["globals"]["data"] = tmp / "data"  # Use a temp data dir
