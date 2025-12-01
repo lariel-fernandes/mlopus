@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 import pytest
+from rclone_python.utils import RcloneException
 
 from mlopus.mlflow.providers.generic import GenericMlflowApi
 from mlopus.mlflow.providers.mlflow import MlflowApi
@@ -102,7 +103,7 @@ class TestGeneric(ApiTester[API]):
 
             with pytest.raises(Exception) as e:
                 api_no_pull.list_run_artifacts(run_id, path_in_run)
-            assert str(e.value).startswith("ls operation")
+            assert isinstance(e.value, RcloneException) and "directory not found" in e.value.args[0].lower()
 
             with pytest.raises(FileNotFoundError):
                 api_no_pull.load_run_artifact(run_id, loader, path_in_run)
