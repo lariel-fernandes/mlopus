@@ -19,7 +19,7 @@ run_command = mlopus.kedro.RunCommand(
         mlopus.kedro.cli_option(
             "--pipeline",
             help="Pipeline name.",
-            target_key="globals.mlflow.run.name",  # Forward value to `globals.mlflow.run.name`
+            target_key="mlflow.run.name",  # Forward value to `mlflow.run.name`
         ),
         mlopus.kedro.cli_option(
             "--json-params",
@@ -44,7 +44,7 @@ def choose_model_version(kedro_config: Mapping) -> str | None:
     """Before the pipeline `eval` is executed, find the last model version
     that was produced by an experiment run with the same `chain_id` tag."""
     results = mlopus.mlflow \
-        .get_api(**kedro_config["globals"]["mlflow"]["api"]) \
+        .get_api(**kedro_config["mlflow"]["api"]) \
         .get_model(name := kedro_config["globals"]["model"]["name"]) \
         .find_versions(
             sorting=[("version", -1)],
