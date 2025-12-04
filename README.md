@@ -57,5 +57,5 @@ poetry add mlopus --extras "mlflow,kedro,search"
 
 **Using UV:**
 ```bash
-uv add mlopus --extra mlflow --extra kedro --extra search
+uv add mlopus --extra mlflow --extra kedro  --extra search
 ```
