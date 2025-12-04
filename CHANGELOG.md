@@ -1,3 +1,9 @@
+## 1.5.1 (2025-12-04)
+
+### Fix
+
+- update dependencies (dummy commit to trigger release of last merged PR)
+
 ## 1.5.0 (2025-11-24)
 
 ### Feat
