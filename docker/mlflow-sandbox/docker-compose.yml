@@ -31,9 +31,10 @@ services:
     - ./localstack-init.sh:/etc/localstack/init/ready.d/init-aws.sh
 
   mlflow:
-    image: bitnami/mlflow
+    image: python:3.12-slim
     healthcheck:
       <<: *healthcheck
+      start_period: 30s # wait before first check
       test: [CMD, python, -c, "import requests; assert requests.get('http://localhost:${MLFLOW_CONTAINER_PORT}/health').status_code == 200"]
     depends_on:
       database: {condition: service_healthy}
