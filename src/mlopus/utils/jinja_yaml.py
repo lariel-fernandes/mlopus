@@ -27,6 +27,7 @@ def load_jinja_yaml_configs(
     expose_env: bool = False,
     env_namespace: str = DEFAULT_ENV_NAMESPACE,
     custom_filters: dict[str, Callable] | None = None,
+    file_extensions: set[str] | None = None,
 ) -> NamespacedConfigs:
     """
     Load namespaced configs from jinja-templated YAML files.
@@ -43,10 +44,11 @@ def load_jinja_yaml_configs(
     :param env_namespace: The name of the extra namespace for environment variables.
 
     :param custom_filters: Custom jinja2 filters for manipulating values in the template.
+    :param file_extensions: File extensions to use. Defaults to `{'.yml', '.yaml'}`. The leading dot is ignored.
     """
 
     namespace_files: dict[str, list[Path]] = defaultdict(list)
-    for namespace, file_path in _iter_files_with_namespaces(Path(base_path)):
+    for namespace, file_path in _iter_files_with_namespaces(Path(base_path), file_extensions or {".yml", ".yaml"}):
         namespace_files[namespace].append(file_path)
 
     for files in namespace_files.values():
@@ -92,13 +94,17 @@ def load_jinja_yaml_configs(
     return result
 
 
-def _iter_files_with_namespaces(base_path: Path) -> Iterator[Tuple[str, Path]]:
+def _iter_files_with_namespaces(base_path: Path, extensions: list[str]) -> Iterator[Tuple[str, Path]]:
     """Iterate (namespace, path) tuples for every YAML file in the specified path.
 
     Namespaces are determined by the file's top dir or by its name before any double underscores.
     Examples: <namespace>/subdir/file.yaml, <namespace>__suffix.yml, <namespace>.yaml, etc
     """
-    for file_path in (x for x in base_path.rglob("*.y*ml") if x.suffix in (".yml", ".yaml")):
+    for file_path in (
+        x
+        for x in base_path.rglob("*.*")
+        if x.is_file() and x.suffix.removeprefix(".") in [ext.removeprefix(".") for ext in extensions]
+    ):
         rel_path = file_path.relative_to(base_path)
         namespace = rel_path.parts[0] if len(rel_path.parts) > 1 else file_path.stem.split("__")[0]
         yield namespace, file_path

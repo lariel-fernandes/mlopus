@@ -1,6 +1,6 @@
 import copy
 from collections.abc import KeysView
-from typing import Any
+from typing import Any, Callable
 
 from kedro.config import AbstractConfigLoader
 
@@ -22,6 +22,8 @@ class JinjaYamlConfigLoader(AbstractConfigLoader):
         extra_namespaces: NamespacedConfigs | None = None,
         expose_env: bool = False,
         env_namespace: str = DEFAULT_ENV_NAMESPACE,
+        custom_filters: dict[str, Callable] | None = None,
+        file_extensions: set[str] | None = None,
         **kwargs: Any,
     ):
         super().__init__(
@@ -41,6 +43,8 @@ class JinjaYamlConfigLoader(AbstractConfigLoader):
             extra_namespaces=extra_namespaces,
             expose_env=expose_env,
             env_namespace=env_namespace,
+            custom_filters=custom_filters,
+            file_extensions=file_extensions,
         )
 
         # The following config namespaces are required by Kedro, so we give them a default if necessary.
