@@ -1,3 +1,9 @@
+## 1.5.2 (2025-12-05)
+
+### Fix
+
+- **JinjaYamlConfigLoader**: accept file extensions and custom filters
+
 ## 1.5.1 (2025-12-04)
 
 ### Fix
