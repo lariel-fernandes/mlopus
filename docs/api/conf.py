@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath("../../src"))
 
 project = "MLOpus"
 author = "Lariel Fernandes"
-release = "1.5.2"
+release = "1.6.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

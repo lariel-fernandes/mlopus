@@ -1,3 +1,9 @@
+## 1.6.0 (2025-12-12)
+
+### Feat
+
+- built-in to_yaml filter for jinja yaml config loader
+
 ## 1.5.2 (2025-12-05)
 
 ### Fix
