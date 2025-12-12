@@ -1,4 +1,5 @@
 import os
+import textwrap
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Literal, Iterator, Tuple, Callable
@@ -47,6 +48,11 @@ def load_jinja_yaml_configs(
     :param file_extensions: File extensions to use. Defaults to `{'.yml', '.yaml'}`. The leading dot is ignored.
     """
 
+    custom_filters = custom_filters or {}
+    for func in _FILTERS:
+        if func.__name__ not in custom_filters:
+            custom_filters[func.__name__] = func
+
     namespace_files: dict[str, list[Path]] = defaultdict(list)
     for namespace, file_path in _iter_files_with_namespaces(Path(base_path), file_extensions or {".yml", ".yaml"}):
         namespace_files[namespace].append(file_path)
@@ -94,7 +100,7 @@ def load_jinja_yaml_configs(
     return result
 
 
-def _iter_files_with_namespaces(base_path: Path, extensions: list[str]) -> Iterator[Tuple[str, Path]]:
+def _iter_files_with_namespaces(base_path: Path, extensions: set[str]) -> Iterator[Tuple[str, Path]]:
     """Iterate (namespace, path) tuples for every YAML file in the specified path.
 
     Namespaces are determined by the file's top dir or by its name before any double underscores.
@@ -108,3 +114,35 @@ def _iter_files_with_namespaces(base_path: Path, extensions: list[str]) -> Itera
         rel_path = file_path.relative_to(base_path)
         namespace = rel_path.parts[0] if len(rel_path.parts) > 1 else file_path.stem.split("__")[0]
         yield namespace, file_path
+
+
+class _NotSet:
+    pass
+
+
+class _Filters:
+    """Built-in jinja filters."""
+
+    @staticmethod
+    def to_yaml(
+        arg: Any,
+        *,
+        indent: int = 0,
+        if_none: Any | None = _NotSet,
+        if_falsy: Any | None = _NotSet,
+    ) -> str:
+        if arg is None and if_none is not _NotSet:
+            arg = if_none
+
+        if not arg and if_falsy is not _NotSet:
+            arg = if_falsy
+
+        encoded = yaml.safe_dump(arg).removesuffix("\n").removesuffix("\n...")
+
+        if prefix := indent * " ":
+            encoded = textwrap.indent(encoded, prefix).removeprefix(prefix)
+
+        return encoded
+
+
+_FILTERS = (_Filters.to_yaml,)

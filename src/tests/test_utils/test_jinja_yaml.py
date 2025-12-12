@@ -21,6 +21,13 @@ def test_load_jinja_yaml_configs_basic():
               bar: foo
             with_suffix: {{ "foo" | add_suffix }}
             empty_key: ""
+            this_is_none: null
+            this_is_falsy_str: ""
+            this_is_falsy_int: 0
+            this_is_falsy_float: 0.0
+            dict_with_nones:
+              key1: null
+              key2: [null]
         """)
         )
 
@@ -40,6 +47,12 @@ def test_load_jinja_yaml_configs_basic():
               {% for key, value in common.conn_defaults.items() %}
               {{ key }}: {{ value }}
               {% endfor %}
+            this_is_none: {{ common.this_is_none | to_yaml(if_none="") }}
+            this_is_falsy_str: {{ common.this_is_falsy_str | to_yaml(if_falsy=None) }}
+            this_is_falsy_int: {{ common.this_is_falsy_int | to_yaml(if_falsy=None) }}
+            this_is_falsy_float: {{ common.this_is_falsy_float | to_yaml(if_falsy=None) }}
+            dict_with_nones:
+              {{ common.dict_with_nones | to_yaml(indent=2) }}
         """)
         )
 
@@ -71,3 +84,10 @@ def test_load_jinja_yaml_configs_basic():
         assert result["database"]["missing_gets_fallback"] == "fallback"
         assert result["database"]["empty_gets_fallback"] == "fallback"
         assert result["database"]["conn_defaults"] == result["common"]["conn_defaults"]
+
+        assert result["database"]["this_is_none"] == ""
+        assert result["database"]["this_is_falsy_str"] is None
+        assert result["database"]["this_is_falsy_int"] is None
+        assert result["database"]["this_is_falsy_float"] is None
+
+        assert result["database"]["dict_with_nones"] == {"key1": None, "key2": [None]}
