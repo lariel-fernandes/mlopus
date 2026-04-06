@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Any
 
+import importlib_metadata
 import pytz
 import toml
 from kedro.config import AbstractConfigLoader
@@ -111,7 +112,7 @@ class MlopusKedroSession(KedroSession):
 
         try:
             dist = packaging.get_dist(self._package_name.split(".")[0])
-        except importlib_metadata.PackageNotFoundError as e:
+        except importlib_metadata.PackageNotFoundError:
             # Fallback: look up the distribution metadata by project name instead
             # (useful in case the package name doesn't match the dist name exactly)
             dist = packaging.get_dist(self._project_name)
