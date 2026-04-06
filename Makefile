@@ -14,7 +14,7 @@ install-tools:
 	@uv tool install -q twine
 	@uv tool install -q pre-commit
 	@uv tool install -q commitizen
-	@uv tool install -q coverage-badge
+	@uv tool install -q coverage-badge --with "setuptools<72"
 
 # === Git hooks ===================================================================================
 

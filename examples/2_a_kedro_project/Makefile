@@ -8,7 +8,7 @@ install-project:
 	@uv sync --frozen --all-extras
 
 install-tools:
-	@uv tool install -q coverage-badge
+	@uv tool install -q coverage-badge --with "setuptools<72"
 
 # === Pytest ======================================================================================
 
