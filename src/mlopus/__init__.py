@@ -1,6 +1,6 @@
 from mlopus import mlflow, artschema, lineage
 
-VERSION = "1.6.1"
+VERSION = "1.6.2"
 
 __all__ = [
     "mlflow",

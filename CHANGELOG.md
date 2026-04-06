@@ -1,3 +1,9 @@
+## 1.6.2 (2026-04-06)
+
+### Fix
+
+- **kedro.session**: importlib metadata
+
 ## 1.6.1 (2026-04-06)
 
 ### Fix
