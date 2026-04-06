@@ -1,3 +1,9 @@
+## 1.6.1 (2026-04-06)
+
+### Fix
+
+- **kedro.session**: expose dist info, fallback to load dist meta by proj name
+
 ## 1.6.0 (2025-12-12)
 
 ### Feat
