@@ -106,9 +106,24 @@ class MlopusKedroSession(KedroSession):
         if self._package_name is None:  # resolve package name from project metadata if not specified
             self._package_name = toml.load(self._project_path / "pyproject.toml")["tool"]["kedro"]["package_name"]
 
+        if not getattr(self, "_project_name", None):  # resolve project name from project metadata if not specified
+            self._project_name = toml.load(self._project_path / "pyproject.toml")["tool"]["kedro"]["project_name"]
+
+        try:
+            dist = packaging.get_dist(self._package_name.split(".")[0])
+        except importlib_metadata.PackageNotFoundError as e:
+            # Fallback: look up the distribution metadata by project name instead
+            # (useful in case the package name doesn't match the dist name exactly)
+            dist = packaging.get_dist(self._project_name)
+
+        self._store["dist"] = {
+            "name": dist.name,
+            "version": dist.version,
+        }
+
         self._store["pkg"] = {
             "name": self._package_name,
-            "version": packaging.get_dist(self._package_name.split(".")[0]).version,
+            "version": dist.version,
         }
 
         self._store["timestamp"] = {
