@@ -81,7 +81,7 @@ class RunCommand(pydantic.BaseModel):
     @pydantic.root_validator(allow_reuse=True, pre=True)  # noqa
     @classmethod
     def _validate_command(cls, values: dict) -> dict:
-        values["command"] = copy.deepcopy(values.get("command") or kedro_run_command)
+        values["command"] = copy.copy(values.get("command") or kedro_run_command)
         values["command"].context_settings["ignore_unknown_options"] = True
         return values
 

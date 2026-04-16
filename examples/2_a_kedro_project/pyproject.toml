@@ -53,7 +53,7 @@ mlopus = { path = "../../", editable = true }
 [tool.kedro]
 project_name = "mlopus-kedro-example"
 package_name = "mlopus_kedro_example"
-kedro_init_version = "0.19.5"
+kedro_init_version = "1.3.1"
 
 [tool.kedro_telemetry]
 project_id = "2ffe7425fe654c9199196a18a5963720"

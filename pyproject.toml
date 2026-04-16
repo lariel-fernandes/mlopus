@@ -34,13 +34,14 @@ dependencies = [
     "rclone-python      >=0.1",
     "importlib-metadata >=6.8",
     "jinja2             >=3.1",
+    "toml               >=0.10",
 ]
 
 [project.urls]
 Repository = "https://github.com/lariel-fernandes/mlopus"
 
 [project.optional-dependencies]
-kedro = ["kedro >=0.19,<1"]
+kedro = ["kedro >=0.19,<2"]
 search = ["mongomock >=4.1,<5"]
 mlflow = ["mlflow-skinny >=2.9,<3"]
 

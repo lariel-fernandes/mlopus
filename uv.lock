@@ -515,14 +515,14 @@ wheels = [
 
 [[package]]
 name = "click"
-version = "8.1.8"
+version = "8.3.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593, upload-time = "2024-12-21T18:38:44.339Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/57/75/31212c6bf2503fdf920d87fee5d7a86a2e3bcf444984126f13d8e4016804/click-8.3.2.tar.gz", hash = "sha256:14162b8b3b3550a7d479eafa77dfd3c38d9dc8951f6f69c78913a8f9a7540fd5", size = 302856, upload-time = "2026-04-03T19:14:45.118Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7e/d4/7ebdbd03970677812aac39c869717059dbb71a4cfc033ca6e5221787892c/click-8.1.8-py3-none-any.whl", hash = "sha256:63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2", size = 98188, upload-time = "2024-12-21T18:38:41.666Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/20/71885d8b97d4f3dde17b1fdb92dbd4908b00541c5a3379787137285f602e/click-8.3.2-py3-none-any.whl", hash = "sha256:1924d2c27c5653561cd2cae4548d1406039cb79b858b747cfea24924bbc1616d", size = 108379, upload-time = "2026-04-03T19:14:43.505Z" },
 ]
 
 [[package]]
@@ -1026,15 +1026,6 @@ wheels = [
 ]
 
 [[package]]
-name = "importlib-resources"
-version = "6.5.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/cf/8c/f834fbf984f691b4f7ff60f50b514cc3de5cc08abfc3295564dd89c5e2e7/importlib_resources-6.5.2.tar.gz", hash = "sha256:185f87adef5bcc288449d98fb4fba07cea78bc036455dd44c5fc4a2fe78fed2c", size = 44693, upload-time = "2025-01-03T18:51:56.698Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/ed/1f1afb2e9e7f38a545d628f864d562a5ae64fe6f7a10e28ffb9b185b4e89/importlib_resources-6.5.2-py3-none-any.whl", hash = "sha256:789cfdc3ed28c78b67a06acb8126751ced69a3d5f79c095a98298cd8a760ccec", size = 37461, upload-time = "2025-01-03T18:51:54.306Z" },
-]
-
-[[package]]
 name = "iniconfig"
 version = "2.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1447,34 +1438,30 @@ wheels = [
 
 [[package]]
 name = "kedro"
-version = "0.19.15"
+version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "build" },
-    { name = "cachetools" },
     { name = "click" },
     { name = "cookiecutter" },
     { name = "dynaconf" },
     { name = "fsspec" },
     { name = "gitpython" },
-    { name = "importlib-metadata" },
-    { name = "importlib-resources" },
     { name = "kedro-telemetry" },
     { name = "more-itertools" },
     { name = "omegaconf" },
     { name = "parse" },
     { name = "pluggy" },
-    { name = "pre-commit-hooks" },
     { name = "pyyaml" },
     { name = "rich" },
-    { name = "rope" },
-    { name = "toml" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
+    { name = "tomli-w" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/8d/a0134b8b5cf0d096ae7372f302e4410c4af11736381a5ee332aafcb4a0b6/kedro-0.19.15.tar.gz", hash = "sha256:4f39a0f97f23ba895ea6893d4720fce834fe8fbc56a5633baa7695501179f7ea", size = 165234, upload-time = "2025-09-02T13:00:44.703Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3b/56/69e8fc81eafd7a7e9c431a95cb67a4a5632e4cfec464fd2f3bfe35f83732/kedro-1.3.1.tar.gz", hash = "sha256:840856e88289e441693923f61bd6750ef64f753a1cbd6ba1292e56e9b676222a", size = 172686, upload-time = "2026-04-07T12:55:10.815Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2a/d5/ecfbf563c92e40f2e3e15703a46d55e31ff36cbee5c4586d1d0a4e183d97/kedro-0.19.15-py3-none-any.whl", hash = "sha256:65a2bad75c6ac196b96e6d59444a2f170f9f52529bbacd1f000405556e88de70", size = 199236, upload-time = "2025-09-02T13:00:43.556Z" },
+    { url = "https://files.pythonhosted.org/packages/1d/a6/d086073f340957e206409e3926a0d853be34e5d7e40f38913d5e6596fe4b/kedro-1.3.1-py3-none-any.whl", hash = "sha256:e363920e3d3c36b0191ff99bb3e563ab5d21d9c9e2f1eab65f55d31ba7741fb7", size = 201806, upload-time = "2026-04-07T12:55:09.482Z" },
 ]
 
 [[package]]
@@ -1662,7 +1649,7 @@ wheels = [
 
 [[package]]
 name = "mlopus"
-version = "1.6.1"
+version = "1.6.2"
 source = { editable = "." }
 dependencies = [
     { name = "dacite" },
@@ -1673,6 +1660,7 @@ dependencies = [
     { name = "pytz" },
     { name = "pyyaml" },
     { name = "rclone-python" },
+    { name = "toml" },
     { name = "urllib3" },
 ]
 
@@ -1714,7 +1702,7 @@ requires-dist = [
     { name = "dacite", specifier = ">=1.5" },
     { name = "importlib-metadata", specifier = ">=6.8" },
     { name = "jinja2", specifier = ">=3.1" },
-    { name = "kedro", marker = "extra == 'kedro'", specifier = ">=0.19,<1" },
+    { name = "kedro", marker = "extra == 'kedro'", specifier = ">=0.19,<2" },
     { name = "mlflow-skinny", marker = "extra == 'mlflow'", specifier = ">=2.9,<3" },
     { name = "mongomock", marker = "extra == 'search'", specifier = ">=4.1,<5" },
     { name = "packaging", specifier = ">=22" },
@@ -1722,6 +1710,7 @@ requires-dist = [
     { name = "pytz", specifier = ">=2024" },
     { name = "pyyaml", specifier = ">=5" },
     { name = "rclone-python", specifier = ">=0.1" },
+    { name = "toml", specifier = ">=0.10" },
     { name = "urllib3", specifier = ">=1.25" },
 ]
 provides-extras = ["kedro", "search", "mlflow"]
@@ -2275,19 +2264,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pre-commit-hooks"
-version = "6.0.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "ruamel-yaml" },
-    { name = "tomli", marker = "python_full_version < '3.11'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/36/4d/93e63e48f8fd16d6c1e4cef5dabadcade4d1325c7fd6f29f075a4d2284f3/pre_commit_hooks-6.0.0.tar.gz", hash = "sha256:76d8370c006f5026cdd638a397a678d26dda735a3c88137e05885a020f824034", size = 28293, upload-time = "2025-08-09T19:25:04.6Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/46/eba9be9daa403fa94854ce16a458c29df9a01c6c047931c3d8be6016cd9a/pre_commit_hooks-6.0.0-py2.py3-none-any.whl", hash = "sha256:76161b76d321d2f8ee2a8e0b84c30ee8443e01376121fd1c90851e33e3bd7ee2", size = 41338, upload-time = "2025-08-09T19:25:03.513Z" },
-]
-
-[[package]]
 name = "prometheus-client"
 version = "0.23.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2672,24 +2648,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pytoolconfig"
-version = "1.3.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "packaging" },
-    { name = "tomli", marker = "python_full_version < '3.11'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/18/dc/abf70d2c2bcac20e8c71a7cdf6d44e4ddba4edf65acb179248d554d743db/pytoolconfig-1.3.1.tar.gz", hash = "sha256:51e6bd1a6f108238ae6aab6a65e5eed5e75d456be1c2bf29b04e5c1e7d7adbae", size = 16655, upload-time = "2024-01-11T16:25:11.914Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/44/da239917f5711ca7105f7d7f9e2765716dd883b241529beafc0f28504725/pytoolconfig-1.3.1-py3-none-any.whl", hash = "sha256:5d8cea8ae1996938ec3eaf44567bbc5ef1bc900742190c439a44a704d6e1b62b", size = 17022, upload-time = "2024-01-11T16:25:10.589Z" },
-]
-
-[package.optional-dependencies]
-global = [
-    { name = "platformdirs" },
-]
-
-[[package]]
 name = "pytz"
 version = "2025.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2935,18 +2893,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/fb/d2/8920e102050a0de7bfabeb4c4614a49248cf8d5d7a8d01885fbb24dc767a/rich-14.2.0.tar.gz", hash = "sha256:73ff50c7c0c1c77c8243079283f4edb376f0f6442433aecb8ce7e6d0b92d1fe4", size = 219990, upload-time = "2025-10-09T14:16:53.064Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/25/7a/b0178788f8dc6cafce37a212c99565fa1fe7872c70c6c9c1e1a372d9d88f/rich-14.2.0-py3-none-any.whl", hash = "sha256:76bc51fe2e57d2b1be1f96c524b890b816e334ab4c1e45888799bfaab0021edd", size = 243393, upload-time = "2025-10-09T14:16:51.245Z" },
-]
-
-[[package]]
-name = "rope"
-version = "1.14.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pytoolconfig", extra = ["global"] },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/74/3a/85e60d154f26ecdc1d47a63ac58bd9f32a5a9f3f771f6672197f02a00ade/rope-1.14.0.tar.gz", hash = "sha256:8803e3b667315044f6270b0c69a10c0679f9f322ed8efe6245a93ceb7658da69", size = 296801, upload-time = "2025-07-12T17:46:07.786Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/75/35/130469d1901da2b3a5a377539b4ffcd8a5c983f1c9e3ba5ffdd8d71ae314/rope-1.14.0-py3-none-any.whl", hash = "sha256:00a7ea8c0c376fc0b053b2f2f8ef3bfb8b50fecf1ebf3eb80e4f8bd7f1941918", size = 207143, upload-time = "2025-07-12T17:46:05.928Z" },
 ]
 
 [[package]]
