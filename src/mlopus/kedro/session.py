@@ -206,14 +206,36 @@ class MlopusKedroSession(KedroSession):
         to_outputs: Iterable[str] | None = None,
         load_versions: dict[str, str] | None = None,
         namespace: str | None = None,
+        namespaces: list[str] | None = None,
+        only_missing_outputs: bool | None = None,
     ) -> dict[str, Any]:
-        assert not (pipeline_names and pipeline_name), "Specify at most one of `pipeline_name` or `pipeline_names`"
+        """Patch of KedroSession.run with lazy pipeline evaluation and backwards compatibility for changed arguments."""
+        kwargs = {}
 
+        # Handle backwards compat for pipeline name
+        assert not (pipeline_names and pipeline_name), "Specify at most one of `pipeline_name` or `pipeline_names`"
         if isinstance(pipeline_names, list) and len(pipeline_names) > 0:
             assert len(pipeline_names) == 1, "Multiple pipeline names are not supported"
             pipeline_name = pipeline_names[0]
+        pipeline_name = pipeline_name or "__default__"
 
-        with self._loaded_pipeline(self.load_context().config_loader, pipeline_name := pipeline_name or "__default__"):
+        # Handle backwards compat for namespace
+        assert not (namespaces and namespace), "Specify at most one of `namespace` or `namespaces`"
+        if isinstance(namespaces, list) and len(namespaces) > 0:
+            assert len(namespaces) == 1, "Multiple namespaces are not supported"
+            namespace = namespaces[0]
+        if namespace:
+            if _kedro_major == 0:
+                kwargs["namespace"] = namespace
+            else:
+                kwargs["namespaces"] = [namespace]
+
+        # Handle only_missing_outputs argument (added in Kedro 1.0)
+        if only_missing_outputs is not None:
+            assert _kedro_major >= 1, "The argument `only_missing_outputs` is only supported in Kedro 1.0+"
+            kwargs["only_missing_outputs"] = only_missing_outputs
+
+        with self._loaded_pipeline(self.load_context().config_loader, pipeline_name):
             return super().run(
                 pipeline_name=pipeline_name,
                 tags=tags,
@@ -224,7 +246,7 @@ class MlopusKedroSession(KedroSession):
                 from_inputs=from_inputs,
                 to_outputs=to_outputs,
                 load_versions=load_versions,
-                namespaces=namespace,
+                **kwargs,  # noqa
             )
 
     @classmethod
