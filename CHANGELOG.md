@@ -1,3 +1,9 @@
+## 1.6.3 (2026-04-16)
+
+### Fix
+
+- #19 added support for kedro v1 with v0 backwards compat
+
 ## 1.6.2 (2026-04-06)
 
 ### Fix
