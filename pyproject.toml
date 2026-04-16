@@ -41,7 +41,7 @@ dependencies = [
 Repository = "https://github.com/lariel-fernandes/mlopus"
 
 [project.optional-dependencies]
-kedro = ["kedro >=0.19,<2"]
+kedro = ["kedro >=0.19,<2"]  # Supports Kedro v1 with backwards compatibility for v0
 search = ["mongomock >=4.1,<5"]
 mlflow = ["mlflow-skinny >=2.9,<3"]
 
