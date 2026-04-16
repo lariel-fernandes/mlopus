@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Any
-
+from kedro import __version__
 import importlib_metadata
 import pytz
 import toml
@@ -25,6 +25,10 @@ from .pipeline_factory import PipelineFactory
 from .utils import log_errors
 
 logger = logging.getLogger(__name__)
+
+_create_session = KedroSession.create  # Save reference to non-patched session factory
+
+_kedro_major = int(__version__.split(".")[0])  # Get major version for backwards compatibility handling
 
 
 class MlopusKedroSession(KedroSession):
@@ -148,14 +152,45 @@ class MlopusKedroSession(KedroSession):
 
         self._ctx = None  # lazy initialized cached context
 
+    @classmethod
+    def create(
+        cls,
+        project_path: Path | str | None = None,
+        save_on_close: bool = True,
+        env: str | None = None,
+        extra_params: dict[str, Any] | None = None,
+        runtime_params: dict[str, Any] | None = None,
+        conf_source: str | None = None,
+        **kwargs,
+    ) -> KedroSession:
+        """Patch of KedroSession.create offering backwards compatibility for the argument `extra_params`,
+        which has been renamed to `runtime_params` in Kedro 1.0."""
+
+        assert not (extra_params and runtime_params), "Specify at most one: `extra_params` or `runtime_params`"
+
+        return _create_session.__func__(  # noqa
+            cls,
+            project_path=project_path,
+            save_on_close=save_on_close,
+            env=env,
+            conf_source=conf_source,
+            **{"extra_params" if _kedro_major == 0 else "runtime_params": extra_params or runtime_params},
+        )
+
     def create_context(self) -> KedroContext:
         """Load and cache context. Initialize and register hooks now that config is available."""
-        ctx = super().load_context()  # evaluate the context
-        self._store["env"] = ctx.config_loader.env  # save env name (default is only applied on context creation)
-        hooks = [self._load_hook(ctx.config_loader, hook) for hook in settings.HOOKS]  # evaluate hook factories
-        _register_hooks(self._hook_manager, hooks)  # register hooks
-        self._hook_manager.hook.after_context_created(context=ctx)  # run post-context creation hooks
-        return ctx
+        config_loader = self._get_config_loader()  # build config before evaluating hook factories
+        self._store["env"] = config_loader.env  # save env name so super().load_context() uses the right env
+
+        hooks = [self._load_hook(config_loader, hook) for hook in settings.HOOKS]  # evaluate hook factories with conf
+        _register_hooks(self._hook_manager, hooks)  # register hooks before after_context_created fires
+
+        self._ctx = super().load_context()  # create context; kedro v1+: fires context creation hooks
+
+        if _kedro_major == 0:  # manually fire context creation hooks
+            self._hook_manager.hook.after_context_created(context=self._ctx)
+
+        return self._ctx
 
     def load_context(self) -> KedroContext:
         """Get cached context."""
@@ -167,6 +202,7 @@ class MlopusKedroSession(KedroSession):
     def run(  # noqa: PLR0913
         self,
         pipeline_name: str | None = None,
+        pipeline_names: list[str] | None = None,
         tags: Iterable[str] | None = None,
         runner: AbstractRunner | None = None,
         node_names: Iterable[str] | None = None,
@@ -176,19 +212,47 @@ class MlopusKedroSession(KedroSession):
         to_outputs: Iterable[str] | None = None,
         load_versions: dict[str, str] | None = None,
         namespace: str | None = None,
+        namespaces: list[str] | None = None,
+        only_missing_outputs: bool | None = None,
     ) -> dict[str, Any]:
-        with self._loaded_pipeline(self.load_context().config_loader, pipeline_name := pipeline_name or "__default__"):
+        """Patch of KedroSession.run with lazy pipeline evaluation and backwards compatibility for changed arguments."""
+        kwargs = {}
+
+        # Handle backwards compat for pipeline name
+        assert not (pipeline_names and pipeline_name), "Specify at most one of `pipeline_name` or `pipeline_names`"
+        if isinstance(pipeline_names, list) and len(pipeline_names) > 0:
+            assert len(pipeline_names) == 1, "Multiple pipeline names are not supported"
+            pipeline_name = pipeline_names[0]
+        pipeline_name = pipeline_name or "__default__"
+
+        # Handle backwards compat for namespace
+        assert not (namespaces and namespace), "Specify at most one of `namespace` or `namespaces`"
+        if isinstance(namespaces, list) and len(namespaces) > 0:
+            assert len(namespaces) == 1, "Multiple namespaces are not supported"
+            namespace = namespaces[0]
+        if namespace:
+            if _kedro_major == 0:
+                kwargs["namespace"] = namespace
+            else:
+                kwargs["namespaces"] = [namespace]
+
+        # Handle only_missing_outputs argument (added in Kedro 1.0)
+        if only_missing_outputs is not None:
+            assert _kedro_major >= 1, "The argument `only_missing_outputs` is only supported in Kedro 1.0+"
+            kwargs["only_missing_outputs"] = only_missing_outputs
+
+        with self._loaded_pipeline(self.load_context().config_loader, pipeline_name):
             return super().run(
-                pipeline_name,
-                tags,
-                runner,
-                node_names,
-                from_nodes,
-                to_nodes,
-                from_inputs,
-                to_outputs,
-                load_versions,
-                namespace,
+                pipeline_name=pipeline_name,
+                tags=tags,
+                runner=runner,
+                node_names=node_names,
+                from_nodes=from_nodes,
+                to_nodes=to_nodes,
+                from_inputs=from_inputs,
+                to_outputs=to_outputs,
+                load_versions=load_versions,
+                **kwargs,  # noqa
             )
 
     @classmethod

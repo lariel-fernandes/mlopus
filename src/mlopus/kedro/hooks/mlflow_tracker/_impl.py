@@ -13,6 +13,7 @@ from mlopus.utils import pydantic, yaml, dicts, import_utils
 from ._pipeline import _Pipeline, _Node
 from ._state import _State
 from ._tracker import Logs, Report, Tags, Metrics, Params, Overrides, Config, Nodes, Datasets
+from .._utils import _resolve_pipeline_name  # noqa: TID252
 from ..hook_factory import HookWithFactory  # noqa: TID252
 from ...utils import log_error  # noqa: TID252
 
@@ -136,7 +137,7 @@ class MlflowTracker(mlopus.mlflow.MlflowRunMixin, HookWithFactory):
 
             self.state.report.metrics[dataset_name] = metrics
 
-    def _track_pipeline(self, pipeline_name: str, pipeline: Pipeline, **pipeline_args):
+    def _track_pipeline(self, pipeline_name: str, pipeline: Pipeline, pipeline_args: dict):
         self.state.report.params.update(self.params.apply(pipeline_name, self.state.conf))
         self.state.report.pipelines[pipeline_name] = _Pipeline.parse_obj(pipeline_args)
         for node in pipeline.nodes:
@@ -255,11 +256,13 @@ class MlflowTracker(mlopus.mlflow.MlflowRunMixin, HookWithFactory):
         if len(self.state.report.pipelines) == 0:
             self._set_tags()  # delay setting tags until the first pipeline is about to be run
         self._resume_run()
-        self._track_pipeline(**run_params, pipeline=pipeline)
+        self._track_pipeline(
+            pipeline=pipeline, pipeline_name=_resolve_pipeline_name(run_params), pipeline_args=run_params
+        )
 
     def _after_pipeline(self, run_params: dict, error: Exception | None = None):
         self._end_run(succeeded=error is None)
-        self._track_pipeline_outcome(run_params["pipeline_name"], error=error)
+        self._track_pipeline_outcome(_resolve_pipeline_name(run_params), error=error)
         self._log_report()
         self._log_params()
         self._log_metrics()

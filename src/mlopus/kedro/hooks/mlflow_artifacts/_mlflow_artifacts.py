@@ -9,6 +9,7 @@ import mlopus
 from mlopus.utils import pydantic
 from .input import PipelineInput
 from .output import PipelineOutput
+from .._utils import _resolve_pipeline_name  # noqa: TID252
 from ..hook_factory import HookWithFactory  # noqa: TID252
 
 logger = logging.getLogger(__name__)
@@ -70,13 +71,13 @@ class MlflowArtifacts(mlopus.mlflow.MlflowRunMixin, HookWithFactory):
 
     @hook_impl
     def before_pipeline_run(self, run_params: dict, pipeline: Pipeline, catalog: DataCatalog):  # noqa
-        self._setup_inputs(run_params["pipeline_name"])
+        self._setup_inputs(_resolve_pipeline_name(run_params))
 
     @hook_impl
     def after_pipeline_run(self, run_params: dict, run_result: dict, pipeline: Pipeline, catalog: DataCatalog):  # noqa
-        self._collect_outputs(run_params["pipeline_name"])
+        self._collect_outputs(_resolve_pipeline_name(run_params))
 
     @hook_impl
     def on_pipeline_error(self, error: Exception, run_params: dict, pipeline: Pipeline, catalog: DataCatalog):  # noqa
         if self.collect_on_error:
-            self._collect_outputs(run_params["pipeline_name"])
+            self._collect_outputs(_resolve_pipeline_name(run_params))
