@@ -179,12 +179,18 @@ class MlopusKedroSession(KedroSession):
 
     def create_context(self) -> KedroContext:
         """Load and cache context. Initialize and register hooks now that config is available."""
-        ctx = super().load_context()  # evaluate the context
-        self._store["env"] = ctx.config_loader.env  # save env name (default is only applied on context creation)
-        hooks = [self._load_hook(ctx.config_loader, hook) for hook in settings.HOOKS]  # evaluate hook factories
-        _register_hooks(self._hook_manager, hooks)  # register hooks
-        self._hook_manager.hook.after_context_created(context=ctx)  # run post-context creation hooks
-        return ctx
+        config_loader = self._get_config_loader()  # build config before evaluating hook factories
+        self._store["env"] = config_loader.env  # save env name so super().load_context() uses the right env
+
+        hooks = [self._load_hook(config_loader, hook) for hook in settings.HOOKS]  # evaluate hook factories with conf
+        _register_hooks(self._hook_manager, hooks)  # register hooks before after_context_created fires
+
+        self._ctx = super().load_context()  # create context; kedro v1+: fires context creation hooks
+
+        if _kedro_major == 0:  # manually fire context creation hooks
+            self._hook_manager.hook.after_context_created(context=self._ctx)
+
+        return self._ctx
 
     def load_context(self) -> KedroContext:
         """Get cached context."""

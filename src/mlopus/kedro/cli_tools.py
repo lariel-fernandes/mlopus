@@ -6,6 +6,8 @@ import click
 from kedro.framework.cli.project import run as kedro_run_command
 from kedro.framework.session import KedroSession
 
+from .session import MlopusKedroSession
+
 from mlopus.utils import pydantic, dicts, func_utils, logical
 
 
@@ -150,9 +152,9 @@ class RunCommand(pydantic.BaseModel):
 
     def __call__(self, ctx: click.Context, **__):
         for cb in self._pipeline_callbacks(ctx.params["pipeline"]):
-            with KedroSession.create(
+            with MlopusKedroSession.create(
                 env=ctx.params["env"],
-                extra_params=ctx.params["params"],
+                runtime_params=ctx.params["params"],
                 conf_source=ctx.params["conf_source"],
             ) as session:
                 cb(**self._build_callback_kwargs(ctx, session))
