@@ -15,24 +15,24 @@ cli = click.Group(
 
 # Copy the `run` command from the Kedro CLI, then patch it with extra options and callbacks
 run_command = mlopus.kedro.RunCommand(
-    # decorators=[
-    #     mlopus.kedro.cli_option(
-    #         "--pipeline",
-    #         help="Pipeline name.",
-    #         target_key="mlflow.run.name",  # Forward value to `mlflow.run.name`
-    #     ),
-    #     mlopus.kedro.cli_option(
-    #         "--json-params",
-    #         type=json.loads,
-    #         params_root=True,
-    #         help="JSON object to be used as root of runtime params (overrides).",
-    #     ),
-    #     mlopus.kedro.cli_option(
-    #         "--chain-id",
-    #         target_key="globals.chain_id",  # Forward value to `globals.chain_id`
-    #         help="Use a common ID to link upstream/downstream pipelines.",
-    #     ),
-    # ],
+    decorators=[
+        mlopus.kedro.cli_option(
+            "--pipeline",
+            help="Pipeline name.",
+            target_key="mlflow.run.name",  # Forward value to `mlflow.run.name`
+        ),
+        mlopus.kedro.cli_option(
+            "--json-params",
+            type=json.loads,
+            params_root=True,
+            help="JSON object to be used as root of runtime params (overrides).",
+        ),
+        mlopus.kedro.cli_option(
+            "--chain-id",
+            target_key="globals.chain_id",  # Forward value to `globals.chain_id`
+            help="Use a common ID to link upstream/downstream pipelines.",
+        ),
+    ],
 ).register(cli)
 
 
